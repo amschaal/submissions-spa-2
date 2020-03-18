@@ -1,0 +1,9 @@
+{
+  "realm": "master",
+  "auth-server-url": "http://ec2-54-153-33-35.us-west-1.compute.amazonaws.com/auth",
+  "ssl-required": "external",
+  "resource": "submission",
+  "public-client": true,
+  "confidential-port": 0,
+  "clientId": "submission"
+}

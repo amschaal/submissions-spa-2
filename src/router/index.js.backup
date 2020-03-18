@@ -1,0 +1,57 @@
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+
+import routes from './routes'
+import {axiosInstance} from '../boot/axios.js'
+
+Vue.use(VueRouter)
+
+/*
+ * If not building with SSR mode, you can
+ * directly export the Router instantiation;
+ *
+ * The function below can be async too; either use
+ * async/await or return a Promise which resolves
+ * with the Router instance.
+ */
+
+export default function (/* { store, ssrContext } */) {
+  const Router = new VueRouter({
+    scrollBehavior: () => ({ x: 0, y: 0 }),
+    routes,
+
+    // Leave these as they are and change in quasar.conf.js instead!
+    // quasar.conf.js -> build -> vueRouterMode
+    // quasar.conf.js -> build -> publicPath
+    mode: process.env.VUE_ROUTER_MODE,
+    base: process.env.VUE_ROUTER_BASE
+  })
+  Router.beforeEach((to, from, next) => {
+    // redirect to login page if not logged in and trying to access a restricted page
+    const { authorize } = to.meta
+    console.log('route', to, from, next)
+    if (authorize && authorize.isLoggedIn && to.path !== '/' && !store.getters.isLoggedIn) {
+      // TODO: Don't repeat the code alread in auth store (use dispatch)
+      console.log('check auth!!!')
+      // store.dispatch('checkAuth', {axios: axiosInstance})
+      //   .then(() => {
+      //     next()
+      //   })
+      //   .catch(() => {
+      //     // console.log('catch');
+      //     return next({ path: '/' })
+      //   })
+      axiosInstance.get('/api/get_user/')
+        .then(function (response) {
+          next()
+        })
+        .catch(function (error) {
+          console.log('error', error)
+          return next({ path: '/' })
+        })
+    } else {
+      next()
+    }
+  }
+  return Router
+}
