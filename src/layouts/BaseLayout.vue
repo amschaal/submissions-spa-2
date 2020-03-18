@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-layout-header reveal>
+    <q-header reveal>
       <q-toolbar
         color="primary"
         :inverted="$q.theme === 'ios'"
@@ -18,15 +18,15 @@
         :inverted="$q.theme === 'ios'"
         :style="$q.theme === 'ios' ? { background: 'rgba(255,255,255,0.95' } : null"
       >
-        <q-route-tab slot="title" to="/" replace label="Home" />
-        <q-route-tab slot="title" :to="{ name: 'create_submission' }" replace label="Create Submission" />
-        <q-route-tab slot="title" :to="{ name: 'submissions' }" v-if="$store.getters.isLoggedIn" replace label="Submissions" />
-        <q-route-tab slot="title" :to="{ name: 'imports' }" v-if="$store.getters.isLoggedIn" replace label="Imports" />
-        <q-route-tab slot="title" :to="{ name: 'submission_types' }" v-if="$store.getters.isLoggedIn" label="Submission Types"/>
-        <q-route-tab slot="title" :to="{ name: 'settings' }" v-if="$store.getters.isLoggedIn" label="Settings"/>
+        <q-route-tab to="/" replace label="Home" />
+        <q-route-tab :to="{ name: 'create_submission' }" replace label="Create Submission" />
+        <q-route-tab :to="{ name: 'submissions' }" v-if="$store.getters.isLoggedIn" replace label="Submissions" />
+        <q-route-tab :to="{ name: 'imports' }" v-if="$store.getters.isLoggedIn" replace label="Imports" />
+        <q-route-tab :to="{ name: 'submission_types' }" v-if="$store.getters.isLoggedIn" label="Submission Types"/>
+        <q-route-tab :to="{ name: 'settings' }" v-if="$store.getters.isLoggedIn" label="Settings"/>
       </q-tabs>
 
-    </q-layout-header>
+    </q-header>
 
 <!--
         <q-item v-if="$store.getters.isLoggedIn" @click.native="$refs.auth.logout()">
@@ -41,16 +41,16 @@
     <q-page-container>
       <router-view :key="$route.fullPath"/>
     </q-page-container>
-    <Auth ref="auth"/>
+    <!-- <Auth ref="auth"/> -->
   </q-layout>
 </template>
 
 <script>
 import { openURL } from 'quasar'
-import Auth from '../components/auth.vue'
+// import Auth from '../components/auth.vue'
 
 export default {
-  name: 'LayoutDefault',
+  name: 'BaseLayout',
   data () {
     return {
       leftDrawerOpen: this.$q.platform.is.desktop,
@@ -61,7 +61,7 @@ export default {
     openURL
   },
   components: {
-    Auth
+    // Auth
   }
 }
 </script>

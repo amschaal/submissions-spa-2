@@ -2,12 +2,12 @@
   <q-page padding class="docs-input row justify-center">
 
     <q-card>
-      <q-card-title>
+      <q-card-section>
         {{default_lab.name}} Sample Submissions
-      </q-card-title>
+      </q-card-section>
 
-      <q-card-separator />
-      <q-card-main>
+      <q-separator />
+      <q-card-section>
         <div v-html="default_lab.home_page" v-if="default_lab.home_page"></div>
         <!-- <p>Welcome to the DNA Technologies Core new online submission portal. Please use this platform for all project submission for Nanopore and 10X (Genome and Single Cell assays).</p>
         <p>These steps will assure the trouble-free processing of your projects: Make sure that your lab has an account with the Genome Center and PPMS. We require a Genome Center account for each PI/lab/company before receiving samples and soon we will be migrating to PPMS for billing. Setting up the account is a simple process of entering contact information for the PI and a financial administrator. Please see "setting up your account and billing" here: <a href="https://dnatech.genomecenter.ucdavis.edu/getting-started/">https://dnatech.genomecenter.ucdavis.edu/getting-started/</a></p>
@@ -15,7 +15,7 @@
         <router-link :to="{ name: 'create_submission' }">Click here</router-link> to start sample submission.
       -->
         <q-btn :to="{ name: 'create_submission' }" label="Create Submission"></q-btn>
-    </q-card-main>
+    </q-card-section>
   </q-card>
   </q-page>
 </template>

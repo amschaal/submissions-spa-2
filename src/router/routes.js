@@ -2,7 +2,7 @@
 const routes = [
   {
     path: '/',
-    component: () => import('layouts/base'),
+    component: () => import('layouts/BaseLayout'),
     children: [
       { path: '', name: 'index', component: () => import('pages/index') },
       {
