@@ -13,18 +13,43 @@
       binary-state-sort
       :rows-per-page-options="[10,25,0]"
     >
-      <template slot="top-left" slot-scope="props">
-        <q-table-columns
+      <template slot="top-left">
+        <!-- <q-table-columns
           color="secondary"
           class="q-mr-sm"
           v-model="visibleColumns"
           :columns="columns"
           :props="props"
+        /> -->
+        <q-select
+          v-model="visibleColumns"
+          multiple
+          outlined
+          dense
+          options-dense
+          :display-value="$q.lang.table.columns"
+          emit-value
+          map-options
+          :options="columns"
+          option-value="name"
+          options-cover
+          style="min-width: 150px"
         />
         <q-checkbox v-model="showImported" label="Show imported" @input="refresh"/>
       </template>
-      <template slot="top-right" slot-scope="props">
-        <q-search hide-underline v-model="filter" :props="props"/>
+      <template slot="top-right">
+        <q-input
+          v-model="filter"
+          debounce="500"
+          placeholder="Search"
+          rounded
+          outlined
+          dense
+        >
+          <template v-slot:prepend>
+            <q-icon name="search" />
+          </template>
+        </q-input>
       </template>
       <template slot="body" slot-scope="props">
         <q-tr :props="props" v-bind:class="{'imported': props.row.submission}">

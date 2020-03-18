@@ -13,7 +13,19 @@
       :rows-per-page-options="[10,25,0]"
     >
       <template slot="top-right" slot-scope="props" :props="props">
-        <q-checkbox v-model="showInactive" label="Show inactive" @input="refresh" class="inactive"/>  <q-search hide-underline v-model="filter" />
+        <q-checkbox v-model="showInactive" label="Show inactive" @input="refresh" class="inactive"/>
+        <q-input
+          v-model="filter"
+          debounce="500"
+          placeholder="Search"
+          rounded
+          outlined
+          dense
+        >
+          <template v-slot:prepend>
+            <q-icon name="search" />
+          </template>
+        </q-input>
       </template>
       <template slot="body" slot-scope="props">
         <q-tr :props="props" v-bind:class="{'inactive': !props.row.active}">

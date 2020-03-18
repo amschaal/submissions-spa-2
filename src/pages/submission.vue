@@ -1,36 +1,46 @@
 <template>
   <q-page padding class="docs-input row justify-center">
     <q-card class="p90">
-    <q-tabs>
-      <q-tab slot="title" name="submission"  default><span v-if="submission.id">Submission</span><span v-else>Create Submission</span></q-tab>
-      <q-tab slot="title" name="files" label="Files"  v-if="submission.id"/>
-      <q-tab slot="title" name="comments" label="comments"  v-if="submission.id"/>
-      <q-tab slot="title" name="charges" label="charges"  v-if="submission.id"/>
+    <q-tabs
+      v-model="tab"
+      dense
+      class="text-grey"
+      active-color="primary"
+      indicator-color="primary"
+      align="justify"
+      narrow-indicator
+    >
+      <q-tab name="submission"  default><span v-if="submission.id">Submission</span><span v-else>Create Submission</span></q-tab>
+      <q-tab name="files" label="Files"  v-if="submission.id"/>
+      <q-tab name="comments" label="comments"  v-if="submission.id"/>
+      <q-tab name="charges" label="charges"  v-if="submission.id"/>
+    </q-tabs>
+    <q-tab-panels v-model="tab" animated>
+      <q-tab-panel name="submission">
+        <q-card-section>
+          <h3 v-if="submission.cancelled" class="text-red">Submission cancelled</h3>
+          <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id) || create" v-on:submission_updated="submissionUpdated"/>
+          <Submission :submission="submission" v-if="!modify && id"/>
+        </q-card-section>
+      </q-tab-panel>
+      <q-tab-panel name="files"  v-if="submission.id">
+        <q-card-section>
+          <!-- <q-uploader url="/api/submission_files/" :upload-factory="uploadFile" multiple="true"/> -->
+          <files :submission="submission"/>
+        </q-card-section>
+      </q-tab-panel>
+      <q-tab-panel name="comments" v-if="submission.id">
+        <q-card-section>
+          <notes-tree :submission="submission"/>
+        </q-card-section>
+      </q-tab-panel>
+      <q-tab-panel name="charges" v-if="submission.id">
+        <q-card-section>
+          <charges :submission="submission"/>
+        </q-card-section>
+      </q-tab-panel>
+    </q-tab-panels>
 
-    <q-tab-pane name="submission">
-      <q-card-main>
-        <h3 v-if="submission.cancelled" class="text-red">Submission cancelled</h3>
-        <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id) || create" v-on:submission_updated="submissionUpdated"/>
-        <Submission :submission="submission" v-if="!modify && id"/>
-      </q-card-main>
-    </q-tab-pane>
-    <q-tab-pane name="files"  v-if="submission.id">
-      <q-card-main>
-        <!-- <q-uploader url="/api/submission_files/" :upload-factory="uploadFile" multiple="true"/> -->
-        <files :submission="submission"/>
-      </q-card-main>
-    </q-tab-pane>
-    <q-tab-pane name="comments" v-if="submission.id">
-      <q-card-main>
-        <notes-tree :submission="submission"/>
-      </q-card-main>
-    </q-tab-pane>
-    <q-tab-pane name="charges" v-if="submission.id">
-      <q-card-main>
-        <charges :submission="submission"/>
-      </q-card-main>
-    </q-tab-pane>
-  </q-tabs>
   </q-card>
   </q-page>
 </template>
@@ -55,7 +65,8 @@ export default {
       submission: {'sample_data': [], 'payment': {}, 'contacts': []},
       errors: {},
       submission_types: [],
-      type_options: this.$store.getters.typeOptions
+      type_options: this.$store.getters.typeOptions,
+      tab: 'submission'
       // type: {},
       // debug: false,
       // modify: false,
