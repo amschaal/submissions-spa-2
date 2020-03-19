@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-uploader url="/api/submission_files/" :upload-factory="uploadFile" :multiple="true" stack-label="Upload files" ref="uploader" @add="filesSelected" hide-upload-button/>
+    <q-uploader :factory="uploadFile" :multiple="true" stack-label="Upload files" ref="uploader" @add="filesSelected" hide-upload-button/>
     <q-table
       ref="table"
       :data="serverData"
@@ -108,7 +108,9 @@ export default {
           self.$q.notify({message: 'Error deleting file', type: 'negative'})
         })
     },
-    uploadFile (file, uploadProgress) {
+    uploadFile (files) {
+      var file = files[0]
+      console.log('uploadFile', files, this.$refs)
       var self = this
       var formData = new FormData()
       formData.append('file', file)
@@ -120,17 +122,20 @@ export default {
             'Content-Type': 'multipart/form-data'
           },
           onUploadProgress: function (progressEvent) {
+            console.log('uploadProgress', this, progressEvent, self.$refs.uploader.__updateFile)
             var percentCompleted = progressEvent.loaded / progressEvent.total
+            self.$refs.uploader.__updateFile(file, null, progressEvent.loaded)
             // execute the callback
-            uploadProgress(percentCompleted)
+            // uploadProgress(percentCompleted)
             return percentCompleted * 100.0
           }
         }
       )
         .then(function () {
-          console.log('uploaded', self.$refs)
+          console.log('uploaded', self.$refs, files)
           self.$q.notify({message: 'File uploaded', type: 'positive'})
           self.refreshTable()
+          self.$refs.uploader.__updateFile(file, 'uploaded')
           return new Promise((resolve, reject) => {
             resolve(file)
           })
