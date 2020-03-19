@@ -1,54 +1,58 @@
 <template>
   <div>
-    <q-alert type="warning" v-if="!value.samples_received">
-       Samples not yet received.
-       <span v-if="admin">
-         Mark as received <a class="action" @click="markReceived()">today by me</a>
-         or <a class="action" @click="openModal">set a specific date</a>.
-       </span>
-    </q-alert>
-    <q-alert type="positive" v-else>
+    <q-banner rounded class="text-white bg-warning" v-if="!value.samples_received">
+      <template v-slot:avatar>
+        <q-icon name="warning" size="sm"/>
+      </template>
+      Samples not yet received.
+      <span v-if="admin">
+        Mark as received <a class="action" @click="markReceived()">today by me</a>
+        or <a class="action" @click="openModal">set a specific date</a>.
+      </span>
+    </q-banner>
+    <q-banner rounded class="text-white bg-positive" v-else>
+      <template v-slot:avatar>
+        <q-icon name="info" size="sm"/>
+      </template>
       Samples received on {{value.samples_received|formatDate}} by {{value.received_by_name}} <a class="action" @click="openModal" v-if="admin">Edit</a>
-    </q-alert>
+    </q-banner>
 
-    <q-modal v-model="opened" :content-css="{width: '500px', minHeight: '40vh'}" ref="modal">
-      <q-modal-layout>
-        <q-toolbar slot="header">
-          <q-btn
-            flat
-            round
-            dense
-            v-close-overlay
-            icon="keyboard_arrow_left"
-          />
-          <q-toolbar-title>
-            Samples received for {{data.internal_id}}
-          </q-toolbar-title>
-        </q-toolbar>
-
-        <div class="layout-padding" v-if="opened && data && data.id">
-            <q-field
-              helper="Select the date that samples were received. Will default to today."
-              label="Received"
-              :error="errors.samples_received"
-              :error-label="errors.samples_received"
-            >
-              <q-datetime v-model="data.samples_received" type="date" />
-            </q-field>
-            <q-field
-              label="Received by"
-              helper="Who received the samples?  Will default to you."
-              :error="errors.received_by"
-              :error-label="errors.received_by"
-            >
+    <q-dialog  v-model="opened" :content-css="{width: '500px', minHeight: '40vh'}" ref="modal">
+        <q-card>
+          <q-card-section>
+            <q-toolbar-title>
+              Samples received for {{data.internal_id}}
+            </q-toolbar-title>
+          </q-card-section>
+          <q-card-section v-if="opened && data && data.id">
+              <!-- <q-datetime v-model="data.samples_received" type="date" /> -->
+              <q-input
+                helper="Select the date that samples were received. Will default to today."
+                label="Received"
+                :error="errors.samples_received"
+                :error-message="errors.samples_received"
+                filled v-model="data.samples_received"
+                > <!--mask="date" :rules="['date']"-->
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date v-model="data.samples_received" @input="() => $refs.qDateProxy.hide()" mask="YYYY-MM-DD" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
               <q-select
                 v-model="data.received_by"
                 :options="$store.getters.staffOptions"
+                label="Received by"
+                helper="Who received the samples?  Will default to you."
+                :error="errors.received_by"
+                :error-message="errors.received_by"
+                emit-value
+                map-options
               />
-            </q-field>
-        </div>
-        <q-toolbar slot="footer">
-          <q-toolbar-title>
+          </q-card-section>
+          <q-card-actions align="right">
             <q-btn
               color="negative"
               label="Cancel"
@@ -61,10 +65,9 @@
               @click="save"
               class="float-right"
             />
-          </q-toolbar-title>
-        </q-toolbar>
-      </q-modal-layout>
-    </q-modal>
+          </q-card-actions>
+        </q-card>
+    </q-dialog>
   </div>
 </template>
 
