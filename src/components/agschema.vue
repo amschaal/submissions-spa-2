@@ -2,137 +2,193 @@
   <div>
     <!-- <HotTable :settings="settings"></HotTable> -->
     <!-- <q-select :value="value" :options="options" @change="handleChange" filter filter-placeholder="select"/> -->
-    <q-modal v-model="opened" :content-css="{height: '50vh', minWidth: '90vw', minHeight: '90vh'}" ref="modal" no-backdrop-dismiss no-esc-dismiss :maximized="maximized">
-      <q-modal-layout>
-        <q-toolbar slot="header">
-          <q-toolbar-title>
-            Samplesheet: {{type.name}} <span class="float-right">{{rootNode.allChildrenCount}} samples <q-btn color="white" text-color="dark" label="Maximize" @click="maximized=true" v-if="!maximized"/><q-btn color="white" text-color="dark" label="Minimize" @click="maximized=false" v-if="maximized"/></span>
-          </q-toolbar-title>
+    <q-dialog v-model="opened" @show="onShow" :content-css="{height: '90vh', minWidth: '120vw', minHeight: '90vh'}" ref="modal" no-backdrop-dismiss no-esc-dismiss :maximized="maximized">
+      <q-card style="min-width:90vw">
+        <q-toolbar>
+          <q-avatar>
+            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
+          </q-avatar>
+
+          <q-toolbar-title>Samplesheet: {{type.name}} <span class="float-right">{{rootNode.allChildrenCount}} samples <q-btn color="white" text-color="dark" label="Maximize" @click="maximized=true" v-if="!maximized"/><q-btn color="white" text-color="dark" label="Minimize" @click="maximized=false" v-if="maximized"/></span></q-toolbar-title>
+          <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
 
-        <!-- <q-toolbar slot="header">
-        </q-toolbar> -->
+        <q-card-section style="height:75vh; min-height:75vh;">
+            <!-- {{type}} -->
+            <q-btn
+              color="primary"
+              @click="show_help = true"
+              label="Help"
+              v-if="type.sample_help"
+            ><q-tooltip ref="tooltip">Please click "Help" button for important information on sample requirements!</q-tooltip></q-btn> <!-- icon="fas fa-question-circle" -->
+            <q-checkbox v-model="showDescriptions" label="Show descriptions" class="show_descriptions" v-if="hasDescriptions"/> <q-checkbox v-model="showExamples" label="Show examples" v-if="allowExamples && this.sample_schema.examples && sample_schema.examples.length"  class="show_examples"/>
+            <q-btn-dropdown label="Resize Columns">
+            <q-list>
+              <q-item @click.native="sizeToFit">
+                <q-item-label>
+                  Fit all columns
+                </q-item-label>
+              </q-item>
+              <q-item @click.native="autoSizeAll">
+                <q-item-label>
+                  Auto-size
+                </q-item-label>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+            <ag-grid-vue style="width: 100%; height: 90%;" class="ag-theme-balham"
 
-        <div style="height:100%">
-          <!-- {{type}} -->
-          <q-btn
-            color="primary"
-            @click="show_help = true"
-            label="Help"
-            v-if="type.sample_help"
-          ><q-tooltip ref="tooltip">Please click "Help" button for important information on sample requirements!</q-tooltip></q-btn> <!-- icon="fas fa-question-circle" -->
-          <q-checkbox v-model="showDescriptions" label="Show descriptions" class="show_descriptions" v-if="hasDescriptions"/> <q-checkbox v-model="showExamples" label="Show examples" v-if="allowExamples && this.sample_schema.examples && sample_schema.examples.length"  class="show_examples"/>
-          <q-btn-dropdown label="Resize Columns" class="float-right">
-          <q-list link>
-            <q-item @click.native="sizeToFit">
-              <q-item-main>
-                <q-item-tile label>Fit all columns</q-item-tile>
-              </q-item-main>
-            </q-item>
-            <q-item @click.native="autoSizeAll">
-              <q-item-main>
-                <q-item-tile label>Auto-size</q-item-tile>
-              </q-item-main>
-            </q-item>
-          </q-list>
-        </q-btn-dropdown>
-          <ag-grid-vue style="width: 100%; height: 90%;" class="ag-theme-balham"
-
-            rowSelection='multiple'
-            :enableColResize='true'
-            :enableSorting='true'
-            :gridOptions='gridOptions'
-            :rowData='rowData'
-            :columnDefs='columnDefs'
-            :ref="'grid'"
-            :pinnedTopRowData="getExampleRows"
-            v-if="opened"
-            >
-          </ag-grid-vue>
-          <!-- domLayout='autoHeight' -->
-        </div>
-        <q-toolbar slot="footer">
-          <q-toolbar-title v-if="editable">
-            <q-btn-dropdown split label="Add row" @click="addRow(1)" color="positive">
-              <!-- dropdown content -->
-              <q-list link>
-                <q-item v-close-overlay @click.native="addRow(1)">
-                  <q-item-main>
-                    <q-item-tile label>Add 1</q-item-tile>
-                  </q-item-main>
-                </q-item>
-                <q-item v-close-overlay @click.native="addRow(10)">
-                  <q-item-main>
-                    <q-item-tile label>Add 10</q-item-tile>
-                  </q-item-main>
-                </q-item>
-                <q-item v-close-overlay @click.native="addRow(25)">
-                  <q-item-main>
-                    <q-item-tile label>Add 25</q-item-tile>
-                  </q-item-main>
-                </q-item>
-                <q-item v-close-overlay @click.native="addRow(100)">
-                  <q-item-main>
-                    <q-item-tile label>Add 100</q-item-tile>
-                  </q-item-main>
-                </q-item>
-              </q-list>
-            </q-btn-dropdown>
-            <!-- <q-btn
-              color="positive"
-              label="Add Row"
-              @click="addRow"
-            /> -->
-            <q-btn
-              color="negative"
-              label="Remove selected rows"
-              @click="removeRows"
-            />
-            <q-btn
-              label="Validate"
-              @click="validate(false)"
-            />
-            <q-btn
-              color="negative"
-              label="Discard"
-              @click="close"
-              class="float-right"
-            />
-            <q-btn
-              color="positive"
-              label="Save"
-              @click="validate(true)"
-              class="float-right"
-            />
-          </q-toolbar-title>
-          <q-toolbar-title v-else>
+              rowSelection='multiple'
+              :enableColResize='true'
+              :enableSorting='true'
+              :gridOptions='gridOptions'
+              :rowData='rowData'
+              :columnDefs='columnDefs'
+              :ref="'grid'"
+              :pinnedTopRowData="getExampleRows"
+              v-if="opened"
+              >
+            </ag-grid-vue>
+            <!-- domLayout='autoHeight' -->
+        </q-card-section>
+        <q-card-actions>
+            <div v-if="editable">
+              <q-btn-dropdown split label="Add row" @click="addRow(1)" color="positive">
+                <q-list link>
+                  <q-item v-close-popup @click.native="addRow(1)">
+                    <q-item-main>
+                      <q-item-tile label>Add 1</q-item-tile>
+                    </q-item-main>
+                  </q-item>
+                  <q-item v-close-popup @click.native="addRow(10)">
+                    <q-item-main>
+                      <q-item-tile label>Add 10</q-item-tile>
+                    </q-item-main>
+                  </q-item>
+                  <q-item v-close-popup @click.native="addRow(25)">
+                    <q-item-main>
+                      <q-item-tile label>Add 25</q-item-tile>
+                    </q-item-main>
+                  </q-item>
+                  <q-item v-close-popup @click.native="addRow(100)">
+                    <q-item-main>
+                      <q-item-tile label>Add 100</q-item-tile>
+                    </q-item-main>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+              <q-btn
+                color="negative"
+                label="Remove selected rows"
+                @click="removeRows"
+              />
+              <q-btn
+                label="Validate"
+                @click="validate(false)"
+              />
+              <q-btn
+                color="negative"
+                label="Discard"
+                @click="close"
+                class="float-right"
+              />
+              <q-btn
+                color="positive"
+                label="Save"
+                @click="validate(true)"
+                class="float-right"
+              />
+          </div>
+          <div v-else>
             <q-btn
               color="negative"
               label="Close"
               @click="close"
               class="float-right"
             />
-          </q-toolbar-title>
+          </div>
+        </q-card-actions>
+        <!-- <q-card-actions align="right" class="text-primary">
+          <q-toolbar slot="footer">
+            <q-toolbar-title v-if="editable">
+              <q-btn-dropdown split label="Add row" @click="addRow(1)" color="positive">
+                <q-list link>
+                  <q-item v-close-popup @click.native="addRow(1)">
+                    <q-item-main>
+                      <q-item-tile label>Add 1</q-item-tile>
+                    </q-item-main>
+                  </q-item>
+                  <q-item v-close-popup @click.native="addRow(10)">
+                    <q-item-main>
+                      <q-item-tile label>Add 10</q-item-tile>
+                    </q-item-main>
+                  </q-item>
+                  <q-item v-close-popup @click.native="addRow(25)">
+                    <q-item-main>
+                      <q-item-tile label>Add 25</q-item-tile>
+                    </q-item-main>
+                  </q-item>
+                  <q-item v-close-popup @click.native="addRow(100)">
+                    <q-item-main>
+                      <q-item-tile label>Add 100</q-item-tile>
+                    </q-item-main>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+              <q-btn
+                color="negative"
+                label="Remove selected rows"
+                @click="removeRows"
+              />
+              <q-btn
+                label="Validate"
+                @click="validate(false)"
+              />
+              <q-btn
+                color="negative"
+                label="Discard"
+                @click="close"
+                class="float-right"
+              />
+              <q-btn
+                color="positive"
+                label="Save"
+                @click="validate(true)"
+                class="float-right"
+              />
+            </q-toolbar-title>
+            <q-toolbar-title v-else>
+              <q-btn
+                color="negative"
+                label="Close"
+                @click="close"
+                class="float-right"
+              />
+            </q-toolbar-title>
+          </q-toolbar>
+        </q-card-actions> -->
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="show_help">
+      <q-card>
+        <q-toolbar>
+          Sample requirements
         </q-toolbar>
-      </q-modal-layout>
-    </q-modal>
-    <q-modal v-model="show_help">
-      <q-modal-layout>
-        <q-toolbar slot="header">
-          <q-toolbar-title>
-            Sample requirements
-          </q-toolbar-title>
-        </q-toolbar>
-        <div class="layout-padding">
+
+        <q-card-section>
           <div v-html="type.sample_help" v-if="type.sample_help"></div>
+        </q-card-section>
+        <q-card-actions align="right" class="text-primary">
           <q-btn
             color="primary"
             @click="show_help = false"
             label="Close"
           />
-        </div>
-      </q-modal-layout>
-    </q-modal>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
   </div>
 </template>
 <!-- <link type="text/css" rel="stylesheet" href="https://docs.handsontable.com/4.0.0/components/handsontable/dist/handsontable.full.min.css"> -->
@@ -218,7 +274,7 @@ export default {
   },
   methods: {
     openSamplesheet () {
-      var self = this
+      // var self = this
       if (this.submission && this.submission.data) {
         this.errors = this.submission.data.errors && this.submission.data.errors.sample_data ? this.submission.data.errors.sample_data : {}
         this.warnings = this.submission.data.warnings && this.submission.data.warnings.sample_data ? this.submission.data.warnings.sample_data : {}
@@ -240,18 +296,34 @@ export default {
       this.sample_schema = this.schema || this.type.sample_schema
       this.columnDefs = this.schema2Columns(this.sample_schema)
       // console.log('openSamplesheet', this.rowData, this.value, this.columnDefs)
-      this.$refs.modal.show().then(() => {
-        if (self.rowData.length === 0) {
-          self.addRow()
-        }
-        this.rootNode = this.gridOptions.api.getModel().rootNode
-        setTimeout(function () {
-          self.$refs.tooltip.show()
-        }, 1000)
-        setTimeout(function () {
-          self.$refs.tooltip.hide()
-        }, 6000)
-      })
+      console.log('agschema refs', this.$refs)
+      this.$refs.modal.show()
+      // .then(() => {
+      //   if (self.rowData.length === 0) {
+      //     self.addRow()
+      //   }
+      //   this.rootNode = this.gridOptions.api.getModel().rootNode
+      //   setTimeout(function () {
+      //     self.$refs.tooltip.show()
+      //   }, 1000)
+      //   setTimeout(function () {
+      //     self.$refs.tooltip.hide()
+      //   }, 6000)
+      // })
+    },
+    onShow () {
+      // var self = this
+      if (this.rowData.length === 0) {
+        this.addRow()
+      }
+      this.rootNode = this.gridOptions.api.getModel().rootNode
+      setTimeout(function () {
+        console.log('refs')
+        // self.$refs.tooltip.show()
+      }, 1000)
+      setTimeout(function () {
+        // self.$refs.tooltip.hide()
+      }, 6000)
     },
     cellEditable (params) {
       // console.log('cellEditable', this.editable, params)
