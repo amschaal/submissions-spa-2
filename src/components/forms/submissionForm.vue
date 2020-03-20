@@ -20,6 +20,7 @@
           class="col-sm-8 col-md-10 col-lg-10" v-model="import_url" placeholder="Enter existing submission URL here (https://....../submissions/abcd12345678)"/><q-btn label="Import" @click="loadImport(import_url)" class="col-sm-2 col-md-2 col-lg-1"/>
       </fieldset>
           <q-select
+            outlined
             emit-value map-options
             label="Participants"
             label-width="2"
@@ -33,12 +34,11 @@
         <fieldset>
           <legend>Please select the submission type</legend>
           <q-select
+            outlined
             emit-value map-options
             :error="hasError('type')"
             bottom-slots :error-message="errorMessage('type')"
             class="required"
-            inverted-light
-            color="white"
             label="* Submission Type"
             stack-label
             v-model="submission.type"
@@ -210,8 +210,6 @@
         <p v-if="!type.id" class="error">***Please select submission type at the top of the form before filling in sample information***</p>
         <CustomFields v-model="submission.submission_data" :schema="submission.submission_schema || type.submission_schema" ref="submission_fields" v-if="type && type.submission_schema" :errors="errors.submission_data" :warnings="errors.warnings ? errors.warnings.submission_data : {}" modify="true"/>
         <q-field
-          label="* Samples"
-          label-width="2"
           :error="sample_data_error"
           bottom-slots :error-message="sample_data_error_label"
           :warning="sample_data_warning"
@@ -220,19 +218,21 @@
           helper="Click on the Samples button to enter sample information"
         >
           <!-- <Samplesheet v-model="submission.sample_data" :type="type"/> -->
-          <Agschema
-            v-model="submission.sample_data"
-            :schema="submission.sample_schema"
-            :type="type"
-            :editable="true"
-            :allow-examples="true"
-            :allow-force-save="true"
-            ref="samplesheet"
-            v-if="type && type.sample_schema"
-            :submission="submission"
-            v-on:warnings="updateWarnings"
-            v-on:errors="updateErrors"/>
-          <q-btn :label="'Samples ('+submission.sample_data.length+')'"  @click="openSamplesheet" />
+          <template v-slot:control>
+            <Agschema
+              v-model="submission.sample_data"
+              :schema="submission.sample_schema"
+              :type="type"
+              :editable="true"
+              :allow-examples="true"
+              :allow-force-save="true"
+              ref="samplesheet"
+              v-if="type && type.sample_schema"
+              :submission="submission"
+              v-on:warnings="updateWarnings"
+              v-on:errors="updateErrors"/>
+            <q-btn :label="'Samples ('+submission.sample_data.length+')'"  @click="openSamplesheet" />
+          </template>
         </q-field>
           <q-input
             :error="hasError('comments')"
@@ -779,6 +779,7 @@ export default {
     border: 1px solid #006daf;
     padding: 12px;
     border-radius: 8px;
+    padding-bottom: 20px;
   }
   legend {
     color: #006daf;

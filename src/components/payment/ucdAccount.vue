@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-sm-12 col-md-12" v-if="this.$store.getters.isStaff">
       <q-input
-        :error="errors.ppms_order_id"
+        :error="hasError('ppms_order_id')"
         bottom-slots :error-message="errorMessage('ppms_order_id')"
         helper="To be assigned by the core."
         v-model="value.ppms_order_id"
@@ -12,8 +12,8 @@
     </div>
     <div class="col-sm-12 col-md-6">
       <q-select
-        inverted-light
-        color="white"
+        outlined
+        emit-value map-options
         float-label="Select"
         v-model="value.payment_type"
         :options="[
@@ -23,14 +23,14 @@
           {label: 'Purchase Order', value: 'Purchase Order'}
         ]"
         stack-label label="* Payment Type"
-        :error="errors.payment_type"
+        :error="hasError('payment_type')"
         bottom-slots :error-message="errorMessage('payment_type')"
         :helper="type_help"
       />
     </div>
     <div class="col-sm-12 col-md-6">
       <q-input
-        :error="errors.payment_info"
+        :error="hasError('payment_info')"
         bottom-slots :error-message="errorMessage('payment_info')"
         v-model="value.payment_info" type="text"
         stack-label label="Payment Info"
@@ -61,6 +61,9 @@ export default {
         return this.errors[field].join ? this.errors[field].join(', ') : this.errors[field]
       }
       return ''
+    },
+    hasError (field) {
+      return this.errors && this.errors[field] !== undefined
     }
   },
   computed: {
