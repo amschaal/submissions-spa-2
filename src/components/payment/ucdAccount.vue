@@ -1,43 +1,40 @@
 <template>
   <div class="row">
     <div class="col-sm-12 col-md-12" v-if="this.$store.getters.isStaff">
-      <q-field
+      <q-input
         :error="errors.ppms_order_id"
-        :error-label="errors.ppms_order_id"
+        bottom-slots :error-message="errorMessage('ppms_order_id')"
         helper="To be assigned by the core."
-      >
-        <q-input v-model="value.ppms_order_id" type="text" stack-label="PPMS Order Ref #"/>
-      </q-field>
-    </div>
-    <div class="col-sm-12 col-md-6">
-      <q-field
-        :error="errors.payment_type"
-        :error-label="errors.payment_type"
-        :helper="type_help"
-      >
-        <q-select
-          inverted-light
-          color="white"
-          float-label="Select"
-          v-model="value.payment_type"
-          :options="[
-            {label: 'UCD KFS Account', value: 'DaFIS'},
-            {label: 'UC Chart String', value: 'UC Chart String'},
-            {label: 'Credit Card (Non UC only)', value: 'Credit Card'},
-            {label: 'Purchase Order', value: 'Purchase Order'}
-          ]"
-          stack-label="* Payment Type"
-
+        v-model="value.ppms_order_id"
+        type="text"
+        stack-label label="PPMS Order Ref #"
         />
-      </q-field>
     </div>
     <div class="col-sm-12 col-md-6">
-      <q-field
+      <q-select
+        inverted-light
+        color="white"
+        float-label="Select"
+        v-model="value.payment_type"
+        :options="[
+          {label: 'UCD KFS Account', value: 'DaFIS'},
+          {label: 'UC Chart String', value: 'UC Chart String'},
+          {label: 'Credit Card (Non UC only)', value: 'Credit Card'},
+          {label: 'Purchase Order', value: 'Purchase Order'}
+        ]"
+        stack-label label="* Payment Type"
+        :error="errors.payment_type"
+        bottom-slots :error-message="errorMessage('payment_type')"
+        :helper="type_help"
+      />
+    </div>
+    <div class="col-sm-12 col-md-6">
+      <q-input
         :error="errors.payment_info"
-        :error-label="errors.payment_info"
-      >
-        <q-input v-model="value.payment_info" type="text" stack-label="Payment Info"/>
-      </q-field>
+        bottom-slots :error-message="errorMessage('payment_info')"
+        v-model="value.payment_info" type="text"
+        stack-label label="Payment Info"
+        />
     </div>
   </div>
 </template>
@@ -59,7 +56,12 @@ export default {
     }
   },
   methods: {
-
+    errorMessage (field) {
+      if (this.errors && this.errors[field] && this.errors[field]) {
+        return this.errors[field].join ? this.errors[field].join(', ') : this.errors[field]
+      }
+      return ''
+    }
   },
   computed: {
     type_help () {

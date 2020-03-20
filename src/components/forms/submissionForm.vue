@@ -14,86 +14,85 @@
           v-if="imported">
           Importing from <a target="_blank" :href="imported.url">{{imported.internal_id}}: {{imported.type.name}}</a>
         </q-alert>
-        <q-field
+          <q-input
           :label-width="12"
           helper="You may import an existing submission, make modifications, and create a new submission."
-        >
-        <div class="row">
-          <q-input class="col-sm-8 col-md-10 col-lg-10" v-model="import_url" placeholder="Enter existing submission URL here (https://....../submissions/abcd12345678)"/><q-btn label="Import" @click="loadImport(import_url)" class="col-sm-2 col-md-2 col-lg-1"/>
-        </div>
-        </q-field>
+          class="col-sm-8 col-md-10 col-lg-10" v-model="import_url" placeholder="Enter existing submission URL here (https://....../submissions/abcd12345678)"/><q-btn label="Import" @click="loadImport(import_url)" class="col-sm-2 col-md-2 col-lg-1"/>
       </fieldset>
-        <q-field
-          label="Participants"
-          label-width="2"
-          :error="errors.type"
-          :error-label="errors.type"
-          v-if="isAdmin && user_options && submission.participants"
-        >
           <q-select
+            label="Participants"
+            label-width="2"
+            :error="hasError('type')"
+            bottom-slots :error-message="errorMessage('type')"
+            v-if="isAdmin && user_options && submission.participants"
             multiple
             v-model="submission.participants"
             :options="user_options"
           />
-        </q-field>
         <fieldset>
           <legend>Please select the submission type</legend>
-        <q-field
-          :error="errors.type"
-          :error-label="errors.type"
-          class="required"
-        >
           <q-select
+            :error="hasError('type')"
+            bottom-slots :error-message="errorMessage('type')"
+            class="required"
             inverted-light
             color="white"
-            stack-label="* Submission Type"
+            label="* Submission Type"
+            stack-label
             v-model="submission.type"
             :options="type_options"
             :disable="submission.id != undefined"
           />
-        </q-field>
       </fieldset>
         <fieldset>
         <legend>PI</legend>
         <div class="row">
           <div class="col-sm-6 col-md-6 col-lg-3">
-            <q-field
-              :error="errors.pi_first_name"
-              :error-label="errors.pi_first_name"
-            >
-              <q-input v-model="submission.pi_first_name" type="text" class="required" stack-label="* PI First Name"/>
-            </q-field>
+            <q-input
+              :error="hasError('pi_first_name')"
+              bottom-slots :error-message="errorMessage('pi_first_name')"
+              v-model="submission.pi_first_name"
+              type="text"
+              class="required"
+              stack-label label="* PI First Name"
+              />
           </div>
           <div class="col-sm-6 col-md-6 col-lg-3">
-            <q-field
-              :error="errors.pi_last_name"
-              :error-label="errors.pi_last_name"
-            >
-              <q-input v-model="submission.pi_last_name" type="text" class="required" stack-label="* PI Last Name"/>
-            </q-field>
+            <q-input
+              :error="hasError('pi_last_name')"
+              bottom-slots :error-message="errorMessage('pi_last_name')"
+              v-model="submission.pi_last_name"
+              type="text"
+              class="required"
+              stack-label label="* PI Last Name"
+              />
           </div>
           <div class="col-sm-12 col-md-6 col-lg-3">
-            <q-field
-              :error="errors.pi_email"
-              :error-label="errors.pi_email"
-            >
-              <q-input v-model="submission.pi_email" type="text" class="required" stack-label="* PI Email"/>
-            </q-field>
+              <q-input
+                v-model="submission.pi_email"
+                :error="hasError('pi_email')"
+                bottom-slots :error-message="errorMessage('pi_email')"
+                type="text"
+                class="required"
+                stack-label label="* PI Email"
+                />
           </div>
           <div class="col-sm-12 col-md-6 col-lg-3">
-            <q-field
-              :error="errors.pi_phone"
-              :error-label="errors.pi_phone"
-            >
-              <q-input v-model="submission.pi_phone" type="text" class="required" stack-label="* PI phone"/>
-            </q-field>
+              <q-input
+                :error="hasError('pi_phone')"
+                bottom-slots :error-message="errorMessage('pi_phone')"
+                v-model="submission.pi_phone"
+                type="text"
+                class="required"
+                stack-label label="* PI phone"
+                />
           </div>
           <div class="col-sm-12 col-md-12 col-lg-12">
             <q-field
-              :error="errors.institute"
-              :error-label="errors.institute"
+              :error="hasError('institute')"
+              bottom-slots :error-message="errorMessage('institute')"
             >
-            <q-input v-model="submission.institute" type="text" class="required" stack-label="* Institute"/>
+            <q-input v-model="submission.institute" type="text" class="required" stack-label label="* Institute"/>
             </q-field>
           </div>
         </div>
@@ -103,34 +102,34 @@
         <div class="row">
           <div class="col-sm-6 col-md-6 col-lg-3">
             <q-field
-              :error="errors.first_name"
-              :error-label="errors.first_name"
+              :error="hasError('first_name')"
+              bottom-slots :error-message="errorMessage('first_name')"
             >
-              <q-input v-model="submission.first_name" type="text" stack-label="* First name"/>
+              <q-input v-model="submission.first_name" type="text" stack-label label="* First name"/>
             </q-field>
           </div>
           <div class="col-sm-6 col-md-6 col-lg-3">
             <q-field
-              :error="errors.last_name"
-              :error-label="errors.last_name"
+              :error="hasError('last_name')"
+              bottom-slots :error-message="errorMessage('last_name')"
             >
-              <q-input v-model="submission.last_name" type="text" stack-label="* Last name"/>
+              <q-input v-model="submission.last_name" type="text" stack-label label="* Last name"/>
             </q-field>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-3">
             <q-field
-              :error="errors.email"
-              :error-label="errors.email"
+              :error="hasError('email')"
+              bottom-slots :error-message="errorMessage('email')"
             >
-              <q-input v-model="submission.email" type="email" :disable="submission.id != undefined" stack-label="* Email"/>
+              <q-input v-model="submission.email" type="email" :disable="submission.id != undefined" stack-label label="* Email"/>
             </q-field>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-3">
             <q-field
-              :error="errors.phone"
-              :error-label="errors.phone"
+              :error="hasError('phone')"
+              bottom-slots :error-message="errorMessage('phone')"
             >
-              <q-input v-model="submission.phone" type="text" stack-label="* Submitter phone"/>
+              <q-input v-model="submission.phone" type="text" stack-label label="* Submitter phone"/>
             </q-field>
           </div>
         </div>
@@ -141,25 +140,25 @@
           <div class="col-sm-12 col-md-4 col-lg-4">
             <q-field
               :error="hasContactError(index,'first_name')"
-              :error-label="getContactError(index,'first_name')"
+              bottom-slots :error-message="getContactError(index,'first_name')"
             >
-              <q-input v-model="c.first_name" type="text" stack-label="* First Name"/>
+              <q-input v-model="c.first_name" type="text" stack-label label="* First Name"/>
             </q-field>
           </div>
           <div class="col-sm-12 col-md-4 col-lg-4">
             <q-field
               :error="hasContactError(index,'last_name')"
-              :error-label="getContactError(index,'last_name')"
+              bottom-slots :error-message="getContactError(index,'last_name')"
             >
-              <q-input v-model="c.last_name" type="text" stack-label="* Last Name"/>
+              <q-input v-model="c.last_name" type="text" stack-label label="* Last Name"/>
             </q-field>
           </div>
           <div class="col-sm-12 col-md-4 col-lg-4">
             <q-field
               :error="hasContactError(index,'email')"
-              :error-label="getContactError(index,'email')"
+              bottom-slots :error-message="getContactError(index,'email')"
             >
-              <q-input v-model="c.email" type="text" stack-label="* Email"/>
+              <q-input v-model="c.email" type="text" stack-label label="* Email"/>
             </q-field>
             <q-btn @click="removeContact(index)" color="negative" label="remove"/>
           </div>
@@ -174,7 +173,7 @@
           <div class="col-sm-12 col-md-6">
             <q-field
               :error="errors.payment_type"
-              :error-label="errors.payment_type"
+              bottom-slots :error-message="errors.payment_type"
             >
               <q-select
                 float-label="Select"
@@ -190,7 +189,7 @@
           <div class="col-sm-12 col-md-6">
             <q-field
               :error="errors.payment_info"
-              :error-label="errors.payment_info"
+              bottom-slots :error-message="errors.payment_info"
             >
               <q-input v-model="submission.payment_info" type="text" stack-label="Payment Info"/>
             </q-field>
@@ -205,7 +204,7 @@
           label="* Samples"
           label-width="2"
           :error="sample_data_error"
-          :error-label="sample_data_error_label"
+          bottom-slots :error-message="sample_data_error_label"
           :warning="sample_data_warning"
           warning-label="Samples contain warnings"
           v-if="type && type.sample_schema && type.sample_schema.order && type.sample_schema.order.length"
@@ -227,12 +226,12 @@
           <q-btn :label="'Samples ('+submission.sample_data.length+')'"  @click="openSamplesheet" />
         </q-field>
         <q-field
-          :error="errors.comments"
-          :error-label="errors.comments"
+          :error="hasError('comments')"
+          bottom-slots :error-message="errorMessage('comments')"
         >
           <q-input
             v-model="submission.comments" type="textarea"
-            stack-label="Special Instructions / Comments"
+            stack-label label="Special Instructions / Comments"
             :max-height="100"
             rows="1"
           />
@@ -255,7 +254,26 @@
           <q-btn v-if="submission.id" label="Cancel" color="negative" class="float-right" @click="$router.push({name: 'submission', params: {id: submission.id}})"/>
           <q-btn color="primary" @click="show_help = true" label="Help" icon="fas fa-question-circle" v-if="type && type.submission_help"><q-tooltip>Click for help with {{type.name}}</q-tooltip></q-btn>
         </q-card-actions>
-        <q-modal v-model="show_help">
+        <q-dialog v-model="show_help">
+          <q-card>
+            <q-toolbar>
+              Submission Help
+            </q-toolbar>
+
+            <q-card-section>
+              <div v-html="type.submission_help" v-if="type && type.submission_help"></div>
+            </q-card-section>
+            <q-card-actions align="right" class="text-primary">
+              <q-btn
+                color="primary"
+                @click="show_help = false"
+                label="Close"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
+        <!-- <q-modal v-model="show_help">
           <q-modal-layout>
             <q-toolbar slot="header">
               <q-toolbar-title>
@@ -271,7 +289,7 @@
               />
             </div>
           </q-modal-layout>
-        </q-modal>
+        </q-modal> -->
       </div>
 </template>
 
@@ -620,6 +638,15 @@ export default {
     getContactError (index, field) {
       if (this.errors && this.errors.contacts && this.errors.contacts[index] && this.errors.contacts[index][field]) {
         return this.errors.contacts[index][field].join(', ')
+      }
+      return ''
+    },
+    hasError (field) {
+      return this.errors[field] !== undefined
+    },
+    errorMessage (field) {
+      if (this.errors && this.errors[field] && this.errors[field]) {
+        return this.errors[field].join ? this.errors[field].join(', ') : this.errors[field]
       }
       return ''
     },

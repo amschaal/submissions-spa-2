@@ -110,7 +110,7 @@ export default {
     },
     uploadFile (files) {
       var file = files[0]
-      console.log('uploadFile', files, this.$refs)
+      // console.log('uploadFile', files, this.$refs)
       var self = this
       var formData = new FormData()
       formData.append('file', file)
@@ -122,17 +122,15 @@ export default {
             'Content-Type': 'multipart/form-data'
           },
           onUploadProgress: function (progressEvent) {
-            console.log('uploadProgress', this, progressEvent, self.$refs.uploader.__updateFile)
-            var percentCompleted = progressEvent.loaded / progressEvent.total
+            // console.log('uploadProgress', this, progressEvent, self.$refs.uploader.__updateFile)
+            // var percentCompleted = progressEvent.loaded / progressEvent.total
             self.$refs.uploader.__updateFile(file, null, progressEvent.loaded)
-            // execute the callback
-            // uploadProgress(percentCompleted)
-            return percentCompleted * 100.0
+            // return percentCompleted * 100.0
           }
         }
       )
         .then(function () {
-          console.log('uploaded', self.$refs, files)
+          // console.log('uploaded', self.$refs, files)
           self.$q.notify({message: 'File uploaded', type: 'positive'})
           self.refreshTable()
           self.$refs.uploader.__updateFile(file, 'uploaded')
@@ -141,7 +139,6 @@ export default {
           })
           // self.request(self.serverPagination, self.filter)
         })
-      console.log('uploadFile', request)
       return request
     }
   }
