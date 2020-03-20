@@ -20,6 +20,7 @@
           class="col-sm-8 col-md-10 col-lg-10" v-model="import_url" placeholder="Enter existing submission URL here (https://....../submissions/abcd12345678)"/><q-btn label="Import" @click="loadImport(import_url)" class="col-sm-2 col-md-2 col-lg-1"/>
       </fieldset>
           <q-select
+            emit-value map-options
             label="Participants"
             label-width="2"
             :error="hasError('type')"
@@ -32,6 +33,7 @@
         <fieldset>
           <legend>Please select the submission type</legend>
           <q-select
+            emit-value map-options
             :error="hasError('type')"
             bottom-slots :error-message="errorMessage('type')"
             class="required"
@@ -88,12 +90,11 @@
                 />
           </div>
           <div class="col-sm-12 col-md-12 col-lg-12">
-            <q-field
+            <q-input
               :error="hasError('institute')"
               bottom-slots :error-message="errorMessage('institute')"
-            >
-            <q-input v-model="submission.institute" type="text" class="required" stack-label label="* Institute"/>
-            </q-field>
+              v-model="submission.institute" type="text" class="required" stack-label label="* Institute"
+              />
           </div>
         </div>
       </fieldset>
@@ -101,36 +102,41 @@
       <legend>Submitter (<a class="link" @click="copyPI">Copy from PI</a>)</legend>
         <div class="row">
           <div class="col-sm-6 col-md-6 col-lg-3">
-            <q-field
+            <q-input
               :error="hasError('first_name')"
               bottom-slots :error-message="errorMessage('first_name')"
-            >
-              <q-input v-model="submission.first_name" type="text" stack-label label="* First name"/>
-            </q-field>
+              v-model="submission.first_name"
+              type="text"
+              stack-label label="* First name"
+              />
           </div>
           <div class="col-sm-6 col-md-6 col-lg-3">
-            <q-field
+            <q-input
               :error="hasError('last_name')"
               bottom-slots :error-message="errorMessage('last_name')"
-            >
-              <q-input v-model="submission.last_name" type="text" stack-label label="* Last name"/>
-            </q-field>
+              v-model="submission.last_name"
+              type="text"
+              stack-label label="* Last name"
+              />
           </div>
           <div class="col-sm-12 col-md-6 col-lg-3">
-            <q-field
+            <q-input
               :error="hasError('email')"
               bottom-slots :error-message="errorMessage('email')"
-            >
-              <q-input v-model="submission.email" type="email" :disable="submission.id != undefined" stack-label label="* Email"/>
-            </q-field>
+              v-model="submission.email"
+              type="email"
+              :disable="submission.id != undefined"
+              stack-label label="* Email"
+              />
           </div>
           <div class="col-sm-12 col-md-6 col-lg-3">
-            <q-field
+            <q-input
               :error="hasError('phone')"
               bottom-slots :error-message="errorMessage('phone')"
-            >
-              <q-input v-model="submission.phone" type="text" stack-label label="* Submitter phone"/>
-            </q-field>
+              v-model="submission.phone"
+              type="text"
+              stack-label label="* Submitter phone"
+              />
           </div>
         </div>
       </fieldset>
@@ -138,28 +144,31 @@
         <legend>Additional Contacts (<a @click="addContact" class="link">Add</a>)</legend>
         <div class="row" v-for="(c, index) in submission.contacts" :key="index">
           <div class="col-sm-12 col-md-4 col-lg-4">
-            <q-field
+            <q-input
               :error="hasContactError(index,'first_name')"
               bottom-slots :error-message="getContactError(index,'first_name')"
-            >
-              <q-input v-model="c.first_name" type="text" stack-label label="* First Name"/>
-            </q-field>
+              v-model="c.first_name"
+              type="text"
+              stack-label label="* First Name"
+              />
           </div>
           <div class="col-sm-12 col-md-4 col-lg-4">
-            <q-field
-              :error="hasContactError(index,'last_name')"
-              bottom-slots :error-message="getContactError(index,'last_name')"
-            >
-              <q-input v-model="c.last_name" type="text" stack-label label="* Last Name"/>
-            </q-field>
+             <q-input
+               :error="hasContactError(index,'last_name')"
+               bottom-slots :error-message="getContactError(index,'last_name')"
+               v-model="c.last_name"
+               type="text"
+               stack-label label="* Last Name"
+               />
           </div>
           <div class="col-sm-12 col-md-4 col-lg-4">
-            <q-field
+            <q-input
               :error="hasContactError(index,'email')"
               bottom-slots :error-message="getContactError(index,'email')"
-            >
-              <q-input v-model="c.email" type="text" stack-label label="* Email"/>
-            </q-field>
+              v-model="c.email"
+              type="text"
+              stack-label label="* Email"
+              />
             <q-btn @click="removeContact(index)" color="negative" label="remove"/>
           </div>
         </div>
@@ -225,21 +234,16 @@
             v-on:errors="updateErrors"/>
           <q-btn :label="'Samples ('+submission.sample_data.length+')'"  @click="openSamplesheet" />
         </q-field>
-        <q-field
-          :error="hasError('comments')"
-          bottom-slots :error-message="errorMessage('comments')"
-        >
           <q-input
+            :error="hasError('comments')"
+            bottom-slots :error-message="errorMessage('comments')"
             v-model="submission.comments" type="textarea"
             stack-label label="Special Instructions / Comments"
             :max-height="100"
             rows="1"
           />
-        </q-field>
       </fieldset>
-      <q-field>
-        <q-checkbox v-model="submission.biocore" label="I want the Bioinformatics Core to analyze my data" />
-      </q-field>
+      <q-checkbox v-model="submission.biocore" label="I want the Bioinformatics Core to analyze my data" />
         <span v-if="debug">
           <p>SCHEMA:
             {{type.sample_schema}}
