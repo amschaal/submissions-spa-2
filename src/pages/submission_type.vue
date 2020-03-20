@@ -13,30 +13,29 @@
         <q-field
           label="Active"
           :error="errors.active"
-          :error-label="errors.active"
+          :error-message="errors.active"
         >
           <q-checkbox v-model="type.active" label="Should this type be available for submission?"/>
         </q-field>
-        <q-field
+        <q-input
           label="Sort order"
           helper="Submission types will be displayed in numeric order as specified by this field"
           :error="errors.sort_order"
-          :error-label="errors.sort_order"
-        >
-          <q-input v-model="type.sort_order" type="integer"/>
-        </q-field>
-        <q-field
+          :error-message="errors.sort_order"
+          v-model="type.sort_order" type="integer"
+          />
+        <q-input
           label="Name"
           helper="This shows up in the dropdown on the submission form"
           :error="errors.name"
-          :error-label="errors.name"
-        >
-          <q-input v-model="type.name" type="text"/>
-        </q-field>
+          :error-message="errors.name"
+          v-model="type.name"
+          type="text"
+          />
         <q-field
           label="Internal ID"
           :error="next_id_error"
-          :error-label="next_id_error"
+          :error-message="next_id_error"
           helper="The Prefix is concatenated with the Next ID to create the internal id for the submission."
         >
           <div class="row no-wrap">
@@ -45,30 +44,28 @@
             <div class="col">Next Internal ID:<br><b>{{next_internal_id}}</b></div>
           </div>
         </q-field>
-        <q-field
+        <q-select
           label="Default participants"
           :error="errors.type"
-          :error-label="errors.type"
+          :error-message="errors.type"
           v-if="user_options"
-        >
-          <q-select
-            float-label="Select"
-            multiple
-            v-model="type.default_participants"
-            :options="user_options"
-          />
-        </q-field>
-        <q-field
+          float-label="Select"
+          multiple
+          v-model="type.default_participants"
+          :options="user_options"
+          map-values emit-value
+        />
+        <q-input
           label="Description"
           :error="errors.description"
           :error-label="errors.description"
-        >
-          <q-input v-model="type.description" type="textarea"/>
-        </q-field>
+          v-model="type.description"
+          type="textarea"
+          />
         <q-field
           label="Statuses"
           :error="errors.statuses"
-          :error-label="errors.statuses"
+          :error-message="errors.statuses"
           helper="Add statuses using the dropdown.  Statuses may reordered by dragging."
         >
           <!-- <q-chips-input v-model="type.statuses" /> -->
@@ -77,6 +74,7 @@
             :options="status_options"
             filter
             @input="add_status"
+            map-values emit-value
           />
           <draggable :list="type.statuses">
             <div v-for="status in type.statuses" :key="status" class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white draggable">
@@ -101,14 +99,14 @@
             ]"
           />
         </q-field>
-        <q-field
+        <q-input
           label="Confirmation Text"
           helper="Text to provide additional instruction to submitter after submission is complete."
           :error="errors.confirmation_text"
           :error-label="errors.confirmation_text"
-        >
-          <q-input v-model="type.confirmation_text" type="textarea"/>
-        </q-field>
+          v-model="type.confirmation_text"
+          type="textarea"
+          />
         <h6>Submission Fields</h6>
         <schemaForm v-model="type.submission_schema" :options="{variables: $store.getters.lab.submission_variables, showWidth: true}" type="submission"/>
         <h5>Samplesheet definition</h5>

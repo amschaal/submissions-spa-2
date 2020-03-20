@@ -7,33 +7,53 @@
 
             <span><q-tooltip v-if="warnings && warnings[v.variable]">{{warnings ? getWarning(v) : ''}}</q-tooltip><q-icon v-if="warnings && warnings[v.variable]" size="14px" name="warning" color="orange"/> {{widget(v).formatValue(value[v.variable],'None')}}</span>
           </span>
-          <q-field
-            v-else
-            :error="errors && errors[v.variable]"
-            :error-label="errors ? getError(v) : ''"
-            :warning="hasWarning(v)"
-            :warning-label="warnings ? getWarning(v) : ''"
-            :label="v.schema.title ? v.schema.title : v.variable"
-            orientation="vertical"
-            :helper="v.schema.description"
-          >
-          <!-- {{widget(v).getOptions()}} {{widget(v).getDefault()}} value: "{{value[v.variable]}}" -->
-            <!-- <q-input v-model="value[v.variable]" type="text" :stack-label="v.schema.title ? v.schema.title : v.variable"/> -->
-            <component :is="widgetClass(v).component"
-            :value="value[v.variable] || widget(v).getDefault()"
-            @input="val => {$set(value, v.variable, val)}"
-            @change="val => {$set(value, v.variable, val)}"
+          <span v-else>
+            <q-field
+              v-if="['q-input', 'q-select', 'q-file'].indexOf(widgetClass(v).component) == -1"
+              :error="errors && errors[v.variable]"
+              :error-message="errors ? getError(v) : ''"
+              :warning="hasWarning(v)"
+              :warning-message="warnings ? getWarning(v) : ''"
+              :label="v.schema.title ? v.schema.title : v.variable"
+              stack-label
+              orientation="vertical"
+              :helper="v.schema.description"
+            >
+            <!-- {{widget(v).getOptions()}} {{widget(v).getDefault()}} value: "{{value[v.variable]}}" -->
+              <!-- <q-input v-model="value[v.variable]" type="text" :stack-label="v.schema.title ? v.schema.title : v.variable"/> -->
+              <component :is="widgetClass(v).component"
+              :value="value[v.variable] || widget(v).getDefault()"
+              @input="val => {$set(value, v.variable, val)}"
+              @change="val => {$set(value, v.variable, val)}"
+                v-bind="widget(v).getOptions()"
+
+              />
+
+    <!--
+    :stack-label="v.schema.title ? v.schema.title : v.variable"
+    v-model="value[v.variable]"
+    :value="value[v.variable] || widgetClass(v).default"
+    @change="val => { value[v.variable] = val }"
+    -->
+            </q-field>
+            <component
+              :is="widgetClass(v).component"
+              :value="value[v.variable] || widget(v).getDefault()"
+              @input="val => {$set(value, v.variable, val)}"
+              @change="val => {$set(value, v.variable, val)}"
               v-bind="widget(v).getOptions()"
-
+              v-else
+              :error="errors && errors[v.variable]"
+              :error-message="errors ? getError(v) : ''"
+              :warning="hasWarning(v)"
+              :warning-message="warnings ? getWarning(v) : ''"
+              :label="v.schema.title ? v.schema.title : v.variable"
+              stack-label
+              :helper="v.schema.description"
+              map-options emit-value
             />
-
-  <!--
-  :stack-label="v.schema.title ? v.schema.title : v.variable"
-  v-model="value[v.variable]"
-  :value="value[v.variable] || widgetClass(v).default"
-  @change="val => { value[v.variable] = val }"
-  -->
-          </q-field>
+            {{widget(v).getOptions()}}|{{widgetClass(v).component}}|{{value}}|{{v.variable}}|{{value[v.variable]}}|{{widget(v).getDefault()}}
+          </span>
         </div>
     </div>
   </div>

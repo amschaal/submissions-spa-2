@@ -56,6 +56,7 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
+<!--
     <q-modal v-model="variable_modal" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
       <q-modal-layout>
         <q-toolbar slot="header">
@@ -96,7 +97,48 @@
         </q-toolbar-title>
       </q-toolbar>
     </q-modal-layout>
-    </q-modal>
+    </q-modal> -->
+
+    <q-dialog v-model="variable_modal" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
+      <q-card>
+        <q-bar>
+          Add a variable
+          <q-space />
+          <q-btn dense flat icon="close" v-close-popup>
+            <q-tooltip>Close</q-tooltip>
+          </q-btn>
+        </q-bar>
+        <q-card-section>
+          <q-select
+            v-model="new_variable.type"
+            :options="type_options"
+            map-values emit-value
+            label="Type"
+          />
+          <q-input
+            label="Variable Name"
+            :error="variableError(new_variable.name)"
+            :error-message="variableMessage(new_variable.name)"
+            helper="Please only use lowercase letters, numbers, and underscores"
+            v-model="new_variable.name"
+          />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn
+            color="positive"
+            @click="addVariable()"
+            label="Add"
+            :disable="variableError(new_variable.name) || !new_variable.name || !new_variable.type"
+          />
+          <q-btn
+            @click="variable_modal = false"
+            label="Cancel"
+            color="negative"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
     </div>
 </template>
 
