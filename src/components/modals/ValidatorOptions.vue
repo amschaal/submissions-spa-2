@@ -13,7 +13,7 @@
           :error="hasError(v.variable)"
           :error-label="error(v.variable)"
         >
-          <q-input v-model="data[v.variable]" :stack-label="v.label" />
+          <q-input v-model="data[v.variable]" stack-label :label="v.label" />
         </q-field>
       </div>
     </div>

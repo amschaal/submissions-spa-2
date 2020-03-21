@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-uploader :factory="uploadFile" :multiple="true" stack-label="Upload files" ref="uploader" @add="filesSelected" hide-upload-button/>
+    <q-uploader :factory="uploadFile" :multiple="true" stack-label label="Upload files" ref="uploader" @add="filesSelected" hide-upload-button/>
     <q-table
       ref="table"
       :data="serverData"

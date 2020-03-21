@@ -191,7 +191,7 @@
                   {label: 'Credit Card', value: 'Credit Card'},
                   {label: 'DaFIS', value: 'DaFIS'}
                 ]"
-                stack-label="* Payment Type"
+                stack-label label="* Payment Type"
               />
             </q-field>
           </div>
@@ -200,7 +200,7 @@
               :error="errors.payment_info"
               bottom-slots :error-message="errors.payment_info"
             >
-              <q-input v-model="submission.payment_info" type="text" stack-label="Payment Info"/>
+              <q-input v-model="submission.payment_info" type="text" stack-label label="Payment Info"/>
             </q-field>
           </div>
         </div> -->

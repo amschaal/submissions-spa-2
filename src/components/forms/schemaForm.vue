@@ -12,18 +12,20 @@
               <q-select
                 v-model="variable.schema.type"
                 :options="type_options"
+                map-options emit-value
               />
             </td>
             <td v-if="options.showWidth">
               <!-- v-bind:value="getNested(`schema.layout.${variable.variable}.width`)" -->
               <q-select
-
+                map-options emit-value
                 v-model="schema.layout[variable.variable].width"
                 :options="width_options"
                 v-if="schema.layout[variable.variable]"
                 @input="setNested(`schema.layout.${variable.variable}.width`,$event)"
               />
               <q-select
+                map-options emit-value
                 :options="width_options"
                 v-if="!schema.layout[variable.variable]"
                 @input="setNested(`schema.layout.${variable.variable}.width`,$event)"
@@ -112,7 +114,7 @@
           <q-select
             v-model="new_variable.type"
             :options="type_options"
-            map-values emit-value
+            map-options emit-value
             label="Type"
           />
           <q-input

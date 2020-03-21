@@ -20,7 +20,7 @@
               :helper="v.schema.description"
             >
             <!-- {{widget(v).getOptions()}} {{widget(v).getDefault()}} value: "{{value[v.variable]}}" -->
-              <!-- <q-input v-model="value[v.variable]" type="text" :stack-label="v.schema.title ? v.schema.title : v.variable"/> -->
+              <!-- <q-input v-model="value[v.variable]" type="text" stack-label :label="v.schema.title ? v.schema.title : v.variable"/> -->
               <component :is="widgetClass(v).component"
               :value="value[v.variable] || widget(v).getDefault()"
               @input="val => {$set(value, v.variable, val)}"
@@ -30,7 +30,7 @@
               />
 
     <!--
-    :stack-label="v.schema.title ? v.schema.title : v.variable"
+    stack-label :label="v.schema.title ? v.schema.title : v.variable"
     v-model="value[v.variable]"
     :value="value[v.variable] || widgetClass(v).default"
     @change="val => { value[v.variable] = val }"

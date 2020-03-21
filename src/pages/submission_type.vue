@@ -1,34 +1,34 @@
 <template>
   <q-page padding class="docs-input row justify-center">
     <q-card style="width:100%">
-      <q-card-title>
+      <q-card-section>
         <span v-if="!type.id">Create</span> Submission Type <span class="inactive" v-if="type.id && !type.active"> (Inactive)</span>
         <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id"/>
         <q-btn @click="delete_type" color="negative" label="Delete" class="float-right" v-if="type.id"  :disable="type.submission_count !== 0" title="Only types with no associated permissions may be deleted."/>
         <router-link v-if="type.submission_count > 0 && type.id" :to="{'name': 'submissions', 'query': { 'search': type.name }}" class="float-right">{{type.submission_count}} Submissions</router-link>
-      </q-card-title>
+      </q-card-section>
       <!-- <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id"/> -->
-      <q-card-separator />
-      <q-card-main>
+      <q-separator />
+      <q-card-section>
         <q-field
           label="Active"
-          :error="errors.active"
-          :error-message="errors.active"
+          :error="hasError('active')"
+          :error-message="errorMessage('active')"
         >
           <q-checkbox v-model="type.active" label="Should this type be available for submission?"/>
         </q-field>
         <q-input
           label="Sort order"
           helper="Submission types will be displayed in numeric order as specified by this field"
-          :error="errors.sort_order"
-          :error-message="errors.sort_order"
+          :error="hasError('sort_order')"
+          :error-message="errorMessage('sort_order')"
           v-model="type.sort_order" type="integer"
           />
         <q-input
           label="Name"
           helper="This shows up in the dropdown on the submission form"
-          :error="errors.name"
-          :error-message="errors.name"
+          :error="hasError('name')"
+          :error-message="errorMessage('name')"
           v-model="type.name"
           type="text"
           />
@@ -39,42 +39,41 @@
           helper="The Prefix is concatenated with the Next ID to create the internal id for the submission."
         >
           <div class="row no-wrap">
-            <q-input v-model="type.prefix" type="text" stack-label="Prefix" class="col"/>
-            <q-input v-model="type.next_id" type="number" stack-label="Next ID" class="col"/>
+            <q-input v-model="type.prefix" type="text" stack-label label="Prefix" class="col"/>
+            <q-input v-model="type.next_id" type="number" stack-label label="Next ID" class="col"/>
             <div class="col">Next Internal ID:<br><b>{{next_internal_id}}</b></div>
           </div>
         </q-field>
         <q-select
           label="Default participants"
-          :error="errors.type"
-          :error-message="errors.type"
+          :error="hasError('type')"
+          :error-message="errorMessage('type')"
           v-if="user_options"
-          float-label="Select"
           multiple
           v-model="type.default_participants"
           :options="user_options"
-          map-values emit-value
+          map-options emit-value
         />
         <q-input
           label="Description"
-          :error="errors.description"
-          :error-label="errors.description"
+          :error="hasError('description')"
+          :error-message="errorMessage('description')"
           v-model="type.description"
           type="textarea"
           />
         <q-field
           label="Statuses"
-          :error="errors.statuses"
-          :error-message="errors.statuses"
+          :error="hasError('statuses')"
+          :error-message="errorMessage('statuses')"
           helper="Add statuses using the dropdown.  Statuses may reordered by dragging."
         >
           <!-- <q-chips-input v-model="type.statuses" /> -->
           <q-select
-            float-label="Add Status"
+            label="Add Status"
             :options="status_options"
             filter
             @input="add_status"
-            map-values emit-value
+            map-options emit-value
           />
           <draggable :list="type.statuses">
             <div v-for="status in type.statuses" :key="status" class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white draggable">
@@ -85,8 +84,8 @@
         </q-field>
         <q-field
           label="Submission Help"
-          :error="errors.submission_help"
-          :error-label="errors.submission_help"
+          :error="hasError('submission_help')"
+          :error-message="errorMessage('submission_help')"
         >
           <q-editor v-model="type.submission_help"
             :toolbar="[
@@ -102,8 +101,8 @@
         <q-input
           label="Confirmation Text"
           helper="Text to provide additional instruction to submitter after submission is complete."
-          :error="errors.confirmation_text"
-          :error-label="errors.confirmation_text"
+          :error="hasError('confirmation_text')"
+          :error-message="errorMessage('confirmation_text')"
           v-model="type.confirmation_text"
           type="textarea"
           />
@@ -118,8 +117,8 @@
         </div>
         <q-field
           label="Samplesheet Help"
-          :error="errors.sample_help"
-          :error-label="errors.sample_help"
+          :error="hasError('sample_help')"
+          :error-message="errorMessage('sample_help')"
         >
           <q-editor v-model="type.sample_help"
             :toolbar="[
@@ -132,8 +131,8 @@
             ]"
           />
         </q-field>
-      </q-card-main>
-      <q-card-separator />
+      </q-card-section>
+      <q-separator />
       <q-card-actions>
         <q-btn @click="submit" label="Save" color="primary"></q-btn>
       </q-card-actions>
@@ -326,6 +325,15 @@ export default {
           ]
         })
       }
+    },
+    hasError (field) {
+      return this.errors[field] !== undefined
+    },
+    errorMessage (field) {
+      if (this.errors && this.errors[field] && this.errors[field]) {
+        return this.errors[field].join ? this.errors[field].join(', ') : this.errors[field]
+      }
+      return ''
     }
   },
   computed: {

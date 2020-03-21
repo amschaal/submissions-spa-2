@@ -6,7 +6,7 @@
         :error="errors.pi_email"
         :error-label="errors.pi_email"
       >
-        <q-input v-model="value.pi_email" type="text" stack-label="PI Email/Login for PPMS"/>
+        <q-input v-model="value.pi_email" type="text" stack-label label="PI Email/Login for PPMS"/>
       </q-field>
     </div>
   </div>
