@@ -289,7 +289,7 @@ export default {
         message: 'Are you sure you want to delete the variable "' + variable + '"?',
         ok: 'Okay',
         cancel: 'Cancel'
-      }).then(() => {
+      }).onOk(() => {
         if (self.schema.order) {
           var index = self.schema.order.indexOf(variable)
           if (index >= 0) {
