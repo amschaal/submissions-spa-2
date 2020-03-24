@@ -143,8 +143,8 @@
       </q-modal-layout>
     </q-modal> -->
 
-    <q-dialog v-model="opened" :content-css="{minWidth: '80vw', minHeight: '80vh'}" ref="modal">
-      <q-card>
+    <q-dialog v-model="opened" ref="modal">
+      <q-card style="width: 800px; max-width: 80vw;">
         <q-bar>
           Field options for: {{variable}} {{type}}
           <q-space />
@@ -153,11 +153,12 @@
           </q-btn>
         </q-bar>
         <q-card-section v-if="opened">
-          <q-input label="Description" v-model="data.description" autogrow placeholder="Enter description here."/>
+          <q-input dense label="Description" v-model="data.description" autogrow placeholder="Enter description here."/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
-          <q-checkbox label="Unique" v-if="type!='submission'" v-model="data.unique" indeterminate-icon="check_box_outline_blank"/>
+          <q-checkbox dense label="Unique" v-if="type!='submission'" v-model="data.unique" indeterminate-icon="check_box_outline_blank"/>
             <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
           <q-select
+            dense options-dense
             label="Pin column"
             v-if="type!='submission'"
             v-model="data.pinned"
@@ -165,12 +166,14 @@
            :options="[{label:'Not pinned',value:undefined},{label:'Pinned left',value:'left'},{label:'Pinned right',value:'right'}]"
           />
           <q-input
+            dense
             v-if="data.type === 'string'"
             label="Regular Expression"
             helper="Enter a valid regular expression to validate against. Example for matching values such as '20.3 ul': ^\d+(\.{1}\d+)? ul$"
             v-model="data.pattern"
             />
           <q-select
+            dense options-dense
             v-model="data.enum"
             use-input
             use-chips
@@ -185,12 +188,14 @@
             helper="If the variable should be constrained to specific choices, enter here."
             />
           <q-checkbox
+            dense
             label="Select multiple"
             v-if="data.type === 'string' && data.enum && data.enum.length"
             v-model="data.multiple"
             indeterminate-icon="check_box_outline_blank"
             />
           <q-input
+            dense
             v-if="data.type === 'number'"
             label="Minimum"
             helper="Optionally, enter a minimum valid number."
@@ -198,6 +203,7 @@
             type="number"
             />
           <q-input
+            dense
             v-if="data.type === 'number'"
             label="Maximum"
             helper="Optionally, enter a maximum valid number."
@@ -205,28 +211,30 @@
             type="number"
             />
           <q-field
+            dense
             label="Widget"
             borderless
+            style="width:100%"
           >
-          <div class="row inline">
             <span class="col-9">
               <q-select
+                dense options-dense
                 v-model="data.widget.type"
                 :options="widgetOptions"
                 clearable
               />
             </span>
-            <span class="col-3">
+            <span class="col-3" v-if="hasWidgetOptions(data.widget.type)">
               <q-btn label="options" size="sm" @click="open('widget_options')"/>
               <WidgetOptions :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :fields="widgetSchema(data.widget.type)" :schema="schema" :variable="variable" :title="`${variable} widget options`" ref="widget_options"/>
             </span>
-          </div>
           </q-field>
           <q-field v-if="data.validators"
             label="Custom validators"
+            stack-label
             borderless
           >
-            <q-btn-dropdown label="Add validator">
+            <q-btn-dropdown size="md" label="Add validator">
               <q-list link>
                 <q-item v-for="(v, id) in validatorsByType(data.type)" :key="id" v-close-overlay @click.native="addValidator(id)" :title="v.description">
                   <q-item-main>
@@ -242,11 +250,11 @@
           </q-field>
           <q-input label="Validation Error Message" v-model="data.error_message" autogrow placeholder="Optionally add a custom validation message here."/>
           <h5>Printing options</h5>
-            <q-input label="Field label" v-model="data.printing.label" placeholder="Optionally add a shortened label."/>
+            <q-input dense label="Field label" v-model="data.printing.label" placeholder="Optionally add a shortened label."/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
-            <q-checkbox label="Hidden" v-model="data.printing.hidden" indeterminate-icon="check_box_outline_blank"/>
+            <q-checkbox dense label="Hidden" v-model="data.printing.hidden" indeterminate-icon="check_box_outline_blank"/>
             <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
-            <q-input label="Truncate after N characters" v-model="data.printing.truncate_at" type="number" />
+            <q-input dense label="Truncate after N characters" v-model="data.printing.truncate_at" type="number" />
         </q-card-section>
         <q-card-actions align="right">
           <q-btn
@@ -365,6 +373,9 @@ export default {
     widgetSchema (id) {
       var factory = this.type === 'submission' ? submissionWidgetFactory : sampleWidgetFactory
       return factory.getWidgetSchema(id)
+    },
+    hasWidgetOptions (id) {
+      return _.keys(this.widgetSchema(id)).length > 0
     },
     getWidget (id) {
       return this.widgetFactory.getWidget(id)

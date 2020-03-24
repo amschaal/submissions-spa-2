@@ -11,7 +11,9 @@
       <q-separator />
       <q-card-section>
         <q-field
+          dense
           label="Active"
+          stack-label
           :error="hasError('active')"
           :error-message="errorMessage('active')"
           borderless
@@ -19,6 +21,7 @@
           <q-checkbox v-model="type.active" label="Should this type be available for submission?"/>
         </q-field>
         <q-input
+          dense
           label="Sort order"
           helper="Submission types will be displayed in numeric order as specified by this field"
           :error="hasError('sort_order')"
@@ -26,6 +29,7 @@
           v-model="type.sort_order" type="integer"
           />
         <q-input
+          dense
           label="Name"
           helper="This shows up in the dropdown on the submission form"
           :error="hasError('name')"
@@ -34,19 +38,20 @@
           type="text"
           />
         <q-field
+          dense
           label="Internal ID"
+          stack-label
           :error="next_id_error !== ''"
           :error-message="next_id_error"
           helper="The Prefix is concatenated with the Next ID to create the internal id for the submission."
           borderless
         >
-          <div class="row no-wrap">
-            <q-input v-model="type.prefix" type="text" stack-label label="Prefix" class="col"/>
-            <q-input v-model="type.next_id" type="number" stack-label label="Next ID" class="col"/>
-            <div class="col">Next Internal ID:<br><b>{{next_internal_id}}</b></div>
-          </div>
+          <q-input dense v-model="type.prefix" type="text" stack-label label="Prefix" class="col"/>
+          <q-input dense v-model="type.next_id" type="number" stack-label label="Next ID" class="col"/>
+          <div class="col">Next Internal ID:<br><b>{{next_internal_id}}</b></div>
         </q-field>
         <q-select
+          dense
           label="Default participants"
           :error="hasError('type')"
           :error-message="errorMessage('type')"
@@ -57,13 +62,15 @@
           map-options emit-value
         />
         <q-input
+          dense
           label="Description"
           :error="hasError('description')"
           :error-message="errorMessage('description')"
           v-model="type.description"
-          type="textarea"
+          autogrow
           />
         <q-field
+          dense
           label="Statuses"
           :error="hasError('statuses')"
           :error-message="errorMessage('statuses')"
@@ -72,6 +79,7 @@
         >
           <!-- <q-chips-input v-model="type.statuses" /> -->
           <q-select
+            dense
             v-model="status_option"
             label="Add Status"
             :options="status_options"
@@ -88,6 +96,7 @@
         </q-field>
         <q-field
           label="Submission Help"
+          stack-label
           :error="hasError('submission_help')"
           :error-message="errorMessage('submission_help')"
           borderless
@@ -104,12 +113,13 @@
           />
         </q-field>
         <q-input
+          dense
           label="Confirmation Text"
           helper="Text to provide additional instruction to submitter after submission is complete."
           :error="hasError('confirmation_text')"
           :error-message="errorMessage('confirmation_text')"
           v-model="type.confirmation_text"
-          type="textarea"
+          autogrow
           />
         <h6>Submission Fields</h6>
         <schemaForm v-model="type.submission_schema" :options="{variables: $store.getters.lab.submission_variables, showWidth: true}" type="submission"/>
@@ -122,6 +132,7 @@
         </div>
         <q-field
           label="Samplesheet Help"
+          stack-label
           :error="hasError('sample_help')"
           :error-message="errorMessage('sample_help')"
           borderless

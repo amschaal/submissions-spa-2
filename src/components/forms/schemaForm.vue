@@ -4,12 +4,13 @@
           <tr><th></th><th title="Should the field only be available to staff?">Internal</th><th>Required</th><th>Variable</th><th>Name</th><th>Type</th><th>Column Width</th><th></th></tr>
           <tr v-for="variable in fields_sorted" :key="variable.variable">
             <td><q-btn flat dense round icon="arrow_upward" color="primary" @click="move(variable.variable, -1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != 0"/> <q-btn flat dense round icon="arrow_downward" color="primary" @click="move(variable.variable, 1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != schema.order.length - 1"/>
-            <td><q-checkbox v-if="variable.schema" v-model="variable.schema.internal" @input="toggleRequired(variable)"/></td>
-            <td><q-checkbox v-model="schema.required" :val="variable.variable" :disable="variable.schema && variable.schema.internal"/></td>
+            <td><q-checkbox dense v-if="variable.schema" v-model="variable.schema.internal" @input="toggleRequired(variable)"/></td>
+            <td><q-checkbox dense v-model="schema.required" :val="variable.variable" :disable="variable.schema && variable.schema.internal"/></td>
             <td>{{variable.variable}}</td>
-            <td><q-input v-model="variable.schema.title" /></td>
+            <td><q-input dense v-model="variable.schema.title" /></td>
             <td>
               <q-select
+                dense options-dense
                 v-model="variable.schema.type"
                 :options="type_options"
                 map-options emit-value
@@ -18,6 +19,7 @@
             <td v-if="options.showWidth">
               <!-- v-bind:value="getNested(`schema.layout.${variable.variable}.width`)" -->
               <q-select
+                dense options-dense
                 map-options emit-value
                 v-model="schema.layout[variable.variable].width"
                 :options="width_options"
@@ -25,6 +27,7 @@
                 @input="setNested(`schema.layout.${variable.variable}.width`,$event)"
               />
               <q-select
+                dense options-dense
                 map-options emit-value
                 :options="width_options"
                 v-if="!schema.layout[variable.variable]"
@@ -112,12 +115,14 @@
         </q-bar>
         <q-card-section>
           <q-select
+            dense options-dense
             v-model="new_variable.type"
             :options="type_options"
             map-options emit-value
             label="Type"
           />
           <q-input
+            dense
             label="Variable Name"
             :error="variableError(new_variable.name)"
             :error-message="variableMessage(new_variable.name)"

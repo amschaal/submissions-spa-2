@@ -10,7 +10,6 @@
           </q-avatar>
 
           <q-toolbar-title>Samplesheet: {{type.name}} <span class="float-right">{{rootNode.allChildrenCount}} samples <q-btn color="white" text-color="dark" label="Maximize" @click="maximized=true" v-if="!maximized"/><q-btn color="white" text-color="dark" label="Minimize" @click="maximized=false" v-if="maximized"/></span></q-toolbar-title>
-          <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
 
         <q-card-section style="height:75vh; min-height:75vh;">
