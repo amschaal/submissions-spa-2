@@ -1,5 +1,5 @@
 <template>
-  <q-modal v-model="opened" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
+  <!-- <q-modal v-model="opened" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
     <q-modal-layout>
       <q-toolbar slot="header">
         <q-toolbar-title>
@@ -7,7 +7,6 @@
         </q-toolbar-title>
       </q-toolbar>
     <div class="layout-padding">
-      <!-- Widget options:  {{fields}} {{value}} {{data}} {{WidgetClass.schema}} -->
       <div v-for="(v, i) in fields" :key="i">
         <q-field
           :error="hasError(v.variable)"
@@ -32,7 +31,41 @@
       </q-toolbar-title>
     </q-toolbar>
   </q-modal-layout>
-  </q-modal>
+  </q-modal> -->
+
+  <q-dialog v-model="opened" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
+    <q-card>
+      <q-bar>
+        {{title}}
+        <q-space />
+        <q-btn dense flat icon="close" v-close-popup>
+          <q-tooltip>Close</q-tooltip>
+        </q-btn>
+      </q-bar>
+      <q-card-section v-if="opened">
+        <div v-for="(v, i) in fields" :key="i">
+          <q-field
+            :error="hasError(v.variable)"
+            :error-label="error(v.variable)"
+          >
+            <q-input v-model="data[v.variable]" stack-label :label="v.label" />
+          </q-field>
+        </div>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn
+          color="positive"
+          @click="save()"
+          label="Save"
+        />
+        <q-btn
+          @click="opened = false"
+          label="Cancel"
+          color="negative"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script>

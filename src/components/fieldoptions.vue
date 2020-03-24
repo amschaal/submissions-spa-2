@@ -153,61 +153,60 @@
           </q-btn>
         </q-bar>
         <q-card-section v-if="opened">
-          <q-field
-            label="Description"
-          >
-            <q-input v-model="data.description" type="textarea" placeholder="Enter description here."/>
-          </q-field>
-          <q-field
-            label="Unique"
-            v-if="type!='submission'"
-          >
+          <q-input label="Description" v-model="data.description" autogrow placeholder="Enter description here."/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
-            <q-checkbox v-model="data.unique" indeterminate-icon="check_box_outline_blank"/>
+          <q-checkbox label="Unique" v-if="type!='submission'" v-model="data.unique" indeterminate-icon="check_box_outline_blank"/>
             <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
-          </q-field>
-          <q-field
+          <q-select
             label="Pin column"
             v-if="type!='submission'"
-          >
-          <q-select
             v-model="data.pinned"
             radio
            :options="[{label:'Not pinned',value:undefined},{label:'Pinned left',value:'left'},{label:'Pinned right',value:'right'}]"
           />
-          </q-field>
-          <q-field v-if="data.type === 'string'"
+          <q-input
+            v-if="data.type === 'string'"
             label="Regular Expression"
             helper="Enter a valid regular expression to validate against. Example for matching values such as '20.3 ul': ^\d+(\.{1}\d+)? ul$"
-          >
-            <q-input v-model="data.pattern" />
-          </q-field>
-          <q-field v-if="data.type === 'string'"
+            v-model="data.pattern"
+            />
+          <q-select
+            v-model="data.enum"
+            use-input
+            use-chips
+            multiple
+            hide-dropdown-icon
+            input-debounce="0"
+            new-value-mode="add-unique"
+            placeholder="Enter options"
+            v-if="data.type === 'string'"
+            stack-label
             label="Choices"
             helper="If the variable should be constrained to specific choices, enter here."
-          >
-            <q-chips-input v-model="data.enum" placeholder="Enter options" />
-          </q-field>
-          <q-field
+            />
+          <q-checkbox
             label="Select multiple"
             v-if="data.type === 'string' && data.enum && data.enum.length"
-          >
-            <q-checkbox v-model="data.multiple" indeterminate-icon="check_box_outline_blank"/>
-          </q-field>
-          <q-field v-if="data.type === 'number'"
+            v-model="data.multiple"
+            indeterminate-icon="check_box_outline_blank"
+            />
+          <q-input
+            v-if="data.type === 'number'"
             label="Minimum"
             helper="Optionally, enter a minimum valid number."
-          >
-            <q-input v-model="data.minimum" type="number"/>
-          </q-field>
-          <q-field v-if="data.type === 'number'"
+            v-model="data.minimum"
+            type="number"
+            />
+          <q-input
+            v-if="data.type === 'number'"
             label="Maximum"
             helper="Optionally, enter a maximum valid number."
-          >
-            <q-input v-model="data.maximum" type="number"/>
-          </q-field>
+            v-model="data.maximum"
+            type="number"
+            />
           <q-field
             label="Widget"
+            borderless
           >
           <div class="row inline">
             <span class="col-9">
@@ -225,6 +224,7 @@
           </q-field>
           <q-field v-if="data.validators"
             label="Custom validators"
+            borderless
           >
             <q-btn-dropdown label="Add validator">
               <q-list link>
@@ -240,29 +240,13 @@
               <ValidatorOptions v-model="v.options" :fields="validators[v.id].schema" :schema="schema" :variable="variable" :title="`${validators[v.id].name} validator options`" :ref="`validator_options_${v.id}`" v-if="validators[v.id].uses_options"/>
             </div>
           </q-field>
-          <q-field
-            label="Validation Error Message"
-          >
-            <q-input v-model="data.error_message" type="textarea" placeholder="Optionally add a custom validation message here."/>
-          </q-field>
+          <q-input label="Validation Error Message" v-model="data.error_message" autogrow placeholder="Optionally add a custom validation message here."/>
           <h5>Printing options</h5>
-            <q-field
-              label="Field label"
-            >
-              <q-input v-model="data.printing.label" placeholder="Optionally add a shortened label."/>
-            </q-field>
-            <q-field
-              label="Hidden"
-            >
-              <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
-              <q-checkbox v-model="data.printing.hidden" indeterminate-icon="check_box_outline_blank"/>
-              <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
-            </q-field>
-            <q-field
-              label="Truncate after N characters"
-            >
-              <q-input v-model="data.printing.truncate_at" type="number" />
-            </q-field>
+            <q-input label="Field label" v-model="data.printing.label" placeholder="Optionally add a shortened label."/>
+            <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
+            <q-checkbox label="Hidden" v-model="data.printing.hidden" indeterminate-icon="check_box_outline_blank"/>
+            <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
+            <q-input label="Truncate after N characters" v-model="data.printing.truncate_at" type="number" />
         </q-card-section>
         <q-card-actions align="right">
           <q-btn
@@ -330,9 +314,10 @@ export default {
       console.log('root', this.$root.validators)
 
       console.log('openModal', this.value, this.data)
-      this.$refs.modal.show().then(() => {
-
-      })
+      this.$refs.modal.show()
+      // .then(() => {
+      //
+      // })
     },
     open (ref) {
       console.log('open', this.$refs[ref], ref)

@@ -14,6 +14,7 @@
           label="Active"
           :error="hasError('active')"
           :error-message="errorMessage('active')"
+          borderless
         >
           <q-checkbox v-model="type.active" label="Should this type be available for submission?"/>
         </q-field>
@@ -37,6 +38,7 @@
           :error="next_id_error !== ''"
           :error-message="next_id_error"
           helper="The Prefix is concatenated with the Next ID to create the internal id for the submission."
+          borderless
         >
           <div class="row no-wrap">
             <q-input v-model="type.prefix" type="text" stack-label label="Prefix" class="col"/>
@@ -66,6 +68,7 @@
           :error="hasError('statuses')"
           :error-message="errorMessage('statuses')"
           helper="Add statuses using the dropdown.  Statuses may reordered by dragging."
+          borderless
         >
           <!-- <q-chips-input v-model="type.statuses" /> -->
           <q-select
@@ -87,6 +90,7 @@
           label="Submission Help"
           :error="hasError('submission_help')"
           :error-message="errorMessage('submission_help')"
+          borderless
         >
           <q-editor v-model="type.submission_help"
             :toolbar="[
@@ -120,6 +124,7 @@
           label="Samplesheet Help"
           :error="hasError('sample_help')"
           :error-message="errorMessage('sample_help')"
+          borderless
         >
           <q-editor v-model="type.sample_help"
             :toolbar="[
@@ -256,6 +261,7 @@ export default {
       if (this.type.statuses.indexOf(status) === -1) {
         this.type.statuses.push(status)
       }
+      this.status_option = null
     },
     delete_type () {
       var self = this
