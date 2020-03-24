@@ -92,7 +92,7 @@ export default {
       return this.schema.layout[variable] && this.schema.layout[variable].width ? [this.schema.layout[variable].width] : ['col-12']
     },
     getError (v) {
-      return v.schema.error_message || this.errors[v.variable]
+      return v.schema.error_message ? v.schema.error_message : this.errors[v.variable].join(', ')
     },
     getWarning (v, flatten) {
       var warning = v.schema.error_message || this.warnings[v.variable]

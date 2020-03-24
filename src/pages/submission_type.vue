@@ -34,7 +34,7 @@
           />
         <q-field
           label="Internal ID"
-          :error="next_id_error"
+          :error="next_id_error !== ''"
           :error-message="next_id_error"
           helper="The Prefix is concatenated with the Next ID to create the internal id for the submission."
         >
@@ -69,6 +69,7 @@
         >
           <!-- <q-chips-input v-model="type.statuses" /> -->
           <q-select
+            v-model="status_option"
             label="Add Status"
             :options="status_options"
             filter
@@ -153,13 +154,14 @@ export default {
   props: ['id'],
   data () {
     return {
-      type: {active: true, help: '', examples: [], statuses: [], default_participants: [], submission_schema: {properties: {}, order: [], required: [], layout: {}, printing: {}}, sample_schema: {properties: {}, order: [], required: [], printing: {}, examples: []}},
+      type: {active: true, submission_help: '', sample_help: '', help: '', examples: [], statuses: [], default_participants: [], submission_schema: {properties: {}, order: [], required: [], layout: {}, printing: {}}, sample_schema: {properties: {}, order: [], required: [], printing: {}, examples: []}},
       errors: {},
       submission_schema: [],
       examples: [],
       save_message: null,
       watch_changes: false,
       user_options: [],
+      status_option: null,
       status_options: this.$store.getters.lab.statuses.map(status => ({label: status, value: status}))
     }
   },
@@ -353,7 +355,7 @@ export default {
       if (this.errors['prefix']) {
         error += this.errors['prefix'].join(', ')
       }
-      return error === '' ? false : error
+      return error
     },
     type_key () {
       return this.id && this.id !== 'create' ? `submission_type_${this.id}` : 'submission_type'
