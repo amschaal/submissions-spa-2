@@ -18,6 +18,7 @@
         v-model="select"
         :options="service_options"
         @input="add_service"
+        map-options emit-value
       />
     <table class="q-table q-table-horizontal-separator">
       <thead><tr><th>Service</th><th>Quantity</th><th>Notes</th></tr></thead>
@@ -26,7 +27,7 @@
         <tr v-for="item in line_items" :key="item.service.id">
           <td><q-btn round color="red" icon="delete" size="sm" @click="deleteItem(item)"/><q-btn round color="green" icon="save" size="sm" @click="saveItem(item)"/> {{item.service.code}} - {{item.service.name}}</td>
           <td><q-input v-model="item.quantity" type="number" style="width: 50px;" class="float-right"/></td>
-          <td><q-input v-model="item.notes" type="textarea"/></td>
+          <td><q-input v-model="item.notes" autogrow/></td>
         </tr>
       </tbody>
       <tbody v-else>

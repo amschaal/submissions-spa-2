@@ -10,7 +10,7 @@
           <span v-else>
             <q-field
               v-if="['q-input', 'q-select', 'q-file'].indexOf(widgetClass(v).component) == -1"
-              :error="errors && errors[v.variable]"
+              :error="hasError(v)"
               :error-message="errors ? getError(v) : ''"
               :warning="hasWarning(v)"
               :warning-message="warnings ? getWarning(v) : ''"
@@ -43,7 +43,7 @@
               @change="val => {$set(value, v.variable, val)}"
               v-bind="widget(v).getOptions()"
               v-else
-              :error="errors && errors[v.variable]"
+              :error="hasError(v.variable)"
               :error-message="errors ? getError(v) : ''"
               :warning="hasWarning(v)"
               :warning-message="warnings ? getWarning(v) : ''"
@@ -92,7 +92,13 @@ export default {
       return this.schema.layout[variable] && this.schema.layout[variable].width ? [this.schema.layout[variable].width] : ['col-12']
     },
     getError (v) {
-      return v.schema.error_message ? v.schema.error_message : this.errors[v.variable].join(', ')
+      console.log('getError1', v.schema, v.schema.error_message, this.errors, v.variable)
+      var foo = v.schema.error_message ? v.schema.error_message : this.errors[v.variable].join(', ')
+      console.log('getError2', foo)
+      return foo
+    },
+    hasError (v) {
+      return this.errors && this.errors[v] !== undefined
     },
     getWarning (v, flatten) {
       var warning = v.schema.error_message || this.warnings[v.variable]
