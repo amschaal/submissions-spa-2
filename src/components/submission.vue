@@ -2,29 +2,23 @@
   <div>
         <div class="row">
           <div class="field col-12" v-if="submission.import_data">
-            <q-alert type="info">
+            <q-banner dense class="text-white bg-light-blue" rounded>
               Imported from <a target="_blank" :href="submission.import_data.url">{{submission.import_data.internal_id}}: {{submission.import_data.type.name}}</a>
-            </q-alert>
+            </q-banner>
           </div>
           <div class="field col-12">
             <SamplesReceived v-if="submission.id" v-model="submission" :admin="$store.getters.isStaff"/>
           </div>
           <div class="field col-12" v-if="hasWarnings">
-            <q-alert
-              type="warning"
-            >
-              <p>There are warnings associated with this submission.</p>
-            </q-alert>
+          <q-banner dense class="text-white bg-warning" rounded>
+              There are warnings associated with this submission.
+          </q-banner>
           </div>
           <div v-if="$route.query.created" class="field col-12">
-            <q-alert
-              type="positive"
-              appear
-              class="q-mb-sm"
-            >
+              <q-banner dense class="text-white bg-positive" rounded>
               <p>Submission Created!</p>
               <pre id="confirmation">{{submission_type.confirmation_text}}</pre>
-            </q-alert>
+            </q-banner>
           </div>
           <div class="field col-sm-12 col-lg-4">
             <StatusSelector v-model="submission.status" :submission="submission" v-if="submission.id && isAdmin"/>

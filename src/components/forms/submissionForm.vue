@@ -9,11 +9,9 @@
 <!-- v-if="submission.participants && user_options && !create" -->
       <fieldset v-if="!id && $store.getters.isStaff">
         <legend>Submission import</legend>
-        <q-alert
-          type="info"
-          v-if="imported">
+        <q-banner dense class="text-white bg-light-blue" rounded v-if="imported">
           Importing from <a target="_blank" :href="imported.url">{{imported.internal_id}}: {{imported.type.name}}</a>
-        </q-alert>
+        </q-banner>
           <q-input
           :label-width="12"
           helper="You may import an existing submission, make modifications, and create a new submission."

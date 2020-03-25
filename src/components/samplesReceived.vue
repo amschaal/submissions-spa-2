@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-banner rounded class="text-white bg-warning" v-if="!value.samples_received">
+    <q-banner dense rounded class="text-white bg-warning" v-if="!value.samples_received">
       <template v-slot:avatar>
         <q-icon name="warning" size="sm"/>
       </template>
@@ -10,7 +10,7 @@
         or <a class="action" @click="openModal">set a specific date</a>.
       </span>
     </q-banner>
-    <q-banner rounded class="text-white bg-positive" v-else>
+    <q-banner dense rounded class="text-white bg-positive" v-else>
       <template v-slot:avatar>
         <q-icon name="info" size="sm"/>
       </template>
