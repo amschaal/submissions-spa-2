@@ -8,21 +8,17 @@
         </div>
           <button slot="header">Add</button>
       </draggable> -->
-      <q-field
+      <q-select
         label="Users"
         v-if="user_options"
-        label-width="2"
-      >
-        <q-select
-          float-label="Select"
-          multiple
-          v-model="lab.users"
-          :options="user_options"
-        />
-      </q-field>
+        multiple
+        v-model="lab.users"
+        :options="user_options"
+        map-options emit-value
+      />
       <q-field
         label="Home Page"
-        label-width="2"
+        stack-label
       >
         <q-editor v-model="lab.home_page"
         :toolbar="toolbar"
@@ -30,20 +26,35 @@
       </q-field>
       <q-field
         label="Submission Page"
-        label-width="2"
+        stack-label
         helper="Enter custom content to be shown at the top of the submission page."
       >
         <q-editor v-model="lab.submission_page"
         :toolbar="toolbar"
         />
       </q-field>
-      <q-field
+      <!-- <q-field
         label="Statuses"
         label-width="2"
         helper="A list of statuses that can be used for submission types.  Special statuses include 'Samples Received' and 'Completed'."
       >
         <q-chips-input v-model="lab.statuses" @input="addStatus" @remove="removeStatus"/>
-      </q-field>
+      </q-field> -->
+      <q-select
+        dense options-dense
+        v-model="lab.statuses"
+        @input="addStatus" @remove="removeStatus"
+        use-input
+        use-chips
+        multiple
+        hide-dropdown-icon
+        input-debounce="0"
+        new-value-mode="add-unique"
+        placeholder="Enter options"
+        stack-label
+        label="Statuses"
+        helper="A list of statuses that can be used for submission types.  Special statuses include 'Samples Received' and 'Completed'."
+        />
       <h5>Submission variables</h5>
       <schemaForm v-model="lab.submission_variables" :options="{variables: {}}" type="submission"/>
       <h5>Sample variables</h5>
@@ -57,12 +68,13 @@
 
 <script>
 import schemaForm from '../components/forms/schemaForm.vue'
+import _ from 'lodash'
 // import draggable from 'vuedraggable'
 export default {
   name: 'settings',
   data () {
     return {
-      lab: this.$store.getters.lab,
+      lab: _.cloneDeep(this.$store.getters.lab),
       settings: null,
       labs: [],
       submission_variables: {},
@@ -75,8 +87,8 @@ export default {
         ['print', 'fullscreen'],
         [
           {
-            label: this.$q.i18n.editor.formatting,
-            icon: this.$q.icon.editor.formatting,
+            label: 'Formatting', // this.$q.i18n.editor.formatting,
+            icon: 'Formatting', // this.$q.icon.editor.formatting,
             list: 'no-icons',
             options: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code']
           },
@@ -85,8 +97,8 @@ export default {
         ['quote', 'unordered', 'ordered'],
         [
           {
-            label: this.$q.i18n.editor.align,
-            icon: this.$q.icon.editor.align,
+            label: 'Align', // this.$q.i18n.editor.align,
+            icon: 'Align', // this.$q.icon.editor.align,
             fixedLabel: true,
             list: 'only-icons',
             options: ['left', 'center', 'right', 'justify']

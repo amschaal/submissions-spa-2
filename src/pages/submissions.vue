@@ -114,7 +114,7 @@ export default {
   name: 'submissions',
   data () {
     return {
-      filters: this.$store.getters.getUserSettings.submission_filters ? this.$store.getters.getUserSettings.submission_filters : defaultFilters,
+      filters: this.$store.getters.getUserSettings.submission_filters ? _.cloneDeep(this.$store.getters.getUserSettings.submission_filters) : defaultFilters,
       loading: false,
       serverData: [],
       columns: [
