@@ -47,17 +47,17 @@
         label="Add field"
         >
           <q-list link>
-            <q-item v-close-overlay @click.native="openModal">
-              <q-item-main>
-                <q-item-tile label>New</q-item-tile>
-              </q-item-main>
-              <q-item-side right icon="create" color="green" />
+            <q-item v-close-popup @click.native="openModal">
+              <q-item-label>
+                <q-item-section label>New</q-item-section>
+              </q-item-label>
+              <q-item-section right icon="create" color="green" />
             </q-item>
             <q-item-separator />
-            <q-item v-for="v in variables" :key="v" v-close-overlay @click.native="addExistingVariable(v)">
-              <q-item-main>
-                <q-item-tile label>{{v}}</q-item-tile>
-              </q-item-main>
+            <q-item v-for="v in variables" :key="v" v-close-popup @click.native="addExistingVariable(v)">
+              <q-item-label>
+                <q-item-section label>{{v}}</q-item-section>
+              </q-item-label>
             </q-item>
           </q-list>
         </q-btn-dropdown>

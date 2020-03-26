@@ -55,24 +55,24 @@
               <q-btn-dropdown split label="Add row" @click="addRow(1)" color="positive">
                 <q-list link>
                   <q-item v-close-popup @click.native="addRow(1)">
-                    <q-item-main>
-                      <q-item-tile label>Add 1</q-item-tile>
-                    </q-item-main>
+                    <q-item-label>
+                      <q-item-section label>Add 1</q-item-section>
+                    </q-item-label>
                   </q-item>
                   <q-item v-close-popup @click.native="addRow(10)">
-                    <q-item-main>
-                      <q-item-tile label>Add 10</q-item-tile>
-                    </q-item-main>
+                    <q-item-label>
+                      <q-item-section label>Add 10</q-item-section>
+                    </q-item-label>
                   </q-item>
                   <q-item v-close-popup @click.native="addRow(25)">
-                    <q-item-main>
-                      <q-item-tile label>Add 25</q-item-tile>
-                    </q-item-main>
+                    <q-item-label>
+                      <q-item-section label>Add 25</q-item-section>
+                    </q-item-label>
                   </q-item>
                   <q-item v-close-popup @click.native="addRow(100)">
-                    <q-item-main>
-                      <q-item-tile label>Add 100</q-item-tile>
-                    </q-item-main>
+                    <q-item-label>
+                      <q-item-section label>Add 100</q-item-section>
+                    </q-item-label>
                   </q-item>
                 </q-list>
               </q-btn-dropdown>

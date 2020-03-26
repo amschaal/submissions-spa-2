@@ -26,7 +26,7 @@
             label="Hidden"
           >
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
-            <q-checkbox v-model="data.hidden" indeterminate-icon="check_box_outline_blank"/>
+            <q-checkbox v-model="data.hidden"/>
             <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
           </q-field>
           <q-field

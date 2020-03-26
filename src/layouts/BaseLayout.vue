@@ -2,8 +2,6 @@
   <q-layout view="lHh Lpr lFf">
     <q-header reveal>
       <q-toolbar
-        color="primary"
-        :inverted="$q.theme === 'ios'"
       >
         <img src="/statics/images/wordmark.png" style="height:60px"/>
         <q-toolbar-title>
@@ -14,9 +12,6 @@
         </q-toolbar-title>
       </q-toolbar>
       <q-tabs
-        color="primary"
-        :inverted="$q.theme === 'ios'"
-        :style="$q.theme === 'ios' ? { background: 'rgba(255,255,255,0.95' } : null"
       >
         <q-route-tab to="/" replace label="Home" />
         <q-route-tab :to="{ name: 'create_submission' }" replace label="Create Submission" />

@@ -155,16 +155,20 @@
         <q-card-section v-if="opened">
           <q-input dense label="Description" v-model="data.description" autogrow placeholder="Enter description here."/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
-          <q-checkbox dense label="Unique" v-if="type!='submission'" v-model="data.unique" indeterminate-icon="check_box_outline_blank"/>
+          <q-checkbox dense label="Unique" v-if="type!='submission'" v-model="data.unique"/>
             <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
-          <q-select
+          <q-field label="Pin column" stack-label borderless>
+            <q-radio dense v-model="data.pinned" :val="undefined" label="Not pinned" />
+            <q-radio dense v-model="data.pinned" val="left" label="Pinned left" />
+            <q-radio dense v-model="data.pinned" val="right" label="Pinned right" />
+          </q-field>
+          <!-- <q-select
             dense options-dense
             label="Pin column"
             v-if="type!='submission'"
             v-model="data.pinned"
-            radio
            :options="[{label:'Not pinned',value:undefined},{label:'Pinned left',value:'left'},{label:'Pinned right',value:'right'}]"
-          />
+          /> -->
           <q-input
             dense
             v-if="data.type === 'string'"
@@ -192,7 +196,6 @@
             label="Select multiple"
             v-if="data.type === 'string' && data.enum && data.enum.length"
             v-model="data.multiple"
-            indeterminate-icon="check_box_outline_blank"
             />
           <q-input
             dense
@@ -236,23 +239,23 @@
           >
             <q-btn-dropdown size="md" label="Add validator">
               <q-list link>
-                <q-item v-for="(v, id) in validatorsByType(data.type)" :key="id" v-close-overlay @click.native="addValidator(id)" :title="v.description">
-                  <q-item-main>
-                    <q-item-tile label>{{v.name}}</q-item-tile>
-                  </q-item-main>
+                <q-item v-for="(v, id) in validatorsByType(data.type)" :key="id" v-close-popup @click.native="addValidator(id)" :title="v.description">
+                  <q-item-label>
+                    <q-item-section label>{{v.name}}</q-item-section>
+                  </q-item-label>
                 </q-item>
               </q-list>
             </q-btn-dropdown>
-            <div v-for="(v, index) in data.validators" :key="index" :title="validators[v.id].description">
-              <q-btn flat dense round icon="delete_outline" @click="removeValidator(index)"/> {{validators[v.id].name}}  <label title="Raise as a warning only"><input type="checkbox" v-model="v.options.warning"/>Warning only</label><q-btn size="sm" v-if="validators[v.id].uses_options" label="Options" @click="open('validator_options_'+v.id)"/>
-              <ValidatorOptions v-model="v.options" :fields="validators[v.id].schema" :schema="schema" :variable="variable" :title="`${validators[v.id].name} validator options`" :ref="`validator_options_${v.id}`" v-if="validators[v.id].uses_options"/>
-            </div>
           </q-field>
+          <div v-for="(v, index) in data.validators" :key="index" :title="validators[v.id].description">
+            <q-btn flat dense round icon="delete_outline" @click="removeValidator(index)"/> {{validators[v.id].name}}  <label title="Raise as a warning only"><input type="checkbox" v-model="v.options.warning"/>Warning only</label><q-btn size="sm" v-if="validators[v.id].uses_options" label="Options" @click="open('validator_options_'+v.id)"/>
+            <ValidatorOptions v-model="v.options" :fields="validators[v.id].schema" :schema="schema" :variable="variable" :title="`${validators[v.id].name} validator options`" :ref="`validator_options_${v.id}`" v-if="validators[v.id].uses_options"/>
+          </div>
           <q-input label="Validation Error Message" v-model="data.error_message" autogrow placeholder="Optionally add a custom validation message here."/>
           <h5>Printing options</h5>
             <q-input dense label="Field label" v-model="data.printing.label" placeholder="Optionally add a shortened label."/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
-            <q-checkbox dense label="Hidden" v-model="data.printing.hidden" indeterminate-icon="check_box_outline_blank"/>
+            <q-checkbox dense label="Hidden" v-model="data.printing.hidden"/>
             <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
             <q-input dense label="Truncate after N characters" v-model="data.printing.truncate_at" type="number" />
         </q-card-section>
