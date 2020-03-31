@@ -21,12 +21,11 @@
             >
             <!-- {{widget(v).getOptions()}} {{widget(v).getDefault()}} value: "{{value[v.variable]}}" -->
               <!-- <q-input v-model="value[v.variable]" type="text" stack-label :label="v.schema.title ? v.schema.title : v.variable"/> -->
+              <!-- @change="val => {setValue('change', value, v.variable, val, $event)}" -->
               <component :is="widgetClass(v).component"
               :value="value[v.variable] || widget(v).getDefault()"
-              @input="val => {$set(value, v.variable, val)}"
-              @change="val => {$set(value, v.variable, val)}"
+              @input="val => {setValue('input', value, v.variable, val)}"
                 v-bind="widget(v).getOptions()"
-
               />
 
     <!--
@@ -34,13 +33,13 @@
     v-model="value[v.variable]"
     :value="value[v.variable] || widgetClass(v).default"
     @change="val => { value[v.variable] = val }"
+    @change="val => {setValue('change', value, v.variable, val, $event)}"
     -->
             </q-field>
             <component
               :is="widgetClass(v).component"
               :value="value[v.variable] || widget(v).getDefault()"
-              @input="val => {$set(value, v.variable, val)}"
-              @change="val => {$set(value, v.variable, val)}"
+              @input="val => {setValue('input', value, v.variable, val)}"
               v-bind="widget(v).getOptions()"
               v-else
               :error="hasError(v.variable)"
@@ -52,7 +51,7 @@
               :helper="v.schema.description"
               map-options emit-value
             />
-            {{widget(v).getOptions()}}|{{widgetClass(v).component}}|{{value}}|{{v.variable}}|{{value[v.variable]}}|{{widget(v).getDefault()}}
+            <!-- {{widget(v).getOptions()}}|{{widgetClass(v).component}}|{{value}}|{{v.variable}}|{{value[v.variable]}}|{{widget(v).getDefault()}} -->
           </span>
         </div>
     </div>
@@ -92,10 +91,9 @@ export default {
       return this.schema.layout[variable] && this.schema.layout[variable].width ? [this.schema.layout[variable].width] : ['col-12']
     },
     getError (v) {
-      console.log('getError1', v.schema, v.schema.error_message, this.errors, v.variable)
-      var foo = v.schema.error_message ? v.schema.error_message : this.errors[v.variable].join(', ')
-      console.log('getError2', foo)
-      return foo
+      // console.log('getError1', v.schema, v.schema.error_message, this.errors, v.variable)
+      var error = v.schema.error_message ? v.schema.error_message : this.errors[v.variable]
+      return error && error.join ? error.join(', ') : error
     },
     hasError (v) {
       return this.errors && this.errors[v] !== undefined
@@ -106,6 +104,14 @@ export default {
     },
     hasWarning (v) {
       return this.warnings && this.getWarning(v) !== ''
+    },
+    setValue (type, value, variable, val, e) {
+      if (value.cancelBubble) {
+        value.cancelBubble = true
+      } else if (!value.target) {
+        this.$set(value, variable, val)
+      }
+      console.log('setValue', type, value, variable, val, e)
     }
   },
   computed: {
