@@ -1,5 +1,34 @@
 <template>
-  <q-modal v-model="opened" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
+  <q-dialog v-model="opened" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
+    <q-card>
+      <q-bar>
+        {{title}}
+        <q-space />
+        <q-btn dense flat icon="close" v-close-popup>
+          <q-tooltip>Close</q-tooltip>
+        </q-btn>
+      </q-bar>
+      <q-card-section>
+        Testing {{schema}} {{value}} {{data}}
+        <div v-for="(v, i) in schema" :key="i">
+          <q-input v-model="data[v.variable]" stack-label :label="v.label" />
+        </div>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn
+          color="positive"
+          @click="save()"
+          label="Save"
+        />
+        <q-btn
+          @click="opened = false"
+          label="Cancel"
+          color="negative"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  <!-- <q-modal v-model="opened" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
     <q-modal-layout>
       <q-toolbar slot="header">
         <q-toolbar-title>
@@ -27,7 +56,7 @@
       </q-toolbar-title>
     </q-toolbar>
   </q-modal-layout>
-  </q-modal>
+  </q-modal> -->
 </template>
 
 <script>
