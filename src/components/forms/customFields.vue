@@ -10,7 +10,8 @@
           <span v-else>
             <q-field
               v-if="['q-input', 'q-select', 'q-file'].indexOf(widgetClass(v).component) == -1"
-              :error="hasError(v)"
+              bottom-slots
+              :error="hasError(v.variable) || hasWarning(v)"
               :error-message="errors ? getError(v) : ''"
               :warning="hasWarning(v)"
               :warning-message="warnings ? getWarning(v) : ''"
@@ -35,6 +36,10 @@
     @change="val => { value[v.variable] = val }"
     @change="val => {setValue('change', value, v.variable, val, $event)}"
     -->
+            <template v-slot:error>
+              <div v-if="hasError(v.variable)">{{getError(v)}}</div>
+              <div v-if="hasWarning(v)" class="warning">{{getWarning(v)}}</div>
+            </template>
             </q-field>
             <component
               :is="widgetClass(v).component"
@@ -42,15 +47,20 @@
               @input="val => {setValue('input', value, v.variable, val)}"
               v-bind="widget(v).getOptions()"
               v-else
-              :error="hasError(v.variable)"
-              :error-message="errors ? getError(v) : ''"
+              bottom-slots
+              :error="hasError(v.variable) || hasWarning(v)"
               :warning="hasWarning(v)"
               :warning-message="warnings ? getWarning(v) : ''"
               :label="v.schema.title ? v.schema.title : v.variable"
               stack-label
               :helper="v.schema.description"
               map-options emit-value
-            />
+            >
+            <template v-slot:error>
+              <div v-if="hasError(v.variable)">{{getError(v)}}</div>
+              <div v-if="hasWarning(v)" class="warning">{{getWarning(v)}}</div>
+            </template>
+          </component>
             <!-- {{widget(v).getOptions()}}|{{widgetClass(v).component}}|{{value}}|{{v.variable}}|{{value[v.variable]}}|{{widget(v).getDefault()}} -->
           </span>
         </div>
