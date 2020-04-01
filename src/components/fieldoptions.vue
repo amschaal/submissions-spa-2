@@ -238,8 +238,8 @@
             borderless
           >
             <q-btn-dropdown size="md" label="Add validator">
-              <q-list link>
-                <q-item v-for="(v, id) in validatorsByType(data.type)" :key="id" v-close-popup @click.native="addValidator(id)" :title="v.description">
+              <q-list>
+                <q-item clickable v-for="(v, id) in validatorsByType(data.type)" :key="id" v-close-popup @click.native="addValidator(id)" :title="v.description">
                   <q-item-label>
                     <q-item-section label>{{v.name}}</q-item-section>
                   </q-item-label>

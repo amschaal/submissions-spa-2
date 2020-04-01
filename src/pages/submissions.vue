@@ -50,7 +50,7 @@
         <q-btn>
           <q-icon name="settings" />
           <q-menu>
-            <q-list link separator class="scroll" style="min-width: 100px">
+            <q-list separator class="scroll" style="min-width: 100px">
               <q-item
                 v-close-popup
                 clickable

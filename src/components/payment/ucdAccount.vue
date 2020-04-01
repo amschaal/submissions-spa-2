@@ -14,7 +14,6 @@
       <q-select
         outlined
         emit-value map-options
-        float-label="Select"
         v-model="value.payment_type"
         :options="[
           {label: 'UCD KFS Account', value: 'DaFIS'},

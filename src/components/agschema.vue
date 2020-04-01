@@ -53,23 +53,23 @@
         <q-card-actions>
             <div v-if="editable">
               <q-btn-dropdown split label="Add row" @click="addRow(1)" color="positive">
-                <q-list link>
-                  <q-item v-close-popup @click.native="addRow(1)">
+                <q-list>
+                  <q-item clickable v-close-popup @click.native="addRow(1)">
                     <q-item-label>
                       <q-item-section label>Add 1</q-item-section>
                     </q-item-label>
                   </q-item>
-                  <q-item v-close-popup @click.native="addRow(10)">
+                  <q-item clickable v-close-popup @click.native="addRow(10)">
                     <q-item-label>
                       <q-item-section label>Add 10</q-item-section>
                     </q-item-label>
                   </q-item>
-                  <q-item v-close-popup @click.native="addRow(25)">
+                  <q-item clickable v-close-popup @click.native="addRow(25)">
                     <q-item-label>
                       <q-item-section label>Add 25</q-item-section>
                     </q-item-label>
                   </q-item>
-                  <q-item v-close-popup @click.native="addRow(100)">
+                  <q-item clickable v-close-popup @click.native="addRow(100)">
                     <q-item-label>
                       <q-item-section label>Add 100</q-item-section>
                     </q-item-label>
