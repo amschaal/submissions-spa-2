@@ -4,9 +4,8 @@
     <q-tabs
       v-model="tab"
       dense
-      class="text-grey"
-      active-color="primary"
-      indicator-color="primary"
+      class="bg-primary text-grey shadow-2"
+      active-color="white"
       align="justify"
       narrow-indicator
     >

@@ -43,11 +43,10 @@
         </q-btn>
       </q-bar>
       <q-card-section v-if="opened">
-        {{fields}}
         <div v-for="(v, i) in fields" :key="i">
           <q-field
             :error="hasError(v.variable)"
-            :error-label="error(v.variable)"
+            :error-message="error(v.variable)"
           >
             <q-input v-model="data[v.variable]" stack-label :label="v.label" />
           </q-field>
@@ -104,7 +103,7 @@ export default {
       this.opened = false
     },
     hasError (variable) {
-      return this.errors && this.errors[variable]
+      return this.errors && this.errors[variable] !== undefined
     },
     error (variable) {
       return this.errors[variable] ? this.errors[variable].join(', ') : ''

@@ -225,6 +225,7 @@
                 v-model="data.widget.type"
                 :options="widgetOptions"
                 clearable
+                map-options emit-value
               />
             </span>
             <span class="col-3" v-if="hasWidgetOptions(data.widget.type)">
@@ -381,6 +382,7 @@ export default {
       return _.keys(this.widgetSchema(id)).length > 0
     },
     getWidget (id) {
+      console.log('widgetFactory', this.widgetFactory, id, this.widgetFactory.getWidget(id))
       return this.widgetFactory.getWidget(id)
     }
   },
@@ -389,7 +391,6 @@ export default {
       return this.type === 'submission' ? submissionWidgetFactory : sampleWidgetFactory
     },
     widgetOptions () {
-      console.log('widgetOptions', this.data.type, this.widgetFactory.getWidgets(this.data.type))
       return this.widgetFactory.getWidgets(this.data.type)
       // switch (this.data.type) {
       //   case 'boolean':
