@@ -1,5 +1,6 @@
 <template>
   <div class="row">
+      <!-- <q-editor ng-model="foo" v-if="false"/> -->
       <div v-for="v in fields" :key="v.variable" class="field" v-bind:class="colWidth(v.variable)">
         <div v-if="$store.getters.isLoggedIn || !v.schema.internal">
           <span v-if="!modify" v-bind:class="{'warning': warnings && warnings[v.variable]}">
@@ -18,7 +19,8 @@
               :label="v.schema.title ? v.schema.title : v.variable"
               stack-label
               orientation="vertical"
-              :helper="v.schema.description"
+              :hint="v.schema.description"
+              borderless
             >
             <!-- {{widget(v).getOptions()}} {{widget(v).getDefault()}} value: "{{value[v.variable]}}" -->
               <!-- <q-input v-model="value[v.variable]" type="text" stack-label :label="v.schema.title ? v.schema.title : v.variable"/> -->
@@ -36,6 +38,9 @@
     @change="val => { value[v.variable] = val }"
     @change="val => {setValue('change', value, v.variable, val, $event)}"
     -->
+            <template v-slot:hint v-if="v.schema.description">
+              {{v.schema.description}}
+            </template>
             <template v-slot:error>
               <div v-if="hasError(v.variable)">{{getError(v)}}</div>
               <div v-if="hasWarning(v)" class="warning">{{getWarning(v)}}</div>
@@ -53,7 +58,7 @@
               :warning-message="warnings ? getWarning(v) : ''"
               :label="v.schema.title ? v.schema.title : v.variable"
               stack-label
-              :helper="v.schema.description"
+              :hint="v.schema.description"
               map-options emit-value
             >
             <template v-slot:error>

@@ -27,7 +27,7 @@
           <q-card-section v-if="opened && data && data.id">
               <!-- <q-datetime v-model="data.samples_received" type="date" /> -->
               <q-input
-                helper="Select the date that samples were received. Will default to today."
+                hint="Select the date that samples were received. Will default to today."
                 label="Received"
                 :error="errors.samples_received"
                 :error-message="errors.samples_received"
@@ -45,7 +45,7 @@
                 v-model="data.received_by"
                 :options="$store.getters.staffOptions"
                 label="Received by"
-                helper="Who received the samples?  Will default to you."
+                hint="Who received the samples?  Will default to you."
                 :error="errors.received_by"
                 :error-message="errors.received_by"
                 emit-value

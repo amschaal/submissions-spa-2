@@ -27,7 +27,7 @@
       <q-field
         label="Submission Page"
         stack-label
-        helper="Enter custom content to be shown at the top of the submission page."
+        hint="Enter custom content to be shown at the top of the submission page."
       >
         <q-editor v-model="lab.submission_page"
         :toolbar="toolbar"
@@ -36,7 +36,7 @@
       <!-- <q-field
         label="Statuses"
         label-width="2"
-        helper="A list of statuses that can be used for submission types.  Special statuses include 'Samples Received' and 'Completed'."
+        hint="A list of statuses that can be used for submission types.  Special statuses include 'Samples Received' and 'Completed'."
       >
         <q-chips-input v-model="lab.statuses" @input="addStatus" @remove="removeStatus"/>
       </q-field> -->
@@ -53,7 +53,7 @@
         placeholder="Enter options"
         stack-label
         label="Statuses"
-        helper="A list of statuses that can be used for submission types.  Special statuses include 'Samples Received' and 'Completed'."
+        hint="A list of statuses that can be used for submission types.  Special statuses include 'Samples Received' and 'Completed'."
         />
       <h5>Submission variables</h5>
       <schemaForm v-model="lab.submission_variables" :options="{variables: {}}" type="submission"/>

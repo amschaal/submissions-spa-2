@@ -40,13 +40,13 @@
           </q-field>
           <q-field v-if="data.type === 'string'"
             label="Regular Expression"
-            helper="Enter a valid regular expression to validate against. Example for matching values such as '20.3 ul': ^\d+(\.{1}\d+)? ul$"
+            hint="Enter a valid regular expression to validate against. Example for matching values such as '20.3 ul': ^\d+(\.{1}\d+)? ul$"
           >
             <q-input v-model="data.pattern" />
           </q-field>
           <q-field v-if="data.type === 'string'"
             label="Choices"
-            helper="If the variable should be constrained to specific choices, enter here."
+            hint="If the variable should be constrained to specific choices, enter here."
           >
             <q-chips-input v-model="data.enum" placeholder="Enter options" />
           </q-field>
@@ -58,13 +58,13 @@
           </q-field>
           <q-field v-if="data.type === 'number'"
             label="Minimum"
-            helper="Optionally, enter a minimum valid number."
+            hint="Optionally, enter a minimum valid number."
           >
             <q-input v-model="data.minimum" type="number"/>
           </q-field>
           <q-field v-if="data.type === 'number'"
             label="Maximum"
-            helper="Optionally, enter a maximum valid number."
+            hint="Optionally, enter a maximum valid number."
           >
             <q-input v-model="data.maximum" type="number"/>
           </q-field>
@@ -173,7 +173,7 @@
             dense
             v-if="data.type === 'string'"
             label="Regular Expression"
-            helper="Enter a valid regular expression to validate against. Example for matching values such as '20.3 ul': ^\d+(\.{1}\d+)? ul$"
+            hint="Enter a valid regular expression to validate against. Example for matching values such as '20.3 ul': ^\d+(\.{1}\d+)? ul$"
             v-model="data.pattern"
             />
           <q-select
@@ -189,7 +189,7 @@
             v-if="data.type === 'string'"
             stack-label
             label="Choices"
-            helper="If the variable should be constrained to specific choices, enter here."
+            hint="If the variable should be constrained to specific choices, enter here."
             />
           <q-checkbox
             dense
@@ -201,7 +201,7 @@
             dense
             v-if="data.type === 'number'"
             label="Minimum"
-            helper="Optionally, enter a minimum valid number."
+            hint="Optionally, enter a minimum valid number."
             v-model="data.minimum"
             type="number"
             />
@@ -209,7 +209,7 @@
             dense
             v-if="data.type === 'number'"
             label="Maximum"
-            helper="Optionally, enter a maximum valid number."
+            hint="Optionally, enter a maximum valid number."
             v-model="data.maximum"
             type="number"
             />

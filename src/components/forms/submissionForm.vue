@@ -14,7 +14,7 @@
         </q-banner>
           <q-input
           :label-width="12"
-          helper="You may import an existing submission, make modifications, and create a new submission."
+          hint="You may import an existing submission, make modifications, and create a new submission."
           class="col-sm-8 col-md-10 col-lg-10" v-model="import_url" placeholder="Enter existing submission URL here (https://....../submissions/abcd12345678)"/><q-btn label="Import" @click="loadImport(import_url)" class="col-sm-2 col-md-2 col-lg-1"/>
       </fieldset>
           <q-select
@@ -213,7 +213,7 @@
           :warning="sample_data_warning"
           warning-label="Samples contain warnings"
           v-if="type && type.sample_schema && type.sample_schema.order && type.sample_schema.order.length"
-          helper="Click on the Samples button to enter sample information"
+          hint="Click on the Samples button to enter sample information"
         >
           <!-- <Samplesheet v-model="submission.sample_data" :type="type"/> -->
           <template v-slot:control>

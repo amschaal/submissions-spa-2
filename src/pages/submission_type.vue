@@ -23,7 +23,7 @@
         <q-input
           dense
           label="Sort order"
-          helper="Submission types will be displayed in numeric order as specified by this field"
+          hint="Submission types will be displayed in numeric order as specified by this field"
           :error="hasError('sort_order')"
           :error-message="errorMessage('sort_order')"
           v-model="type.sort_order" type="integer"
@@ -31,7 +31,7 @@
         <q-input
           dense
           label="Name"
-          helper="This shows up in the dropdown on the submission form"
+          hint="This shows up in the dropdown on the submission form"
           :error="hasError('name')"
           :error-message="errorMessage('name')"
           v-model="type.name"
@@ -43,7 +43,7 @@
           stack-label
           :error="next_id_error !== ''"
           :error-message="next_id_error"
-          helper="The Prefix is concatenated with the Next ID to create the internal id for the submission."
+          hint="The Prefix is concatenated with the Next ID to create the internal id for the submission."
           borderless
         >
           <q-input dense v-model="type.prefix" type="text" stack-label label="Prefix" class="col"/>
@@ -74,7 +74,7 @@
           label="Statuses"
           :error="hasError('statuses')"
           :error-message="errorMessage('statuses')"
-          helper="Add statuses using the dropdown.  Statuses may reordered by dragging."
+          hint="Add statuses using the dropdown.  Statuses may reordered by dragging."
           borderless
         >
           <!-- <q-chips-input v-model="type.statuses" /> -->
@@ -115,7 +115,7 @@
         <q-input
           dense
           label="Confirmation Text"
-          helper="Text to provide additional instruction to submitter after submission is complete."
+          hint="Text to provide additional instruction to submitter after submission is complete."
           :error="hasError('confirmation_text')"
           :error-message="errorMessage('confirmation_text')"
           v-model="type.confirmation_text"

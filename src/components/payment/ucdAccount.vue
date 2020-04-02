@@ -4,7 +4,7 @@
       <q-input
         :error="hasError('ppms_order_id')"
         bottom-slots :error-message="errorMessage('ppms_order_id')"
-        helper="To be assigned by the core."
+        hint="To be assigned by the core."
         v-model="value.ppms_order_id"
         type="text"
         stack-label label="PPMS Order Ref #"
@@ -24,7 +24,7 @@
         stack-label label="* Payment Type"
         :error="hasError('payment_type')"
         bottom-slots :error-message="errorMessage('payment_type')"
-        :helper="type_help"
+        :hint="type_help"
       />
     </div>
     <div class="col-sm-12 col-md-6">

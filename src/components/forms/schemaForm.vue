@@ -80,7 +80,7 @@
           label="Variable Name"
           :error="variableError(new_variable.name)"
           :error-label="variableMessage(new_variable.name)"
-          helper="Please only use lowercase letters, numbers, and underscores">
+          hint="Please only use lowercase letters, numbers, and underscores">
             <q-input
               v-model="new_variable.name"
             />
@@ -126,7 +126,7 @@
             label="Variable Name"
             :error="variableError(new_variable.name)"
             :error-message="variableMessage(new_variable.name)"
-            helper="Please only use lowercase letters, numbers, and underscores"
+            hint="Please only use lowercase letters, numbers, and underscores"
             v-model="new_variable.name"
           />
         </q-card-section>
