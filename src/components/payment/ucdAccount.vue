@@ -1,7 +1,8 @@
 <template>
   <div class="row">
-    <div class="col-sm-12 col-md-12" v-if="this.$store.getters.isStaff">
+    <div class="col-sm-12 col-md-12 q-pb-lg" v-if="this.$store.getters.isStaff">
       <q-input
+        compact
         :error="hasError('ppms_order_id')"
         bottom-slots :error-message="errorMessage('ppms_order_id')"
         hint="To be assigned by the core."
@@ -12,6 +13,7 @@
     </div>
     <div class="col-sm-12 col-md-6">
       <q-select
+        compact
         outlined
         emit-value map-options
         v-model="value.payment_type"
@@ -90,7 +92,7 @@ export default {
 }
 </script>
 <style>
-.q-field {
-  padding: 3px !important;
-}
+/* .q-field {
+  padding-bottom: 25px !important;
+} */
 </style>

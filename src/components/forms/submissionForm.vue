@@ -15,7 +15,11 @@
           <q-input
           :label-width="12"
           hint="You may import an existing submission, make modifications, and create a new submission."
-          class="col-sm-8 col-md-10 col-lg-10" v-model="import_url" placeholder="Enter existing submission URL here (https://....../submissions/abcd12345678)"/><q-btn label="Import" @click="loadImport(import_url)" class="col-sm-2 col-md-2 col-lg-1"/>
+          v-model="import_url" placeholder="Enter existing submission URL here (https://....../submissions/abcd12345678)">
+          <template v-slot:append>
+            <q-btn label="Import" @click="loadImport(import_url)"/>
+          </template>
+          </q-input>
       </fieldset>
           <q-select
             outlined
@@ -214,6 +218,8 @@
           warning-label="Samples contain warnings"
           v-if="type && type.sample_schema && type.sample_schema.order && type.sample_schema.order.length"
           hint="Click on the Samples button to enter sample information"
+          class="q-pb-xl q-mb-xl"
+          borderless
         >
           <!-- <Samplesheet v-model="submission.sample_data" :type="type"/> -->
           <template v-slot:control>
@@ -237,8 +243,9 @@
             bottom-slots :error-message="errorMessage('comments')"
             v-model="submission.comments" type="textarea"
             stack-label label="Special Instructions / Comments"
-            :max-height="100"
+            autogrow
             rows="1"
+            class="q-mt-xl q-pt-xl"
           />
       </fieldset>
       <q-checkbox v-model="submission.biocore" label="I want the Bioinformatics Core to analyze my data" />
