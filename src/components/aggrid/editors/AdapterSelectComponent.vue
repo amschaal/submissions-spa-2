@@ -6,6 +6,7 @@
         :options="options"
         ref="select"
         @input="selected(value)"
+        map-options emit-value
       />
     </div>
 </template>

@@ -51,7 +51,7 @@
         <fieldset>
         <legend>PI</legend>
         <div class="row">
-          <div class="col-sm-6 col-md-6 col-lg-3">
+          <div class="col-sm-6 col-md-6 col-lg-3 q-pa-sm">
             <q-input
               :error="hasError('pi_first_name')"
               bottom-slots :error-message="errorMessage('pi_first_name')"
@@ -61,7 +61,7 @@
               stack-label label="* PI First Name"
               />
           </div>
-          <div class="col-sm-6 col-md-6 col-lg-3">
+          <div class="col-sm-6 col-md-6 col-lg-3 q-pa-sm">
             <q-input
               :error="hasError('pi_last_name')"
               bottom-slots :error-message="errorMessage('pi_last_name')"
@@ -71,7 +71,7 @@
               stack-label label="* PI Last Name"
               />
           </div>
-          <div class="col-sm-12 col-md-6 col-lg-3">
+          <div class="col-sm-12 col-md-6 col-lg-3 q-pa-sm">
               <q-input
                 v-model="submission.pi_email"
                 :error="hasError('pi_email')"
@@ -81,7 +81,7 @@
                 stack-label label="* PI Email"
                 />
           </div>
-          <div class="col-sm-12 col-md-6 col-lg-3">
+          <div class="col-sm-12 col-md-6 col-lg-3 q-pa-sm">
               <q-input
                 :error="hasError('pi_phone')"
                 bottom-slots :error-message="errorMessage('pi_phone')"
@@ -91,7 +91,7 @@
                 stack-label label="* PI phone"
                 />
           </div>
-          <div class="col-sm-12 col-md-12 col-lg-12">
+          <div class="col-sm-12 col-md-12 col-lg-12 q-pa-sm">
             <q-input
               :error="hasError('institute')"
               bottom-slots :error-message="errorMessage('institute')"
@@ -103,7 +103,7 @@
       <fieldset>
       <legend>Submitter (<a class="link" @click="copyPI">Copy from PI</a>)</legend>
         <div class="row">
-          <div class="col-sm-6 col-md-6 col-lg-3">
+          <div class="col-sm-6 col-md-6 col-lg-3 q-pa-sm">
             <q-input
               :error="hasError('first_name')"
               bottom-slots :error-message="errorMessage('first_name')"
@@ -112,7 +112,7 @@
               stack-label label="* First name"
               />
           </div>
-          <div class="col-sm-6 col-md-6 col-lg-3">
+          <div class="col-sm-6 col-md-6 col-lg-3 q-pa-sm">
             <q-input
               :error="hasError('last_name')"
               bottom-slots :error-message="errorMessage('last_name')"
@@ -121,7 +121,7 @@
               stack-label label="* Last name"
               />
           </div>
-          <div class="col-sm-12 col-md-6 col-lg-3">
+          <div class="col-sm-12 col-md-6 col-lg-3 q-pa-sm">
             <q-input
               :error="hasError('email')"
               bottom-slots :error-message="errorMessage('email')"
@@ -131,7 +131,7 @@
               stack-label label="* Email"
               />
           </div>
-          <div class="col-sm-12 col-md-6 col-lg-3">
+          <div class="col-sm-12 col-md-6 col-lg-3 q-pa-sm">
             <q-input
               :error="hasError('phone')"
               bottom-slots :error-message="errorMessage('phone')"
@@ -145,7 +145,7 @@
       <fieldset>
         <legend>Additional Contacts (<a @click="addContact" class="link">Add</a>)</legend>
         <div class="row" v-for="(c, index) in submission.contacts" :key="index">
-          <div class="col-sm-12 col-md-4 col-lg-4">
+          <div class="col-sm-12 col-md-4 col-lg-4 q-p-xl">
             <q-input
               :error="hasContactError(index,'first_name')"
               bottom-slots :error-message="getContactError(index,'first_name')"
@@ -689,7 +689,7 @@ export default {
   watch: {
     'submission.type': function (id) {
       // this.assignType(id)
-      this.type = this.$store.getters.typesDict[id]
+      this.type = id ? this.$store.getters.typesDict[id] : {}
       console.log('type', id, this.type, this.$store.getters.typesDict)
       if (this.type.submission_help) {
         this.flashHelpTooltip()

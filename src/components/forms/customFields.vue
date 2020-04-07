@@ -1,7 +1,7 @@
 <template>
   <div class="row">
       <!-- <q-editor ng-model="foo" v-if="false"/> -->
-      <div v-for="v in fields" :key="v.variable" class="field q-pb-lg" v-bind:class="colWidth(v.variable)">
+      <div v-for="v in fields" :key="v.variable" class="field q-pb-lg q-pl-sm q-pr-sm" v-bind:class="colWidth(v.variable)">
         <div v-if="$store.getters.isLoggedIn || !v.schema.internal">
           <span v-if="!modify" v-bind:class="{'warning': warnings && warnings[v.variable]}">
             <p class="caption">{{v.schema.title ? v.schema.title : v.variable}}</p>

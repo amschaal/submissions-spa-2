@@ -6,6 +6,7 @@
         ref="select"
         @input="selected(value)"
         :multiple="widget_options.multiple"
+        map-options emit-value
       />
     </div>
 </template>

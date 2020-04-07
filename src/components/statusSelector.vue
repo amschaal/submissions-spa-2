@@ -4,6 +4,7 @@
       v-model="status"
      :options="statusOptions"
      @input="statusChanged()"
+     map-options emit-value
     />
     <q-checkbox v-model="email" label="Email submitter" />
 </div>
