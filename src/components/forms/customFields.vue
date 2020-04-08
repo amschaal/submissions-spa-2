@@ -75,7 +75,7 @@
 
 <script>
 import widgetFactory from '../forms/widgets.js'
-import { QSelect } from 'quasar'
+import { QSelect, QOptionGroup } from 'quasar'
 // import _ from 'lodash'
 
 export default {
@@ -144,7 +144,8 @@ export default {
     }
   },
   components: {
-    QSelect
+    QSelect,
+    QOptionGroup
   },
   watch: {
   }

@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import {Widget, WidgetFactory} from './Widget.js'
+import DateComponent from '../editors/DateComponent.vue'
 
 class TextWidget extends Widget {
   static type = 'string'
@@ -15,6 +16,19 @@ class WYSIWYGWidget extends Widget {
   static component = 'q-editor'
   static name = 'WYSIWYG'
   defaultValue = ''
+}
+
+class DateWidget extends Widget {
+  // @TODO: wrap this in another component as in the guide https://quasar-framework.org/components/autocomplete.html
+  static type = 'string'
+  static id = 'date'
+  static component = DateComponent
+  static name = 'Date'
+  static schema =
+  [
+    {'variable': 'foo', 'label': 'Foo', 'type': 'text'},
+    {'variable': 'bar', 'label': 'Bar', 'type': 'text', 'options': [{'label': 'One', 'value': 1}, {'label': 'Two', 'value': 2}]}
+  ]
 }
 
 class CheckboxWidget extends Widget {
@@ -40,11 +54,12 @@ class EnumWidget extends Widget {
 class ChipsWidget extends EnumWidget {
   static type = 'string'
   static id = 'chips'
-  static component = 'q-chips-input'
+  static component = 'q-select'
   static name = 'Chips Input'
-  // static schema = {
-  // }
-  // static defaultValue = []
+
+  getOptions () {
+    return _.merge(this.options, this.getSelectOptions(), {label: 'radio', 'use-input': true, filled: true, 'use-chips': true, multiple: true, 'hide-dropdown-icon': true, 'input-debounce': '0', 'new-value-mode': 'add'})
+  }
 }
 class SelectWidget extends EnumWidget {
   static type = 'string'
@@ -80,22 +95,22 @@ class MultiCheckboxWidget extends RadioWidget {
   }
 }
 
-class AutocompleteWidget extends EnumWidget {
-  // @TODO: wrap this in another component as in the guide https://quasar-framework.org/components/autocomplete.html
-  static type = 'string'
-  static id = 'autocomplete'
-  static component = 'q-autocomplete'
-  static name = 'Autocomplete'
-  // static schema = {
-  // }
-  getStaticData () {
-    var staticData = this.variable.schema.enum || []
-    return {field: 'value', list: staticData.map(function (val) { return {'label': val, 'value': val} })}
-  }
-  getOptions () {
-    return _.merge(this.options, {'static-data': this.getStaticData(), clearable: true})
-  }
-}
+// class AutocompleteWidget extends EnumWidget {
+//   // @TODO: wrap this in another component as in the guide https://quasar-framework.org/components/autocomplete.html
+//   static type = 'string'
+//   static id = 'autocomplete'
+//   static component = 'q-autocomplete'
+//   static name = 'Autocomplete'
+//   // static schema = {
+//   // }
+//   getStaticData () {
+//     var staticData = this.variable.schema.enum || []
+//     return {field: 'value', list: staticData.map(function (val) { return {'label': val, 'value': val} })}
+//   }
+//   getOptions () {
+//     return _.merge(this.options, {'static-data': this.getStaticData(), clearable: true})
+//   }
+// }
 class MultiSelectWidget extends SelectWidget {
   static id = 'multi-select'
   static component = 'q-select'
@@ -105,6 +120,6 @@ class MultiSelectWidget extends SelectWidget {
   }
 }
 
-var widgetFactory = new WidgetFactory([TextWidget, WYSIWYGWidget, ChipsWidget, SelectWidget, MultiSelectWidget, CheckboxWidget, AutocompleteWidget, RadioWidget, MultiCheckboxWidget], SelectWidget, MultiSelectWidget)
+var widgetFactory = new WidgetFactory([TextWidget, WYSIWYGWidget, ChipsWidget, SelectWidget, MultiSelectWidget, CheckboxWidget, RadioWidget, MultiCheckboxWidget, DateWidget], SelectWidget, MultiSelectWidget)
 // export {MultiSelectWidget}
 export default widgetFactory
