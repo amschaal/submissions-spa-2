@@ -1,13 +1,5 @@
-// @TODO: Replace autocomplete with select!  Broken stuff commented out for now...
 <template>
     <div class="autocomplete">
-      <!-- <q-input color="amber" v-model="value" placeholder="Featuring static data">
-        <q-autocomplete
-          @search="search"
-          :min-characters="2"
-          @selected="selected"
-        />
-      </q-input> -->
       <q-select
         :value="value"
         use-input
@@ -54,15 +46,6 @@ export default Vue.extend({
     selected (item) {
       console.log('item', item)
       this.value = item
-      // this.close()
-      // this.$q.notify(`Selected suggestion "${item.label}"`)
-    },
-    search (terms, done) {
-      console.log(terms)
-      setTimeout(() => {
-        // done(filter(terms, {field: 'value', list: this.options}))
-        // done([{value: 'one', label: 'one'}, {value: 'two', label: 'two'}]) // filter(terms, {field: 'value', list: ['one', 'two', 'three']}) // ['one', 'two', 'three']
-      }, 100)
     },
     getValue () {
       return this.value

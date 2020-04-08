@@ -1,46 +1,66 @@
 <template>
-    <div class="autocomplete">
-      <q-input color="amber" v-model="temp_value" placeholder="Search" ref="input">
+    <div class="vocabulary">
+      <!-- <q-input color="amber" v-model="value" placeholder="Featuring static data" ref="input">
         <q-autocomplete
           @search="search"
           :min-characters="2"
           @selected="selected"
-          @hide="hide"
         />
-      </q-input>
+      </q-input> -->
+      <q-select
+        :value="value"
+        use-input
+        hide-selected
+        fill-input
+        input-debounce="0"
+        :options="options"
+        @filter="filterFn"
+        @input-value="selected"
+        @input="close"
+        hint="Text autocomplete"
+        ref="select"
+        map-options emit-value
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey">
+              No results
+            </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
     </div>
 </template>
 
 <script>
 import Vue from 'vue'
-// import { filter } from 'quasar'
 export default Vue.extend({
   data () {
     return {
-      value: null
+      value: null,
+      options: []
     }
   },
   methods: {
-    selected (item) {
-      this.value = item.value
-      // this.params.stopEditing() // This closes it when merely highlighting a suggestion
-    },
-    hide () {
-      this.params.stopEditing()
-    },
-    search (terms, done) {
+    filterFn (val, update, abort) {
+      var self = this
       this.$axios
-        .get(`/api/terms/${this.vocabulary}/?search=${terms}`)
+        .get(`/api/terms/${this.vocabulary}/?search=${val}`)
         .then(function (response) {
-          console.log('response', response)
-          done(response.data.results.map(o => ({value: o.value, label: o.value})))
+          update(() => {
+            self.options = response.data.results.map(o => ({value: o.value, label: o.value}))
+          })
         })
-        // .catch(function (error, stuff) {
-        // })
-      console.log(terms)
+    },
+    selected (item) {
+      console.log('item', item)
+      this.value = item
     },
     getValue () {
       return this.value
+    },
+    close () {
+      this.params.stopEditing()
     }
   },
   created () {
@@ -59,8 +79,8 @@ export default Vue.extend({
   },
   mounted () {
     Vue.nextTick(() => {
-      if (this.$refs.input) {
-        this.$refs.input.select()
+      if (this.$refs.select) {
+        this.$refs.select.focus()
       }
     })
   }
