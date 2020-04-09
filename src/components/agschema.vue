@@ -4,15 +4,19 @@
     <!-- <q-select :value="value" :options="options" @change="handleChange" filter filter-placeholder="select"/> -->
     <q-dialog v-model="opened" @show="onShow" :content-css="{height: '90vh', minWidth: '120vw', minHeight: '90vh'}" ref="modal" no-backdrop-dismiss no-esc-dismiss :maximized="maximized">
       <q-card style="min-width:90vw">
-        <q-toolbar>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
-          </q-avatar>
+        <q-bar class="bg-primary text-white">
+          <q-toolbar>
+            <q-avatar>
+            </q-avatar>
 
-          <q-toolbar-title>Samplesheet: {{type.name}} <span class="float-right">{{rootNode.allChildrenCount}} samples <q-btn color="white" text-color="dark" label="Maximize" @click="maximized=true" v-if="!maximized"/><q-btn color="white" text-color="dark" label="Minimize" @click="maximized=false" v-if="maximized"/></span></q-toolbar-title>
-        </q-toolbar>
-
-        <q-card-section style="height:75vh; min-height:75vh;">
+            <q-toolbar-title>Samplesheet: {{type.name}} - {{rootNode.allChildrenCount}} samples
+              <span class="float-right">
+                <q-btn title="Maximize" dense flat icon="crop_square"  @click="maximized=true" v-if="!maximized"/>
+                <q-btn title="Minimize" dense flat icon="maximize" @click="maximized=false" v-if="maximized"/>
+              </span></q-toolbar-title>
+          </q-toolbar>
+        </q-bar>
+        <q-card-section style="height:80vh; min-height:80vh;">
             <!-- {{type}} -->
             <q-btn
               color="primary"
@@ -23,12 +27,12 @@
             <q-checkbox v-model="showDescriptions" label="Show descriptions" class="show_descriptions" v-if="hasDescriptions"/> <q-checkbox v-model="showExamples" label="Show examples" v-if="allowExamples && this.sample_schema.examples && sample_schema.examples.length"  class="show_examples"/>
             <q-btn-dropdown label="Resize Columns">
             <q-list>
-              <q-item @click.native="sizeToFit">
+              <q-item @click.native="sizeToFit" clickable>
                 <q-item-label>
                   Fit all columns
                 </q-item-label>
               </q-item>
-              <q-item @click.native="autoSizeAll">
+              <q-item @click.native="autoSizeAll" clickable>
                 <q-item-label>
                   Auto-size
                 </q-item-label>

@@ -7,12 +7,12 @@ import APIAutocompleteComponent from './editors/APIAutocompleteComponent.vue'
 import APISelectComponent from './editors/APISelectComponent.vue'
 import SelectComponent from './editors/SelectComponent.vue'
 // import AdapterAutocompleteComponent from './editors/AdapterAutocompleteComponent.vue'
-import AdapterSelectComponent from './editors/AdapterSelectComponent.vue'
+// import AdapterSelectComponent from './editors/AdapterSelectComponent.vue'
 
 import {Widget, WidgetFactory} from '../forms/Widget.js'
 // import {MultiSelectWidget} from '../forms/widgets.js'
 
-import {SIMS} from '../../settings.js'
+// import {SIMS} from '../../settings.js'
 
 class GridWidget extends Widget {
   getOptions () {
@@ -83,7 +83,7 @@ class APIAutocompleteWidget extends GridWidget {
     {'variable': 'label_property', 'label': 'Label property', 'type': 'text'}
   ]
 }
-
+/*
 class AdapterWidget extends APIAutocompleteWidget {
   // @TODO: wrap this in another component as in the guide https://quasar-framework.org/components/autocomplete.html
   static type = 'string'
@@ -107,7 +107,7 @@ class AdapterWidget extends APIAutocompleteWidget {
     return _.merge(this.options, SIMS['adapter_db']) // {'url': 'http://sims.ucdavis.edu:8000/api/adapter_db/', 'value_property': 'id', 'label_property': 'name'}
   }
 }
-
+*/
 class APISelectWidget extends APIAutocompleteWidget {
   // @TODO: wrap this in another component as in the guide https://quasar-framework.org/components/autocomplete.html
   // static type = 'string'
@@ -122,7 +122,7 @@ class APISelectWidget extends APIAutocompleteWidget {
   //   {'variable': 'label_property', 'label': 'Label property', 'type': 'text'}
   // ]
 }
-
+/*
 class AdapterDBWidget extends APIAutocompleteWidget {
   // @TODO: wrap this in another component as in the guide https://quasar-framework.org/components/autocomplete.html
   // static type = 'string'
@@ -135,7 +135,7 @@ class AdapterDBWidget extends APIAutocompleteWidget {
     return _.merge(this.options, SIMS['adapter_db']) // {'url': 'http://sims.ucdavis.edu:8000/api/adapter_db/', 'value_property': 'id', 'label_property': 'name'}
   }
 }
-
+*/
 class BooleanWidget extends GridWidget {
   // @TODO: wrap this in another component as in the guide https://quasar-framework.org/components/autocomplete.html
   static type = 'boolean'
@@ -180,6 +180,6 @@ class MultiSelectWidget extends SelectWidget {
   }
 }
 
-var widgetFactory = new WidgetFactory([DateWidget, BooleanWidget, AutocompleteWidget, VocabularyWidget, APIAutocompleteWidget, APISelectWidget, AdapterWidget, AdapterDBWidget, MultiSelectWidget])
+var widgetFactory = new WidgetFactory([DateWidget, BooleanWidget, AutocompleteWidget, VocabularyWidget, APIAutocompleteWidget, APISelectWidget, MultiSelectWidget])
 
 export default widgetFactory
