@@ -83,7 +83,6 @@
             v-model="status_option"
             label="Add Status"
             :options="status_options"
-            filter
             @input="add_status"
             map-options emit-value
           />
@@ -102,14 +101,8 @@
           borderless
         >
           <q-editor v-model="type.submission_help"
-            :toolbar="[
-              ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
-              ['token', 'hr', 'link', 'custom_btn'],
-              ['print', 'fullscreen'],
-              ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
-              ['undo', 'redo'],
-              ['table']
-            ]"
+            :toolbar="toolbar"
+            :fonts="fonts"
           />
         </q-field>
         <q-input
@@ -138,14 +131,8 @@
           borderless
         >
           <q-editor v-model="type.sample_help"
-            :toolbar="[
-              ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
-              ['token', 'hr', 'link', 'custom_btn'],
-              ['print', 'fullscreen'],
-              ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
-              ['undo', 'redo'],
-              ['table']
-            ]"
+            :toolbar="toolbar"
+            :fonts="fonts"
           />
         </q-field>
       </q-card-section>
@@ -178,7 +165,77 @@ export default {
       watch_changes: false,
       user_options: [],
       status_option: null,
-      status_options: this.$store.getters.lab.statuses.map(status => ({label: status, value: status}))
+      status_options: this.$store.getters.lab.statuses.map(status => ({label: status, value: status})),
+      toolbar: [
+        ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
+        ['token', 'hr', 'link', 'custom_btn'],
+        ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
+        ['table'],
+        [
+          {
+            label: this.$q.lang.editor.formatting,
+            icon: this.$q.iconSet.editor.formatting,
+            list: 'no-icons',
+            options: [
+              'p',
+              'h1',
+              'h2',
+              'h3',
+              'h4',
+              'h5',
+              'h6',
+              'code'
+            ]
+          },
+          {
+            label: this.$q.lang.editor.fontSize,
+            icon: this.$q.iconSet.editor.fontSize,
+            fixedLabel: true,
+            fixedIcon: true,
+            list: 'no-icons',
+            options: [
+              'size-1',
+              'size-2',
+              'size-3',
+              'size-4',
+              'size-5',
+              'size-6',
+              'size-7'
+            ]
+          },
+          {
+            label: this.$q.lang.editor.defaultFont,
+            icon: this.$q.iconSet.editor.font,
+            fixedIcon: true,
+            list: 'no-icons',
+            options: [
+              'default_font',
+              'arial',
+              'arial_black',
+              'comic_sans',
+              'courier_new',
+              'impact',
+              'lucida_grande',
+              'times_new_roman',
+              'verdana'
+            ]
+          },
+          'removeFormat'
+        ],
+        ['undo', 'redo'],
+        ['fullscreen'],
+        ['viewsource']
+      ],
+      fonts: {
+        arial: 'Arial',
+        arial_black: 'Arial Black',
+        comic_sans: 'Comic Sans MS',
+        courier_new: 'Courier New',
+        impact: 'Impact',
+        lucida_grande: 'Lucida Grande',
+        times_new_roman: 'Times New Roman',
+        verdana: 'Verdana'
+      }
     }
   },
   mounted: function () {
