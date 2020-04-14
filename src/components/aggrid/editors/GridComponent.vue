@@ -56,7 +56,7 @@ export default Vue.extend({
   created () {
     console.log('created', this.params)
     this.value = this.params.value ? _.cloneDeep(this.params.value) : []
-    this.schema = _.cloneDeep(this.params.widget_options._schema)
+    this.schema = Object.freeze(_.cloneDeep(this.params.widget_options._schema))
   },
   mounted () {
     Vue.nextTick(() => {

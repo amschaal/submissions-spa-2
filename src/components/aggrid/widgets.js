@@ -6,6 +6,7 @@ import VocabularyComponent from './editors/VocabularyComponent.vue'
 import APIAutocompleteComponent from './editors/APIAutocompleteComponent.vue'
 import APISelectComponent from './editors/APISelectComponent.vue'
 import SelectComponent from './editors/SelectComponent.vue'
+import GridComponent from './editors/GridComponent.vue'
 // import AdapterAutocompleteComponent from './editors/AdapterAutocompleteComponent.vue'
 // import AdapterSelectComponent from './editors/AdapterSelectComponent.vue'
 
@@ -180,6 +181,18 @@ class MultiSelectWidget extends SelectWidget {
   }
 }
 
-var widgetFactory = new WidgetFactory([DateWidget, BooleanWidget, AutocompleteWidget, VocabularyWidget, APIAutocompleteWidget, APISelectWidget, MultiSelectWidget])
+class GridComponentWidget extends GridWidget {
+  // @TODO: wrap this in another component as in the guide https://quasar-framework.org/components/autocomplete.html
+  static type = 'string'
+  static id = 'grid'
+  static component = GridComponent
+  static name = 'Spreadsheet'
+  static schema =
+  [
+    {'variable': 'schema', 'label': 'Schema', 'type': 'text'}
+  ]
+}
+
+var widgetFactory = new WidgetFactory([DateWidget, BooleanWidget, AutocompleteWidget, VocabularyWidget, APIAutocompleteWidget, APISelectWidget, MultiSelectWidget, GridComponentWidget])
 
 export default widgetFactory
