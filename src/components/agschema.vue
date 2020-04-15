@@ -206,7 +206,7 @@
 import { AgGridVue } from 'ag-grid-vue'
 import '../../node_modules/ag-grid-community/dist/styles/ag-grid.css'
 import '../../node_modules/ag-grid-community/dist/styles/ag-theme-balham.css'
-import 'ag-grid-enterprise/main'
+import 'ag-grid-enterprise'
 import NumericComponent from './aggrid/editors/NumericComponent.vue'
 // import DateComponent from './aggrid/DateComponent.vue'
 // import AutocompleteComponent from './aggrid/editors/AutocompleteComponent.vue'
@@ -227,10 +227,10 @@ export default {
       show_help: false,
       showExamples: this.allowExamples,
       showDescriptions: true,
-      sample_schema: Object.freeze({}),
+      // sample_schema: Object.freeze({}),
       rowData: [], // this.value,
       rootNode: {},
-      columnDefs: [],
+      // columnDefs: [],
       gridOptions: {
         enableRangeSelection: true,
         defaultColDef: {
@@ -287,6 +287,7 @@ export default {
   },
   methods: {
     openSamplesheet () {
+      console.log('openSamplesheet', this.type)
       // var self = this
       if (this.submission && this.submission.data) {
         this.errors = this.submission.data.errors && this.submission.data.errors.sample_data ? this.submission.data.errors.sample_data : {}
@@ -306,8 +307,8 @@ export default {
       //   })
       //   return
       // }
-      this.sample_schema = Object.freeze(this.schema || this.type.sample_schema)
-      this.columnDefs = this.schema2Columns(this.sample_schema)
+      // this.sample_schema = this.schema || this.type.sample_schema
+      this._columnDefs = this.schema2Columns(this.sample_schema)
       // console.log('openSamplesheet', this.rowData, this.value, this.columnDefs)
       // console.log('agschema refs', this.$refs)
       this.$refs.modal.show()
@@ -426,6 +427,7 @@ export default {
       }
     },
     getColDef (id, definition, schema) {
+      console.log('getColDef', definition, schema)
       var self = this
       function cellClass (params) {
         // console.log('cellClass', params, self.errors)
@@ -484,8 +486,10 @@ export default {
       // console.log('widget', definition, WidgetClass)
       // console.log('factory', sampleWidgetFactory)
       if (WidgetClass) {
-        var options = definition.widget.options
-        options._schema = Object.freeze(_.cloneDeep(schema))
+        console.log('WidgetClass', definition.widget.options)
+        var options = JSON.parse(JSON.stringify(definition.widget.options))
+        options._schema = JSON.parse(JSON.stringify(schema))
+        Object.freeze(options)
         var widget = new WidgetClass(id, options)
         return {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: WidgetClass.component, cellEditorParams: {definition: definition, widget_options: widget.getOptions()}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned} // values: definition.enum, widget: definition.widget,
       }
@@ -633,6 +637,12 @@ export default {
     // }
   },
   computed: {
+    sample_schema () {
+      return this.schema ? this.schema : this.type.sample_schema
+    },
+    columnDefs () {
+      return this._columnDefs ? this._columnDefs : []
+    },
     hasErrors () {
       // console.log('hasErrors', this.errors)
       return this.errors && _.size(this.errors) > 0

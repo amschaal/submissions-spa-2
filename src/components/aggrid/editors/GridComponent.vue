@@ -22,7 +22,7 @@
 
 <script>
 import Vue from 'vue'
-import _ from 'lodash'
+// import _ from 'lodash'
 // import Agschema from '../../agschema.vue'
 export default Vue.extend({
   data () {
@@ -55,8 +55,9 @@ export default Vue.extend({
   },
   created () {
     console.log('created', this.params)
-    this.value = this.params.value ? _.cloneDeep(this.params.value) : []
-    this.schema = Object.freeze(_.cloneDeep(this.params.widget_options._schema))
+    this.value = this.params.value ? this.params.value : []
+    this.schema = this.params.widget_options._schema
+    console.log('grid schema', this.schema, this.params.widget_options)
   },
   mounted () {
     Vue.nextTick(() => {
