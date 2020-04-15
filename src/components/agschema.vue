@@ -212,6 +212,7 @@ import NumericComponent from './aggrid/editors/NumericComponent.vue'
 // import AutocompleteComponent from './aggrid/editors/AutocompleteComponent.vue'
 import BooleanComponent from './aggrid/editors/BooleanComponent.vue'
 import SelectComponent from './aggrid/editors/SelectComponent.vue'
+import GridComponent from './aggrid/editors/GridComponent.vue'
 import _ from 'lodash'
 import sampleWidgetFactory from './aggrid/widgets.js'
 // import { ClipboardService } from '../../node_modules/ag-grid-enterprise/dist/lib/clipboardService.js'
@@ -486,14 +487,21 @@ export default {
       // console.log('widget', definition, WidgetClass)
       // console.log('factory', sampleWidgetFactory)
       if (WidgetClass) {
-        console.log('WidgetClass', definition.widget.options)
-        var options = JSON.parse(JSON.stringify(definition.widget.options))
-        options._schema = JSON.parse(JSON.stringify(schema))
-        Object.freeze(options)
+        // console.log('WidgetClass', definition.widget.options)
+        var options = definition.widget.options
+        // options._schema = JSON.parse(JSON.stringify(schema))
+        // Object.freeze(options)
         var widget = new WidgetClass(id, options)
         return {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: WidgetClass.component, cellEditorParams: {definition: definition, widget_options: widget.getOptions()}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned} // values: definition.enum, widget: definition.widget,
       }
       switch (definition.type) {
+        case 'object':
+          // console.log('object', definition)
+          var _options = JSON.parse(JSON.stringify(definition.widget.options))
+          _options._schema = JSON.parse(JSON.stringify(definition.schema))
+          Object.freeze(options)
+          // var widget = new WidgetClass(id, options)
+          return {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: GridComponent, cellEditorParams: {definition: definition, widget_options: _options}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned}
         case 'string':
           if (definition.enum) {
             // console.log('enum', {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: SelectComponent, cellEditorParams: {definition: definition, widget_options: {multiple: definition.multiple}}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned})
