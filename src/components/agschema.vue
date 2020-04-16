@@ -495,10 +495,10 @@ export default {
         return {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: WidgetClass.component, cellEditorParams: {definition: definition, widget_options: widget.getOptions()}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned} // values: definition.enum, widget: definition.widget,
       }
       switch (definition.type) {
-        case 'object':
+        case 'table':
           // console.log('object', definition)
-          var _options = JSON.parse(JSON.stringify(definition.widget.options))
-          _options._schema = JSON.parse(JSON.stringify(definition.schema))
+          // var _options = JSON.parse(JSON.stringify(definition.widget.options))
+          var _options = {_schema: JSON.parse(JSON.stringify(definition.schema))}
           Object.freeze(options)
           // var widget = new WidgetClass(id, options)
           return {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: GridComponent, cellEditorParams: {definition: definition, widget_options: _options}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned}
