@@ -1,47 +1,50 @@
 <template>
   <div>
-        <table v-if="schema" style="width:100%">
-          <tr><th></th><th title="Should the field only be available to staff?">Internal</th><th>Required</th><th>Variable</th><th>Name</th><th>Type</th><th>Column Width</th><th></th></tr>
-          <tr v-for="variable in fields_sorted" :key="variable.variable">
-            <td><q-btn flat dense round icon="arrow_upward" color="primary" @click="move(variable.variable, -1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != 0"/> <q-btn flat dense round icon="arrow_downward" color="primary" @click="move(variable.variable, 1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != schema.order.length - 1"/>
-            <td><q-checkbox dense v-if="variable.schema" v-model="variable.schema.internal" @input="toggleRequired(variable)"/></td>
-            <td><q-checkbox dense v-model="schema.required" :val="variable.variable" :disable="variable.schema && variable.schema.internal"/></td>
-            <td>{{variable.variable}}</td>
-            <td><q-input dense v-model="variable.schema.title" /></td>
-            <td>
-              <q-select
-                dense options-dense
-                v-model="variable.schema.type"
-                :options="type_options"
-                map-options emit-value
-              />
-            </td>
-            <td v-if="options.showWidth">
-              <!-- v-bind:value="getNested(`schema.layout.${variable.variable}.width`)" -->
-              <q-select
-                dense options-dense
-                map-options emit-value
-                v-model="schema.layout[variable.variable].width"
-                :options="width_options"
-                v-if="schema.layout[variable.variable]"
-                @input="setNested(`schema.layout.${variable.variable}.width`,$event)"
-              />
-              <q-select
-                dense options-dense
-                map-options emit-value
-                :options="width_options"
-                v-if="!schema.layout[variable.variable]"
-                @input="setNested(`schema.layout.${variable.variable}.width`,$event)"
-              />
-              <!-- @input="$set(item,'prop',$event.target.value)" -->
+        <div v-if="schema" style="width:100%">
+          <div class="row"><div class="col-1"></div><div class="col-1" title="Should the field only be available to staff?">Internal</div><div class="col-1">Required</div><div class="col-2">Variable</div><div class="col-2">Name</div><div class="col-2">Type</div><div class="col-1">Column Width</div><div class="col-2"></div></div>
+          <div v-for="variable in fields_sorted" :key="variable.variable">
+            <div class="row">
+              <div class="col-1"><q-btn flat dense round icon="arrow_upward" color="primary" @click="move(variable.variable, -1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != 0"/> <q-btn flat dense round icon="arrow_downward" color="primary" @click="move(variable.variable, 1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != schema.order.length - 1"/></div>
+              <div class="col-1"><q-checkbox dense v-if="variable.schema" v-model="variable.schema.internal" @input="toggleRequired(variable)"/></div>
+              <div class="col-1"><q-checkbox dense v-model="schema.required" :val="variable.variable" :disable="variable.schema && variable.schema.internal"/></div>
+              <div class="col-2">{{variable.variable}}</div>
+              <div class="col-2"><q-input dense v-model="variable.schema.title" /></div>
+              <div class="col-2">
+                <q-select
+                  dense options-dense
+                  v-model="variable.schema.type"
+                  :options="type_options"
+                  map-options emit-value
+                />
+              </div>
+              <div class="col-1" v-if="options.showWidth">
+                <!-- v-bind:value="getNested(`schema.layout.${variable.variable}.width`)" -->
+                <q-select
+                  dense options-dense
+                  map-options emit-value
+                  v-model="schema.layout[variable.variable].width"
+                  :options="width_options"
+                  v-if="schema.layout[variable.variable]"
+                  @input="setNested(`schema.layout.${variable.variable}.width`,$event)"
+                />
+                <q-select
+                  dense options-dense
+                  map-options emit-value
+                  :options="width_options"
+                  v-if="!schema.layout[variable.variable]"
+                  @input="setNested(`schema.layout.${variable.variable}.width`,$event)"
+                />
+                <!-- @input="$set(item,'prop',$event.target.value)" -->
 
-            </td>
-            <td class="row">
-              <fieldoptions :schema="schema" v-model="schema.properties[variable.variable]" :variable="variable.variable" :type="type"/>
-              <q-btn label="Delete" color="negative" @click="deleteVariable(variable.variable, 'submission_schema')"></q-btn>
-            </td>
-          </tr>
-        </table>
+              </div>
+              <div class="col-2">
+                <SchemaDialog v-if="variable.schema.type == 'table'" v-model="variable.schema.schema" :variable="variable"/>
+                <fieldoptions v-else style="display:inline-block" :schema="schema" v-model="schema.properties[variable.variable]" :variable="variable.variable" :type="type"/>
+                <q-btn label="Delete" color="negative" @click="deleteVariable(variable.variable, 'submission_schema')"></q-btn>
+              </div>
+            </div>
+          </div>
+        </div>
         <q-btn-dropdown
         color="positive"
         label="Add field"
@@ -61,52 +64,10 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
-<!--
-    <q-modal v-model="variable_modal" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
-      <q-modal-layout>
-        <q-toolbar slot="header">
-          <q-toolbar-title>
-            Add a variable
-          </q-toolbar-title>
-        </q-toolbar>
-      <div class="layout-padding">
-        <q-field label="Type">
-            <q-select
-              v-model="new_variable.type"
-              :options="type_options"
-            />
-        </q-field>
-        <q-field
-          label="Variable Name"
-          :error="variableError(new_variable.name)"
-          :error-label="variableMessage(new_variable.name)"
-          hint="Please only use lowercase letters, numbers, and underscores">
-            <q-input
-              v-model="new_variable.name"
-            />
-        </q-field>
-      </div>
-      <q-toolbar slot="footer">
-        <q-toolbar-title>
-          <q-btn
-            color="positive"
-            @click="addVariable()"
-            label="Add"
-            :disable="variableError(new_variable.name) || !new_variable.name || !new_variable.type"
-          />
-          <q-btn
-            @click="variable_modal = false"
-            label="Cancel"
-            color="negative"
-          />
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-modal-layout>
-    </q-modal> -->
 
     <q-dialog v-model="variable_modal" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
       <q-card>
-        <q-bar>
+        <q-bar class="bg-primary text-white">
           Add a variable
           <q-space />
           <q-btn dense flat icon="close" v-close-popup>
@@ -176,7 +137,7 @@ export default {
     return {
       schema: this.value,
       errors: {},
-      type_options: [{ 'label': 'Text', 'value': 'string' }, { 'label': 'Number', 'value': 'number' }, { 'label': 'True / False', 'value': 'boolean' }],
+      type_options: [{ 'label': 'Text', 'value': 'string' }, { 'label': 'Number', 'value': 'number' }, { 'label': 'True / False', 'value': 'boolean' }, { 'label': 'Table', 'value': 'table' }],
       width_options: [{ 'label': '100%', 'value': 'col-md-12 col-sm-12 col-xs-auto' }, { 'label': '5/6', 'value': 'col-md-10 col-sm-12 col-xs-auto' }, { 'label': '3/4', 'value': 'col-md-9 col-sm-12 col-xs-auto' }, { 'label': '2/3', 'value': 'col-md-8 col-sm-12 col-xs-auto' }, { 'label': '1/2', 'value': 'col-md-6 col-sm-12 col-xs-auto' }, { 'label': '1/3', 'value': 'col-md-4 col-sm-6 col-xs-auto' }, { 'label': '1/4', 'value': 'col-md-3 col-sm-6 col-xs-auto' }, { 'label': '1/6', 'value': 'col-md-2 col-sm-4 col-xs-auto' }],
       new_variable: {},
       variable_modal: false,
@@ -390,7 +351,8 @@ export default {
     }
   },
   components: {
-    Fieldoptions
+    Fieldoptions,
+    SchemaDialog: () => import('./SchemaDialog.vue')
     // Formatoptions,
     // Agschema
   }

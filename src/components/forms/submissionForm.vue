@@ -26,6 +26,8 @@
             emit-value map-options
             label="Participants"
             label-width="2"
+            color="grey"
+            options-selected-class="selected"
             :error="hasError('type')"
             bottom-slots :error-message="errorMessage('type')"
             v-if="isAdmin && user_options && submission.participants"
@@ -225,7 +227,7 @@
           <template v-slot:control>
             <Agschema
               v-model="submission.sample_data"
-              :schema="submission.sample_schema"
+              :schema="sample_schema"
               :type="type"
               :editable="true"
               :allow-examples="true"
@@ -306,7 +308,7 @@
 import './docs-input.styl'
 // import axios from 'axios'
 // import Samplesheet from '../../components/samplesheet.vue'
-import Agschema from '../../components/agschema.vue'
+// import Agschema from '../../components/agschema.vue'
 import CustomFields from '../../components/forms/customFields.vue'
 import Account from '../../components/payment/ucdAccount.vue'
 // import PPMS from '../../components/payment/ppms.vue'
@@ -324,7 +326,7 @@ export default {
       warnings: {},
       // submission_types: [{ foo: 'bar' }],
       // type_options: this.$store.getters.typeOptions,
-      type: {},
+      type: Object.freeze({}),
       type_id: null, // from query params ?type=, will force form to use type
       debug: false,
       user_options: null,
@@ -338,9 +340,6 @@ export default {
     }
   },
   mounted: function () {
-    console.log('mounted')
-    console.log('type', this.type)
-    console.log('submission.type', this.submission.type)
     var submission = window.localStorage.getItem('submission')
     var self = this
     if (!this.create) {
@@ -689,8 +688,9 @@ export default {
   watch: {
     'submission.type': function (id) {
       // this.assignType(id)
-      this.type = id ? this.$store.getters.typesDict[id] : {}
-      console.log('type', id, this.type, this.$store.getters.typesDict)
+      console.log('type dict', id, this.$store.getters.typesDict[id])
+      this.type = id ? Object.freeze(this.$store.getters.typesDict[id]) : Object.freeze({})
+      console.log('type changed', id, this.type, this.$store.getters.typesDict)
       if (this.type.submission_help) {
         this.flashHelpTooltip()
       }
@@ -731,6 +731,13 @@ export default {
     // }
   },
   computed: {
+    sample_schema () {
+      if (this.type && this.type.sample_schema) {
+        return Object.freeze(Object.assign({}, this.type.sample_schema))
+      } else {
+        return {}
+      }
+    },
     error_message (field) {
       return this.errors[field]
     },
@@ -755,7 +762,8 @@ export default {
 
   },
   components: {
-    Agschema,
+    // Agschema,
+    Agschema: () => import('../../components/agschema.vue'),
     CustomFields,
     Account
     // UCDAccount

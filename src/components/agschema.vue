@@ -9,7 +9,7 @@
             <q-avatar>
             </q-avatar>
 
-            <q-toolbar-title>Samplesheet: {{type.name}} - {{rootNode.allChildrenCount}} samples
+            <q-toolbar-title>Samplesheet: {{type ? type.name : ''}} - {{rootNode.allChildrenCount}} samples
               <span class="float-right">
                 <q-btn title="Maximize" dense flat icon="crop_square"  @click="maximized=true" v-if="!maximized"/>
                 <q-btn title="Minimize" dense flat icon="maximize" @click="maximized=false" v-if="maximized"/>
@@ -22,7 +22,7 @@
               color="primary"
               @click="show_help = true"
               label="Help"
-              v-if="type.sample_help"
+              v-if="type && type.sample_help"
             ><q-tooltip ref="tooltip">Please click "Help" button for important information on sample requirements!</q-tooltip></q-btn> <!-- icon="fas fa-question-circle" -->
             <q-checkbox v-model="showDescriptions" label="Show descriptions" class="show_descriptions" v-if="hasDescriptions"/> <q-checkbox v-model="showExamples" label="Show examples" v-if="allowExamples && this.sample_schema.examples && sample_schema.examples.length"  class="show_examples"/>
             <q-btn-dropdown label="Resize Columns">
@@ -180,7 +180,7 @@
         </q-toolbar>
 
         <q-card-section>
-          <div v-html="type.sample_help" v-if="type.sample_help"></div>
+          <div v-html="type.sample_help" v-if="type && type.sample_help"></div>
         </q-card-section>
         <q-card-actions align="right" class="text-primary">
           <q-btn
@@ -206,12 +206,13 @@
 import { AgGridVue } from 'ag-grid-vue'
 import '../../node_modules/ag-grid-community/dist/styles/ag-grid.css'
 import '../../node_modules/ag-grid-community/dist/styles/ag-theme-balham.css'
-import 'ag-grid-enterprise/main'
+import 'ag-grid-enterprise'
 import NumericComponent from './aggrid/editors/NumericComponent.vue'
 // import DateComponent from './aggrid/DateComponent.vue'
 // import AutocompleteComponent from './aggrid/editors/AutocompleteComponent.vue'
 import BooleanComponent from './aggrid/editors/BooleanComponent.vue'
 import SelectComponent from './aggrid/editors/SelectComponent.vue'
+import GridComponent from './aggrid/editors/GridComponent.vue'
 import _ from 'lodash'
 import sampleWidgetFactory from './aggrid/widgets.js'
 // import { ClipboardService } from '../../node_modules/ag-grid-enterprise/dist/lib/clipboardService.js'
@@ -219,6 +220,7 @@ import sampleWidgetFactory from './aggrid/widgets.js'
 // var clipboardService = null
 
 export default {
+  name: 'Agschema',
   props: ['value', 'type', 'schema', 'editable', 'allowExamples', 'allowForceSave', 'submission'],
   data () {
     return {
@@ -226,10 +228,10 @@ export default {
       show_help: false,
       showExamples: this.allowExamples,
       showDescriptions: true,
-      sample_schema: {},
-      rowData: this.value,
+      // sample_schema: Object.freeze({}),
+      rowData: [], // this.value,
       rootNode: {},
-      columnDefs: [],
+      // columnDefs: [],
       gridOptions: {
         enableRangeSelection: true,
         defaultColDef: {
@@ -275,31 +277,41 @@ export default {
       maximized: true
     }
   },
+  mounted () {
+    console.log('mounted agschema')
+  },
+  created () {
+    console.log('created agschema')
+  },
+  destroyed () {
+    console.log('destroyed agschema')
+  },
   methods: {
     openSamplesheet () {
+      console.log('openSamplesheet', this.type)
       // var self = this
       if (this.submission && this.submission.data) {
         this.errors = this.submission.data.errors && this.submission.data.errors.sample_data ? this.submission.data.errors.sample_data : {}
         this.warnings = this.submission.data.warnings && this.submission.data.warnings.sample_data ? this.submission.data.warnings.sample_data : {}
       }
-      console.log('warnings', this.warnings)
+      // console.log('warnings', this.warnings)
       if (this.value && this.value.length > 0) {
         this.rowData = _.cloneDeep(this.value)
       } else {
         this.rowData = _.times(10, _.stubObject)
       }
 
-      if (!this.type || !this.type.sample_schema) {
-        this.$q.dialog({
-          title: 'Alert',
-          message: 'Please select a submission type first.'
-        })
-        return
-      }
-      this.sample_schema = this.schema || this.type.sample_schema
-      this.columnDefs = this.schema2Columns(this.sample_schema)
+      // if (!this.type || !this.type.sample_schema) {
+      //   this.$q.dialog({
+      //     title: 'Alert',
+      //     message: 'Please select a submission type first.'
+      //   })
+      //   return
+      // }
+      // this.sample_schema = this.schema || this.type.sample_schema
+      this._columnDefs = this.schema2Columns(this.sample_schema)
       // console.log('openSamplesheet', this.rowData, this.value, this.columnDefs)
-      console.log('agschema refs', this.$refs)
+      // console.log('agschema refs', this.$refs)
       this.$refs.modal.show()
       // .then(() => {
       //   if (self.rowData.length === 0) {
@@ -320,13 +332,6 @@ export default {
         this.addRow()
       }
       this.rootNode = this.gridOptions.api.getModel().rootNode
-      setTimeout(function () {
-        console.log('refs')
-        // self.$refs.tooltip.show()
-      }, 1000)
-      setTimeout(function () {
-        // self.$refs.tooltip.hide()
-      }, 6000)
     },
     cellEditable (params) {
       // console.log('cellEditable', this.editable, params)
@@ -423,6 +428,7 @@ export default {
       }
     },
     getColDef (id, definition, schema) {
+      console.log('getColDef', definition, schema)
       var self = this
       function cellClass (params) {
         // console.log('cellClass', params, self.errors)
@@ -475,17 +481,27 @@ export default {
       }
       var WidgetClass = null
       if (definition.widget && definition.widget.type) {
-        console.log('getcolwidget', definition.widget, definition.widget.type)
+        // console.log('getcolwidget', definition.widget, definition.widget.type)
         WidgetClass = sampleWidgetFactory.getWidget(definition.widget.type)
       }
-      console.log('widget', definition, WidgetClass)
+      // console.log('widget', definition, WidgetClass)
       // console.log('factory', sampleWidgetFactory)
       if (WidgetClass) {
+        // console.log('WidgetClass', definition.widget.options)
         var options = definition.widget.options
+        // options._schema = JSON.parse(JSON.stringify(schema))
+        // Object.freeze(options)
         var widget = new WidgetClass(id, options)
         return {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: WidgetClass.component, cellEditorParams: {definition: definition, widget_options: widget.getOptions()}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned} // values: definition.enum, widget: definition.widget,
       }
       switch (definition.type) {
+        case 'table':
+          // console.log('object', definition)
+          // var _options = JSON.parse(JSON.stringify(definition.widget.options))
+          var _options = {_schema: JSON.parse(JSON.stringify(definition.schema))}
+          Object.freeze(options)
+          // var widget = new WidgetClass(id, options)
+          return {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: GridComponent, cellEditorParams: {definition: definition, widget_options: _options}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned}
         case 'string':
           if (definition.enum) {
             // console.log('enum', {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: SelectComponent, cellEditorParams: {definition: definition, widget_options: {multiple: definition.multiple}}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned})
@@ -518,7 +534,7 @@ export default {
     },
     validate (save) {
       // this.hst.validateTable(true)
-      // console.log('validate', save)
+      console.log('validate', this.type, this.sample_schema, save)
       var self = this
       if (this.type) {
         // this.$axios.post('/api/submission_types/' + this.type.id + '/validate_data/', {data: this.getRowData(true)})
@@ -591,7 +607,7 @@ export default {
           cleaned.unshift(row)
         }
       })
-      console.log('getRowData', data, cleaned)
+      // console.log('getRowData', data, cleaned)
       return cleaned
     },
     rowIsEmpty (row) {
@@ -629,12 +645,18 @@ export default {
     // }
   },
   computed: {
+    sample_schema () {
+      return this.schema ? this.schema : this.type.sample_schema
+    },
+    columnDefs () {
+      return this._columnDefs ? this._columnDefs : []
+    },
     hasErrors () {
-      console.log('hasErrors', this.errors)
+      // console.log('hasErrors', this.errors)
       return this.errors && _.size(this.errors) > 0
     },
     hasWarnings () {
-      console.log('hasWarnings', this.warnings)
+      // console.log('hasWarnings', this.warnings)
       return this.warnings && _.size(this.warnings) > 0
     },
     sampleCount () {
@@ -669,7 +691,7 @@ export default {
         }
         // examples = examples.concat(this.sample_schema.examples)
       }
-      console.log('examples', examples)
+      // console.log('examples', examples)
       return examples
     }
   },

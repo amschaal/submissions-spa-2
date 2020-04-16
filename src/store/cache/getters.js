@@ -20,7 +20,7 @@ export const types = (state) => {
   return state.types
 }
 export const typesDict = (state) => {
-  return createDict(state.types)
+  return Object.freeze(createDict(state.types))
 }
 export const typeOptions = (state) => {
   console.log('typeOptions', state)
