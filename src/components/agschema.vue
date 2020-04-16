@@ -536,58 +536,56 @@ export default {
       // this.hst.validateTable(true)
       console.log('validate', this.type, this.sample_schema, save)
       var self = this
-      if (this.type) {
-        // this.$axios.post('/api/submission_types/' + this.type.id + '/validate_data/', {data: this.getRowData(true)})
-        this.$axios.post('/api/validate/', {sample_schema: this.sample_schema, data: this.getRowData(true)})
-          .then(function (response) {
-            // console.log(response)
-            self.errors = {}
-            self.warnings = {}
-            self.gridOptions.api.redrawRows() // redrawCells({force: true})
-            self.$q.notify({message: 'Samples successfully validated.  Please save the submission.', type: 'positive'})
-            if (save) {
-              self.save()
+      // this.$axios.post('/api/submission_types/' + this.type.id + '/validate_data/', {data: this.getRowData(true)})
+      this.$axios.post('/api/validate/', {sample_schema: this.sample_schema, data: this.getRowData(true)})
+        .then(function (response) {
+          // console.log(response)
+          self.errors = {}
+          self.warnings = {}
+          self.gridOptions.api.redrawRows() // redrawCells({force: true})
+          self.$q.notify({message: 'Samples successfully validated.  Please save the submission.', type: 'positive'})
+          if (save) {
+            self.save()
+          }
+        })
+        .catch(function (error, stuff) {
+          console.log('ERROR', error.response, self.$refs.grid, self.gridOptions.api.refreshCells)
+          if (!error.response.data || (!error.response.data.errors && !error.response.data.warnings)) {
+            self.$q.notify({message: 'A server error occurred.', type: 'negative'})
+            return
+          }
+          self.errors = error.response.data.errors
+          self.warnings = error.response.data.warnings
+          self.gridOptions.api.redrawRows() // redrawCells({force: true})
+          if (!save || !self.allowForceSave) {
+            if (self.hasErrors) {
+              self.$q.notify({message: 'There were errors in your data.', type: 'negative'})
             }
-          })
-          .catch(function (error, stuff) {
-            console.log('ERROR', error.response, self.$refs.grid, self.gridOptions.api.refreshCells)
-            if (!error.response.data || (!error.response.data.errors && !error.response.data.warnings)) {
-              self.$q.notify({message: 'A server error occurred.', type: 'negative'})
-              return
+            if (self.hasWarnings) {
+              self.$q.notify({message: 'There were warnings in your data.', type: 'warning'})
             }
-            self.errors = error.response.data.errors
-            self.warnings = error.response.data.warnings
-            self.gridOptions.api.redrawRows() // redrawCells({force: true})
-            if (!save || !self.allowForceSave) {
-              if (self.hasErrors) {
-                self.$q.notify({message: 'There were errors in your data.', type: 'negative'})
-              }
-              if (self.hasWarnings) {
-                self.$q.notify({message: 'There were warnings in your data.', type: 'warning'})
-              }
-            } else {
-              var message = self.hasErrors ? 'There were errors.  Any errors will need to be corrected before completing submission.  You may choose to "save anyway" and then save this submission as a draft in order not to lose your work.' : 'There were warnings.  To ignore the warnings, click "save anyway".'
-              self.$q.notify({
-                message: message,
-                timeout: 10000, // in milliseconds; 0 means no timeout
-                type: self.hasErrors ? 'negative' : 'warning',
-                // position: 'bottom', // 'top', 'left', 'bottom-left' etc.
-                actions: [
-                  {
-                    label: 'Save Anyway',
-                    handler: () => {
-                      self.save()
-                    }
+          } else {
+            var message = self.hasErrors ? 'There were errors.  Any errors will need to be corrected before completing submission.  You may choose to "save anyway" and then save this submission as a draft in order not to lose your work.' : 'There were warnings.  To ignore the warnings, click "save anyway".'
+            self.$q.notify({
+              message: message,
+              timeout: 10000, // in milliseconds; 0 means no timeout
+              type: self.hasErrors ? 'negative' : 'warning',
+              // position: 'bottom', // 'top', 'left', 'bottom-left' etc.
+              actions: [
+                {
+                  label: 'Save Anyway',
+                  handler: () => {
+                    self.save()
                   }
-                ]
-              })
-            }
+                }
+              ]
+            })
+          }
 
-            // if (error.response) {
-            //   self.errors = error.response.data.errors
-            // }
-          })
-      }
+          // if (error.response) {
+          //   self.errors = error.response.data.errors
+          // }
+        })
     },
     getRowData (filterAndSort) {
       var data = []

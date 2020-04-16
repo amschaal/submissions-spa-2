@@ -3,7 +3,37 @@
       <!-- <q-editor ng-model="foo" v-if="false"/> -->
       <div v-for="v in fields" :key="v.variable" class="field q-pb-lg q-pl-sm q-pr-sm" v-bind:class="colWidth(v.variable)">
         <div v-if="$store.getters.isLoggedIn || !v.schema.internal">
-          <span v-if="!modify" v-bind:class="{'warning': warnings && warnings[v.variable]}">
+          <span v-if="v.schema.type=='table'">
+            <!-- :error="sample_data_error"
+            bottom-slots :error-message="sample_data_error_label"
+            :warning="sample_data_warning"
+            warning-label="Samples contain warnings" -->
+            <q-field
+              v-if="v.schema.schema && v.schema.schema.order && v.schema.schema.order.length"
+              hint="Open table"
+              class="q-pb-xl q-mb-xl"
+              borderless
+              :label="v.schema.title ? v.schema.title : v.variable"
+              stack-label
+            >
+              <!-- <Samplesheet v-model="submission.sample_data" :type="type"/> -->
+              <template v-slot:control>
+                <!-- :submission="submission"
+                v-on:warnings="updateWarnings"
+                v-on:errors="updateErrors" -->
+                <Agschema
+                  v-model="value[v.variable]"
+                  :schema="v.schema.schema"
+                  :editable="modify && ($store.getters.isLoggedIn || !v.schema.internal)"
+                  :allow-examples="true"
+                  :allow-force-save="true"
+                  :ref="v.variable"
+                  />
+                <q-btn :label="table_button_label(v)"  @click="openTable(v)" />
+              </template>
+            </q-field>
+          </span>
+          <span v-else-if="!modify" v-bind:class="{'warning': warnings && warnings[v.variable]}">
             <p class="caption">{{v.schema.title ? v.schema.title : v.variable}}</p>
 
             <span><q-tooltip v-if="warnings && warnings[v.variable]">{{warnings ? getWarning(v) : ''}}</q-tooltip><q-icon v-if="warnings && warnings[v.variable]" size="14px" name="warning" color="orange"/> {{widget(v).formatValue(value[v.variable],'None')}}</span>
@@ -127,6 +157,14 @@ export default {
         this.$set(value, variable, val)
       }
       console.log('setValue', type, value, variable, val, e)
+    },
+    openTable (v) {
+      console.log('refs', this.$refs, v, this.$refs[v.variable][0])
+      this.$refs[v.variable][0].openSamplesheet()
+    },
+    table_button_label (v) {
+      console.log('table_button_label', v, v.variable, this.value, this.value[v.variable])
+      return (v.schema.title ? v.schema.title : v.variable) + ' (' + (this.value[v.variable] && this.value[v.variable].length ? this.value[v.variable].length : 0) + ')'
     }
   },
   computed: {
@@ -145,7 +183,8 @@ export default {
   },
   components: {
     QSelect,
-    QOptionGroup
+    QOptionGroup,
+    Agschema: () => import('../agschema.vue')
   },
   watch: {
   }
