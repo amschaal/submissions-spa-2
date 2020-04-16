@@ -92,7 +92,7 @@ export class WidgetFactory {
     return this.lookup[id] ? this.lookup[id].schema : {}
   }
   getWidget (id, type, definition) {
-    console.log('getWidget', id, type, this.lookup, definition)
+    // console.log('getWidget', id, type, this.lookup, definition)
     if (id && this.lookup[id]) {
       return this.lookup[id]
     }

@@ -34,6 +34,7 @@ export default Vue.extend({
           self.options = response.data.results.map(
             o => ({value: o[self.value_property], label: o[self.label_property]})
           )
+          self.$refs.select.showPopup()
         })
         // .catch(function (error, stuff) {
         // })
@@ -60,7 +61,7 @@ export default Vue.extend({
     Vue.nextTick(() => {
       if (this.$refs.select) {
         console.log('select', this.$refs.select)
-        this.$refs.select.show()
+        this.$refs.select.focus()
       }
     })
   }

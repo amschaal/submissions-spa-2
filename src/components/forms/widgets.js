@@ -58,7 +58,7 @@ class ChipsWidget extends EnumWidget {
   static name = 'Chips Input'
 
   getOptions () {
-    return _.merge(this.options, this.getSelectOptions(), {label: 'radio', 'use-input': true, filled: true, 'use-chips': true, multiple: true, 'hide-dropdown-icon': true, 'input-debounce': '0', 'new-value-mode': 'add'})
+    return _.merge(this.options, this.getSelectOptions(), {label: 'radio', 'use-input': true, 'use-chips': true, multiple: true, 'hide-dropdown-icon': true, 'input-debounce': '0', 'new-value-mode': 'add'})
   }
 }
 class SelectWidget extends EnumWidget {

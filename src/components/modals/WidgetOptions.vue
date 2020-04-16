@@ -35,7 +35,7 @@
 
   <q-dialog v-model="opened" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
     <q-card>
-      <q-bar>
+      <q-bar class="bg-primary text-white">
         {{title}}
         <q-space />
         <q-btn dense flat icon="close" v-close-popup>

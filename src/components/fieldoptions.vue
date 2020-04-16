@@ -145,7 +145,7 @@
 
     <q-dialog v-model="opened" ref="modal">
       <q-card style="width: 800px; max-width: 80vw;">
-        <q-bar>
+        <q-bar class="bg-primary text-white">
           Field options for: {{variable}} {{type}}
           <q-space />
           <q-btn dense flat icon="close" v-close-popup>
