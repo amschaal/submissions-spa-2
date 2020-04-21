@@ -723,4 +723,10 @@ export default {
   .ag-theme-balham .ag-cell {
     border-right: 1px solid #BDC3C7;
   }
+  .ag-theme-balham .ag-ltr .ag-cell {
+    border-right: 1px solid #BDC3C7;
+  }
+  /* .ag-watermark {
+    display: none !important;
+  } */
 </style>

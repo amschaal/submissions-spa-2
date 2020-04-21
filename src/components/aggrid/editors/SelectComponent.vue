@@ -77,7 +77,7 @@ export default Vue.extend({
         this.params.stopEditing()
       } else if (this.$refs.select) {
         console.log('select', this.$refs.select)
-        this.$refs.select.show()
+        this.$refs.select.showPopup()
       }
     })
   }
