@@ -39,6 +39,7 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
+          {{warnings}} {{errors}}
             <ag-grid-vue style="width: 100%; height: 90%;" class="ag-theme-balham"
 
               rowSelection='multiple'
@@ -221,7 +222,7 @@ import sampleWidgetFactory from './aggrid/widgets.js'
 
 export default {
   name: 'Agschema',
-  props: ['value', 'type', 'schema', 'editable', 'allowExamples', 'allowForceSave', 'submission'],
+  props: ['value', 'type', 'schema', 'editable', 'allowExamples', 'allowForceSave', 'submission', 'tableWarnings', 'tableErrors'],
   data () {
     return {
       opened: false,
@@ -287,14 +288,31 @@ export default {
     console.log('destroyed agschema')
   },
   methods: {
-    openSamplesheet () {
-      console.log('openSamplesheet', this.type)
-      // var self = this
-      if (this.submission && this.submission.data) {
-        this.errors = this.submission.data.errors && this.submission.data.errors.sample_data ? this.submission.data.errors.sample_data : {}
-        this.warnings = this.submission.data.warnings && this.submission.data.warnings.sample_data ? this.submission.data.warnings.sample_data : {}
+    getValidationObject (validation) {
+      // validation errors or warnings could be a list mixed strings and objects, we only want the object
+      if (typeof validation === 'object' && !Array.isArray(validation)) {
+        return validation
+      } else if (Array.isArray(validation)) {
+        for (var i in validation) {
+          if (typeof validation[i] === 'object' && !Array.isArray(validation[i])) {
+            return validation[i]
+          }
+        }
+      } else {
+        return {}
       }
+    },
+    openSamplesheet () {
+      console.log('openSamplesheet!!!', this.type)
+      // var self = this
+      // if (this.submission && this.submission.data) {
+      //   this.errors = this.submission.data.errors && this.submission.data.errors.sample_data ? this.submission.data.errors.sample_data : {}
+      //   this.warnings = this.submission.data.warnings && this.submission.data.warnings.sample_data ? this.submission.data.warnings.sample_data : {}
+      // }
       // console.log('warnings', this.warnings)
+      this.warnings = this.tableWarnings ? _.cloneDeep(this.getValidationObject(this.tableWarnings)) : {}
+      this.errors = this.tableErrors ? _.cloneDeep(this.getValidationObject(this.tableErrors)) : {}
+      console.log('Samplesheet errors, warnings', this.warnings, this.errors)
       if (this.value && this.value.length > 0) {
         this.rowData = _.cloneDeep(this.value)
       } else {
