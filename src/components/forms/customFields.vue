@@ -10,11 +10,9 @@
             warning-label="Samples contain warnings" -->
             <q-field
               v-if="v.schema.schema && v.schema.schema.order && v.schema.schema.order.length"
-              hint="Open table"
+              :hint="(v.schema.title ? v.schema.title : v.variable) + ': Click on the button above to open the table'"
               class="q-pb-xl q-mb-xl"
               borderless
-              :label="v.schema.title ? v.schema.title : v.variable"
-              stack-label
             >
               <!-- <Samplesheet v-model="submission.sample_data" :type="type"/> -->
               <template v-slot:control>
@@ -28,8 +26,12 @@
                   :allow-examples="true"
                   :allow-force-save="true"
                   :ref="v.variable"
+                  :table-warnings="getTableWarnings(v)"
+                  :table-errors="getTableErrors(v)"
                   />
                 <q-btn :label="table_button_label(v)"  @click="openTable(v)" />
+                {{warnings}}
+                {{errors}}
               </template>
             </q-field>
           </span>
@@ -149,6 +151,12 @@ export default {
     },
     hasWarning (v) {
       return this.warnings && this.getWarning(v) !== ''
+    },
+    getTableWarnings (v) {
+      return this.warnings && this.warnings[v.variable] ? this.warnings[v.variable] : {}
+    },
+    getTableErrors (v) {
+      return this.errors && this.errors[v.variable] ? this.errors[v.variable] : {}
     },
     setValue (type, value, variable, val, e) {
       if (value.cancelBubble) {
