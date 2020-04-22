@@ -157,7 +157,7 @@
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
           <q-checkbox dense label="Unique" v-if="type!='submission'" v-model="data.unique"/>
             <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
-          <q-field label="Pin column" stack-label borderless>
+          <q-field label="Pin column" stack-label borderless v-if="type==='table'">
             <q-radio dense v-model="data.pinned" :val="undefined" label="Not pinned" />
             <q-radio dense v-model="data.pinned" val="left" label="Pinned left" />
             <q-radio dense v-model="data.pinned" val="right" label="Pinned right" />
@@ -284,7 +284,7 @@
 <script>
 import _ from 'lodash'
 import submissionWidgetFactory from './forms/widgets.js'
-import sampleWidgetFactory from './aggrid/widgets.js'
+import tableWidgetFactory from './aggrid/widgets.js'
 import WidgetOptions from './modals/WidgetOptions.vue'
 import ValidatorOptions from './modals/ValidatorOptions.vue'
 
@@ -375,7 +375,7 @@ export default {
       this.data.validators.splice(index, 1)
     },
     widgetSchema (id) {
-      var factory = this.type === 'submission' ? submissionWidgetFactory : sampleWidgetFactory
+      var factory = this.type === 'submission' ? submissionWidgetFactory : tableWidgetFactory
       return factory.getWidgetSchema(id)
     },
     hasWidgetOptions (id) {
@@ -388,7 +388,7 @@ export default {
   },
   computed: {
     widgetFactory () {
-      return this.type === 'submission' ? submissionWidgetFactory : sampleWidgetFactory
+      return this.type === 'submission' ? submissionWidgetFactory : tableWidgetFactory
     },
     widgetOptions () {
       return this.widgetFactory.getWidgets(this.data.type)

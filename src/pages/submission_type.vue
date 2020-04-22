@@ -114,8 +114,9 @@
           v-model="type.confirmation_text"
           autogrow
           />
-        <h6>Submission Fields</h6>
+        <h6>Custom Fields</h6>
         <schemaForm v-model="type.submission_schema" :options="{variables: $store.getters.lab.submission_variables, showWidth: true}" type="submission"/>
+<!--
         <h5>Samplesheet definition</h5>
         <h6>Column Definitions</h6>
         <schemaForm v-model="type.sample_schema" :options="{variables: $store.getters.lab.sample_variables, showWidth: false}" type="samples"/>
@@ -134,7 +135,7 @@
             :toolbar="toolbar"
             :fonts="fonts"
           />
-        </q-field>
+        </q-field> -->
       </q-card-section>
       <q-separator />
       <q-card-actions>
@@ -150,7 +151,7 @@
 import '../components/forms/docs-input.styl'
 import SchemaForm from '../components/forms/schemaForm.vue'
 import Vue from 'vue'
-import Agschema from '../components/agschema.vue'
+// import Agschema from '../components/agschema.vue'
 import draggable from 'vuedraggable'
 export default {
   name: 'submission_type',
@@ -469,7 +470,7 @@ export default {
   },
   components: {
     SchemaForm,
-    Agschema,
+    // Agschema,
     draggable
   }
 }
