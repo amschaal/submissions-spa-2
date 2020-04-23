@@ -57,7 +57,7 @@
         />
       <h5>Submission variables</h5>
       <schemaForm v-model="lab.submission_variables" :options="{variables: {}}" type="submission"/>
-      <h5>Sample variables</h5>
+      <h5>Table variables</h5>
       <schemaForm v-model="lab.table_variables" :options="{variables: {}}" type="table"/>
       <q-card-actions>
         <q-btn @click="save" label="Save"></q-btn>

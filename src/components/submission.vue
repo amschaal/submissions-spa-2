@@ -132,9 +132,9 @@
         </div>
         <CustomFields v-model="submission.submission_data" :schema="submission_schema" ref="submission_fields" :warnings="submission.warnings ? submission.warnings.submission_data : {}" v-if="submission_schema" :modify="false"/>
           <!-- <Samplesheet v-model="submission.sample_data" :type="type"/> -->
-        <Agschema v-model="submission.sample_data" :type="submission_type" :editable="false" ref="samplesheet" v-if="submission_type && submission_type.sample_schema" :submission="submission"/>
-        <q-icon size="25px" name="warning" v-if="hasWarnings" color="warning" title="Samples contain warnings."/>
-        <q-btn :label="'Samples ('+submission.sample_data.length+')'"  @click="openSamplesheet"/>
+        <!-- <Agschema v-model="submission.sample_data" :type="submission_type" :editable="false" ref="samplesheet" v-if="submission_type && submission_type.sample_schema" :submission="submission"/> -->
+        <!-- <q-icon size="25px" name="warning" v-if="hasWarnings" color="warning" title="Samples contain warnings."/> -->
+        <!-- <q-btn :label="'Samples ('+submission.sample_data.length+')'"  @click="openSamplesheet"/> -->
         <div class="row" v-if="submission.id">
           <div class="col-lg-12">
             <q-btn class="float-right" label="Create copy" description="Create a new submission using data from this submission." @click="copySubmission"/>
@@ -158,7 +158,7 @@
 
 <script>
 // import './docs-input.styl'
-import Agschema from './agschema.vue'
+// import Agschema from './agschema.vue'
 import CustomFields from './forms/customFields.vue'
 import StatusSelector from './statusSelector.vue'
 import Lock from './lock.vue'
@@ -206,16 +206,16 @@ export default {
   //     })
   // },
   methods: {
-    openSamplesheet () {
-      if (!this.submission_type || !this.submission_type.sample_schema) {
-        this.$q.dialog({
-          title: 'Alert',
-          message: 'Please select a submission type first.'
-        })
-      } else {
-        this.$refs.samplesheet.openSamplesheet()
-      }
-    },
+    // openSamplesheet () {
+    //   if (!this.submission_type || !this.submission_type.sample_schema) {
+    //     this.$q.dialog({
+    //       title: 'Alert',
+    //       message: 'Please select a submission type first.'
+    //     })
+    //   } else {
+    //     this.$refs.samplesheet.openSamplesheet()
+    //   }
+    // },
     download () {
       window.location.href = `/server/api/submissions/${this.submission.id}/download/?format=${this.downloadParams.format}&data=${this.downloadParams.data}`
     },
@@ -274,7 +274,7 @@ export default {
     }
   },
   components: {
-    Agschema,
+    // Agschema,
     CustomFields,
     StatusSelector,
     Lock,

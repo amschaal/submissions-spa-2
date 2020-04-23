@@ -10,7 +10,7 @@
           </q-btn>
         </q-bar>
         <q-card-section v-if="opened">
-          <schemaForm v-model="schema" :options="{variables: {}}" type="table"/>
+          <schemaForm v-model="schema" :options="{variables: $store.getters.lab.table_variables}" type="table"/>
         </q-card-section>
         <q-card-actions align="right">
           <q-btn
