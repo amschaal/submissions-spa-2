@@ -22,7 +22,7 @@
               color="primary"
               @click="show_help = true"
               label="Help"
-              v-if="type && type.sample_help"
+              v-if="schema && schema.help"
             ><q-tooltip ref="tooltip">Please click "Help" button for important information on sample requirements!</q-tooltip></q-btn> <!-- icon="fas fa-question-circle" -->
             <q-checkbox v-model="showDescriptions" label="Show descriptions" class="show_descriptions" v-if="hasDescriptions"/> <q-checkbox v-model="showExamples" label="Show examples" v-if="allowExamples && this.sample_schema.examples && sample_schema.examples.length"  class="show_examples"/>
             <q-btn-dropdown label="Resize Columns">
@@ -177,11 +177,11 @@
     <q-dialog v-model="show_help">
       <q-card>
         <q-toolbar>
-          Sample requirements
+          Help
         </q-toolbar>
 
         <q-card-section>
-          <div v-html="type.sample_help" v-if="type && type.sample_help"></div>
+          <div v-html="schema.help" v-if="schema && schema.help"></div>
         </q-card-section>
         <q-card-actions align="right" class="text-primary">
           <q-btn

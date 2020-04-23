@@ -158,10 +158,10 @@ export default {
   props: ['id'],
   data () {
     return {
-      type: {active: true, submission_help: '', sample_help: '', help: '', examples: [], statuses: [], default_participants: [], submission_schema: {properties: {}, order: [], required: [], layout: {}, printing: {}}, sample_schema: {properties: {}, order: [], required: [], printing: {}, examples: []}},
+      type: {active: true, submission_help: '', help: '', statuses: [], default_participants: [], submission_schema: {properties: {}, order: [], required: [], layout: {}, printing: {}}, sample_schema: {properties: {}, order: [], required: [], printing: {}, examples: []}},
       errors: {},
       submission_schema: [],
-      examples: [],
+      // examples: [],
       save_message: null,
       watch_changes: false,
       user_options: [],
@@ -294,9 +294,9 @@ export default {
     }
   },
   methods: {
-    openExamples () {
-      this.$refs.samplesheet.openSamplesheet()
-    },
+    // openExamples () {
+    //   this.$refs.samplesheet.openSamplesheet()
+    // },
     submit () {
       var self = this
       var id = this.id

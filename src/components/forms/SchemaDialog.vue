@@ -10,7 +10,19 @@
           </q-btn>
         </q-bar>
         <q-card-section v-if="opened">
+          <Agschema v-model="schema.examples" :schema="schema" :editable="true"  ref="examples" :allow-force-save="false"/>
+          <q-btn :label="exampleLabel"  @click="openExamples"/>
           <schemaForm v-model="schema" :options="{variables: $store.getters.lab.table_variables}" type="table"/>
+          <q-field
+            label="Help"
+            stack-label
+            borderless
+          >
+            <q-editor v-model="schema.help"
+              :toolbar="toolbar"
+              :fonts="fonts"
+            />
+          </q-field>
         </q-card-section>
         <q-card-actions align="right">
           <q-btn
@@ -41,7 +53,77 @@ export default {
   data () {
     return {
       opened: false,
-      schema: {}
+      schema: {},
+      toolbar: [
+        ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
+        ['token', 'hr', 'link', 'custom_btn'],
+        ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
+        ['table'],
+        [
+          {
+            label: this.$q.lang.editor.formatting,
+            icon: this.$q.iconSet.editor.formatting,
+            list: 'no-icons',
+            options: [
+              'p',
+              'h1',
+              'h2',
+              'h3',
+              'h4',
+              'h5',
+              'h6',
+              'code'
+            ]
+          },
+          {
+            label: this.$q.lang.editor.fontSize,
+            icon: this.$q.iconSet.editor.fontSize,
+            fixedLabel: true,
+            fixedIcon: true,
+            list: 'no-icons',
+            options: [
+              'size-1',
+              'size-2',
+              'size-3',
+              'size-4',
+              'size-5',
+              'size-6',
+              'size-7'
+            ]
+          },
+          {
+            label: this.$q.lang.editor.defaultFont,
+            icon: this.$q.iconSet.editor.font,
+            fixedIcon: true,
+            list: 'no-icons',
+            options: [
+              'default_font',
+              'arial',
+              'arial_black',
+              'comic_sans',
+              'courier_new',
+              'impact',
+              'lucida_grande',
+              'times_new_roman',
+              'verdana'
+            ]
+          },
+          'removeFormat'
+        ],
+        ['undo', 'redo'],
+        ['fullscreen'],
+        ['viewsource']
+      ],
+      fonts: {
+        arial: 'Arial',
+        arial_black: 'Arial Black',
+        comic_sans: 'Comic Sans MS',
+        courier_new: 'Courier New',
+        impact: 'Impact',
+        lucida_grande: 'Lucida Grande',
+        times_new_roman: 'Times New Roman',
+        verdana: 'Verdana'
+      }
       // options: this.value && this.value.enum ? this.value.enum : []
     }
   },
@@ -52,6 +134,9 @@ export default {
   methods: {
     setup () {
       this.schema = _.cloneDeep(this.variable.schema.schema)
+      if (!this.schema.examples) {
+        this.$set(this.schema, 'examples', [])
+      }
     },
     open () {
       this.setup()
@@ -63,6 +148,9 @@ export default {
       // .then(() => {
       //
       // })
+    },
+    openExamples () {
+      this.$refs.examples.openSamplesheet()
     },
     // open (ref) {
     //   console.log('open', this.$refs[ref], ref)
@@ -86,9 +174,13 @@ export default {
     }
   },
   computed: {
+    exampleLabel () {
+      return 'Examples (' + this.schema.examples.length + ')'
+    }
   },
   components: {
-    schemaForm: () => import('./schemaForm.vue')
+    schemaForm: () => import('./schemaForm.vue'),
+    Agschema: () => import('../agschema.vue')
   }
 }
 
