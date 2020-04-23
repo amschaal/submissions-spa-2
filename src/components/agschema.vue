@@ -298,9 +298,8 @@ export default {
             return validation[i]
           }
         }
-      } else {
-        return {}
       }
+      return {}
     },
     openSamplesheet () {
       console.log('openSamplesheet!!!', this.type)

@@ -34,7 +34,7 @@
                 <q-btn :label="table_button_label(v)"  @click="openTable(v)" />
               </template>
               <template v-slot:error>
-                <div v-if="hasError(v.variable)">Table contains errors</div>
+                <div v-if="hasError(v.variable)">{{getError(v)}}</div>
                 <div v-if="hasWarning(v.variable)" class="warning">Table contains warnings</div>
               </template>
             </q-field>
@@ -138,8 +138,11 @@ export default {
     },
     getError (v) {
       // console.log('getError1', v.schema, v.schema.error_message, this.errors, v.variable)
-      var error = v.schema.error_message ? v.schema.error_message : this.errors[v.variable]
-      return error && error.join ? error.join(', ') : error
+      var errors = v.schema.error_message ? v.schema.error_message : this.errors[v.variable]
+      if (Array.isArray(errors)) {
+        errors = errors.map(e => (typeof e === 'string' ? e : 'Table contains errors.'))
+      }
+      return errors && errors.join ? errors.join(', ') : errors
     },
     hasError (v) {
       return this.errors && this.errors[v] !== undefined
