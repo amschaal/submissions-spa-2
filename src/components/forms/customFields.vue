@@ -13,6 +13,8 @@
               :hint="(v.schema.title ? v.schema.title : v.variable) + ': Click on the button above to open the table'"
               class="q-pb-xl q-mb-xl"
               borderless
+              bottom-slots
+              :error="hasError(v.variable) || hasWarning(v.variable)"
             >
               <!-- <Samplesheet v-model="submission.sample_data" :type="type"/> -->
               <template v-slot:control>
@@ -30,8 +32,10 @@
                   :table-errors="getTableErrors(v)"
                   />
                 <q-btn :label="table_button_label(v)"  @click="openTable(v)" />
-                {{warnings}}
-                {{errors}}
+              </template>
+              <template v-slot:error>
+                <div v-if="hasError(v.variable)">Table contains errors</div>
+                <div v-if="hasWarning(v.variable)" class="warning">Table contains warnings</div>
               </template>
             </q-field>
           </span>
@@ -44,10 +48,7 @@
             <q-field
               v-if="['q-input', 'q-select', 'q-file'].indexOf(widgetClass(v).component) == -1"
               bottom-slots
-              :error="hasError(v.variable) || hasWarning(v)"
-              :error-message="errors ? getError(v) : ''"
-              :warning="hasWarning(v)"
-              :warning-message="warnings ? getWarning(v) : ''"
+              :error="hasError(v.variable) || hasWarning(v.variable)"
               :label="v.schema.title ? v.schema.title : v.variable"
               stack-label
               orientation="vertical"
@@ -75,7 +76,7 @@
             </template>
             <template v-slot:error>
               <div v-if="hasError(v.variable)">{{getError(v)}}</div>
-              <div v-if="hasWarning(v)" class="warning">{{getWarning(v)}}</div>
+              <div v-if="hasWarning(v.variable)" class="warning">{{getWarning(v)}}</div>
             </template>
             </q-field>
             <component
@@ -85,9 +86,7 @@
               v-bind="widget(v).getOptions()"
               v-else
               bottom-slots
-              :error="hasError(v.variable) || hasWarning(v)"
-              :warning="hasWarning(v)"
-              :warning-message="warnings ? getWarning(v) : ''"
+              :error="hasError(v.variable) || hasWarning(v.variable)"
               :label="v.schema.title ? v.schema.title : v.variable"
               stack-label
               :hint="v.schema.description"
@@ -95,7 +94,7 @@
             >
             <template v-slot:error>
               <div v-if="hasError(v.variable)">{{getError(v)}}</div>
-              <div v-if="hasWarning(v)" class="warning">{{getWarning(v)}}</div>
+              <div v-if="hasWarning(v.variable)" class="warning">{{getWarning(v)}}</div>
             </template>
           </component>
             <!-- {{widget(v).getOptions()}}|{{widgetClass(v).component}}|{{value}}|{{v.variable}}|{{value[v.variable]}}|{{widget(v).getDefault()}} -->
@@ -150,7 +149,7 @@ export default {
       return warning && warning.join ? warning.join(', ') : ''
     },
     hasWarning (v) {
-      return this.warnings && this.getWarning(v) !== ''
+      return this.warnings && this.warnings[v] !== undefined
     },
     getTableWarnings (v) {
       return this.warnings && this.warnings[v.variable] ? this.warnings[v.variable] : {}
