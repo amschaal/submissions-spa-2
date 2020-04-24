@@ -256,15 +256,15 @@ export default {
         .get('/api/submission_types/' + id + '/')
         .then(function (response) {
           self.type = response.data
-          if (!self.type.sample_schema.examples) {
-            self.type.sample_schema.examples = []
-          }
+          // if (!self.type.sample_schema.examples) {
+          //   self.type.sample_schema.examples = []
+          // }
           if (!self.type.submission_schema.printing) {
             Vue.set(self.type.submission_schema, 'printing', {})
           }
-          if (!self.type.sample_schema.printing) {
-            Vue.set(self.type.sample_schema, 'printing', {})
-          }
+          // if (!self.type.sample_schema.printing) {
+          //   Vue.set(self.type.sample_schema, 'printing', {})
+          // }
           if (self.$route.query.copy_from) {
             delete self.type['id']
             self.type.name = 'Copy from ' + self.type.name

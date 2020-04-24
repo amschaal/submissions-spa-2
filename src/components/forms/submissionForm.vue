@@ -596,6 +596,11 @@ export default {
           delete imported['samples_received']
           var internalID = imported['internal_id']
           delete imported['internal_id']
+          if (imported.contacts) {
+            for (var i in imported.contacts) {
+              delete imported.contacts[i]['id']
+            }
+          }
           imported['import_internal_id'] = internalID
           imported['import_data'] = _.cloneDeep(self.imported)
           console.log('import response', response.data)
