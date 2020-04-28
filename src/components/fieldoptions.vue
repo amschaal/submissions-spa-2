@@ -218,6 +218,7 @@
             label="Widget"
             borderless
             style="width:100%"
+            v-if="data.type !== 'table'"
           >
             <span class="col-9">
               <q-select
@@ -233,10 +234,11 @@
               <WidgetOptions :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :fields="widgetSchema(data.widget.type)" :schema="schema" :variable="variable" :title="`${variable} widget options`" ref="widget_options"/>
             </span>
           </q-field>
-          <q-field v-if="data.validators"
+          <q-field
             label="Custom validators"
             stack-label
             borderless
+            v-if="data.type !== 'table' && data.validators"
           >
             <q-btn-dropdown size="md" label="Add validator">
               <q-list>
@@ -252,13 +254,13 @@
             <q-btn flat dense round icon="delete_outline" @click="removeValidator(index)"/> {{validators[v.id].name}}  <label title="Raise as a warning only"><input type="checkbox" v-model="v.options.warning"/>Warning only</label><q-btn size="sm" v-if="validators[v.id].uses_options" label="Options" @click="open('validator_options_'+v.id)"/>
             <ValidatorOptions v-model="v.options" :fields="validators[v.id].schema" :schema="schema" :variable="variable" :title="`${validators[v.id].name} validator options`" :ref="`validator_options_${v.id}`" v-if="validators[v.id].uses_options"/>
           </div>
-          <q-input label="Validation Error Message" v-model="data.error_message" autogrow placeholder="Optionally add a custom validation message here."/>
+          <q-input label="Validation Error Message" v-model="data.error_message" autogrow placeholder="Optionally add a custom validation message here." v-if="data.type !== 'table'"/>
           <h5>Printing options</h5>
-            <q-input dense label="Field label" v-model="data.printing.label" placeholder="Optionally add a shortened label."/>
+            <q-input dense label="Field label" v-model="data.printing.label" placeholder="Optionally add a shortened label." v-if="data.type !== 'table'"/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
             <q-checkbox dense label="Hidden" v-model="data.printing.hidden"/>
             <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
-            <q-input dense label="Truncate after N characters" v-model="data.printing.truncate_at" type="number" />
+            <q-input dense label="Truncate after N characters" v-model="data.printing.truncate_at" type="number" v-if="data.type !== 'table'"/>
         </q-card-section>
         <q-card-actions align="right">
           <q-btn
