@@ -144,11 +144,13 @@
                 :options="formatOptions"
                 v-if="downloadParams.data !== 'all'"
                 class="float-right"
+                map-options emit-value
               />
               <q-select
                 v-model="downloadParams.data"
                 :options="dataOptions"
                 class="float-right"
+                map-options emit-value
               />
           </div>
         </div>
@@ -172,21 +174,7 @@ export default {
   props: ['id', 'submission'],
   data () {
     return {
-      downloadParams: {'data': 'all', 'format': 'xlsx'},
-      dataOptions: [
-        {
-          label: 'Submission + Samples',
-          value: 'all'
-        },
-        {
-          label: 'Submission',
-          value: 'submission'
-        },
-        {
-          label: 'Samples',
-          value: 'samples'
-        }
-      ]
+      downloadParams: {'data': 'all', 'format': 'xlsx'}
     }
   },
   // mounted: function () {
@@ -261,6 +249,25 @@ export default {
       } else {
         return options
       }
+    },
+    dataOptions () {
+      var opts = [
+        {
+          label: 'All (XLSX)',
+          value: 'all'
+        },
+        {
+          label: 'Submission',
+          value: 'submission'
+        }
+      ]
+      for (var i in this.submission.submission_schema.order) {
+        var v = this.submission.submission_schema.order[i]
+        if (this.submission.submission_schema.properties[v].type === 'table') {
+          opts.push({ label: this.submission.submission_schema.properties[v].title || v, value: v })
+        }
+      }
+      return opts
     },
     canCancel () {
       return this.submission && !this.submission.cancelled && (!this.submission.locked || this.isAdmin)
