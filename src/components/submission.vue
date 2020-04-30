@@ -2,7 +2,7 @@
   <div>
         <div class="row">
           <div class="field col-12" v-if="submission.import_data">
-            <q-banner dense class="text-white bg-light-blue" rounded>
+            <q-banner dense class="text-white bg-light-blue q-mt-xs q-mb-xs" rounded>
               Imported from <a target="_blank" :href="submission.import_data.url">{{submission.import_data.internal_id}}: {{submission.import_data.type.name}}</a>
             </q-banner>
           </div>
@@ -10,12 +10,12 @@
             <SamplesReceived v-if="submission.id" v-model="submission" :admin="$store.getters.isStaff"/>
           </div>
           <div class="field col-12" v-if="hasWarnings">
-          <q-banner dense class="text-white bg-warning" rounded>
+          <q-banner dense class="text-white bg-warning q-mt-xs q-mb-xs" rounded>
               There are warnings associated with this submission.
           </q-banner>
           </div>
           <div v-if="$route.query.created" class="field col-12">
-              <q-banner dense class="text-white bg-positive" rounded>
+              <q-banner dense class="text-white bg-positive q-mt-xs q-mb-xs" rounded>
               <p>Submission Created!</p>
               <pre id="confirmation">{{submission_type.confirmation_text}}</pre>
             </q-banner>
@@ -26,10 +26,10 @@
           <div class="col-sm-12 col-lg-8">
             <div class="row">
               <div class="col-lg-12">
-                <q-btn v-if="canModify" label="Modify" class="float-right" @click="$router.push({name: 'modify_submission', params: {id: submission.id}})"/>
-                <q-btn label="Print" class="float-right" @click="$router.push({name: 'print_submission', params: {id: submission.id}})"/>
-                <Lock v-if="submission.id && isAdmin" :submission="submission" class="float-right"/>
-                <Cancel v-if="submission.id && canCancel" :submission="submission" class="float-right"/>
+                <q-btn v-if="canModify" label="Modify" class="float-right q-ml-xs" @click="$router.push({name: 'modify_submission', params: {id: submission.id}})"/>
+                <q-btn label="Print" class="float-right q-ml-xs" @click="$router.push({name: 'print_submission', params: {id: submission.id}})"/>
+                <Lock v-if="submission.id && isAdmin" :submission="submission" class="float-right q-ml-xs"/>
+                <Cancel v-if="submission.id && canCancel" :submission="submission" class="float-right q-ml-xs"/>
               </div>
             </div>
           </div>
