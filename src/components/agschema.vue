@@ -39,7 +39,6 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          {{warnings}} {{errors}}
             <ag-grid-vue style="width: 100%; height: 90%;" class="ag-theme-balham"
 
               rowSelection='multiple'
