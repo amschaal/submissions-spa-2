@@ -10,7 +10,7 @@
             warning-label="Samples contain warnings" -->
             <q-field
               v-if="v.schema.schema && v.schema.schema.order && v.schema.schema.order.length"
-              :hint="(v.schema.title ? v.schema.title : v.variable) + ': Click on the button above to open the table'"
+              :hint="tableHint(v)"
               class="q-pb-xl q-mb-xl"
               borderless
               bottom-slots
@@ -175,6 +175,13 @@ export default {
     table_button_label (v) {
       console.log('table_button_label', v, v.variable, this.value, this.value[v.variable])
       return (v.schema.title ? v.schema.title : v.variable) + ' (' + (this.value[v.variable] && this.value[v.variable].length ? this.value[v.variable].length : 0) + ')'
+    },
+    tableHint (v) {
+      if (v.schema.schema.description) {
+        return v.schema.schema.description
+      } else {
+        return (v.schema.title ? v.schema.title : v.variable) + ': Click on the button above to open the table'
+      }
     }
   },
   computed: {

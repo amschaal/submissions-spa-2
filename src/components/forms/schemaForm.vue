@@ -39,7 +39,7 @@
               </div>
               <div class="col-2">
                 <SchemaDialog v-if="variable.schema.type == 'table'" v-model="variable.schema.schema" :variable="variable"/>
-                <fieldoptions style="display:inline-block" :schema="schema" v-model="schema.properties[variable.variable]" :variable="variable.variable" :type="type"/>
+                <fieldoptions v-else style="display:inline-block" :schema="schema" v-model="schema.properties[variable.variable]" :variable="variable.variable" :type="type"/>
                 <q-btn label="Delete" color="negative" @click="deleteVariable(variable.variable, 'submission_schema')"></q-btn>
               </div>
             </div>
@@ -192,7 +192,12 @@ export default {
       return null
     },
     addVariable () {
-      Vue.set(this.schema.properties, this.new_variable.name, {type: this.new_variable.type, internal: false, unique: false})
+      if (this.new_variable.type === 'table') {
+        Vue.set(this.schema.properties, this.new_variable.name, {type: this.new_variable.type, internal: false, unique: false, schema: { order: [], properties: {}}, printing: { hidden: false }})
+      } else {
+        Vue.set(this.schema.properties, this.new_variable.name, {type: this.new_variable.type, internal: false, unique: false})
+      }
+
       this.schema.order.push(this.new_variable.name)
       // // this.schema.properties['VARIABLE_NAME'] = {added: true}
       // console.log(this.schema.properties)
