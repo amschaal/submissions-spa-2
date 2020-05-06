@@ -331,100 +331,24 @@ export default {
     }
   },
   mounted: function () {
-    var submission = window.localStorage.getItem('submission')
     var self = this
-    if (!this.create) {
-      // this.$axios
-      //   .get(`/api/submissions/${self.id}/`)
-      //   .then(function (response) {
-      //     console.log('response', response)
-      //     if (!response.data.sample_data) {
-      //       response.data.sample_data = []
-      //     }
-      //     self.submission = response.data
-      //     Vue.set(self.submission, 'type', response.data.type.id)
-      //   })
-      this.loadSubmission(this.id)
-    } else {
-      this.import = !this.id && this.$route.query.import ? this.$route.query.import : null
-      console.log('import', this.import)
-      this.draft = !this.id && this.$route.query.draft ? this.$route.query.draft : null
-      if (this.import) {
-        this.loadImport()
-      } else if (this.draft) {
-        this.loadDraft(this.draft)
-      } else if (submission && window.JSON && window.JSON.parse) {
-        var message = this.$q.notify({
-          message: `An unsaved draft was found.  Would you like to load it?`,
-          timeout: 0, // in milliseconds; 0 means no timeout
-          type: 'info',
-          position: 'top', // 'top', 'left', 'bottom-left' etc.
-          actions: [
-            {
-              label: 'Restore',
-              handler: () => {
-                try {
-                  self.submission = window.JSON.parse(submission)
-                  this.$q.notify({message: 'Submission restored.', type: 'positive', position: 'top'})
-                } catch {
-                  this.$q.notify({message: 'There was an error restoring the submission.', type: 'negative'})
-                }
-              }
-            },
-            {
-              label: 'Ignore',
-              handler: () => {
-                self.removeCached()
-              }
-            }
-
-          ]
-        })
-        this.messages.push(message)
-        // if (confirm('An unsaved draft was found.  Would you like to load it?')) {
-        //   this.submission = window.JSON.parse(submission)
-        // } else {
-        //   this.removeCached()
-        // }
-      }
-      console.log('draft', this.draft)
-    }
-    this.type_id = !this.id && this.$route.query.type ? this.$route.query.type : null
-    if (this.type_id) {
-      this.submission.type = this.type_id
-    }
-    if (this.submission.type) {
-      if (this.submission.type.id) {
-        this.submission.type = this.submission.type.id
+    this.$q.loading.show({
+      delay: 400 // ms
+    })
+    function init () {
+      if (!self.$store.getters.types.length) {
+        setTimeout(init, 500)
       } else {
-        this.type = this.$store.getters.typesDict[this.submission.type]
+        self.initialize()
       }
     }
-
-    // this.$axios
-    //   .get('/api/submission_types/?show=true')
-    //   .then(function (response) {
-    //     console.log('response', response)
-    //     console.log('id', self.id)
-    //     self.type_options = response.data.results.map(opt => ({label: opt.name, value: opt.id}))
-    //     self.submission_types = response.data.results
-    //     if (self.create) {
-    //       self.$axios
-    //         .get('/api/submissions/' + self.id)
-    //         .then(function (response) {
-    //           console.log('response', response)
-    //           self.submission = response.data
-    //           Vue.set(self.submission, 'type', response.data.type.id)
-    //         })
-    //     }
-    //   })
-    if (this.$store.getters.isStaff) {
-      this.$axios
-        .get('/api/users/?show=true')
-        .then(function (response) {
-          self.user_options = response.data.results.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
-        })
-    }
+    init()
+    // if (!this.$store.getters.types.length) {
+    //   setTimeout(init_timeout, 2000)
+    //   // this.initialize()
+    // } else {
+    //   this.initialize()
+    // }
   },
   beforeDestroy: function () {
     if (this.draft_message) {
@@ -433,6 +357,103 @@ export default {
     this.messages.forEach(m => m())
   },
   methods: {
+    initialize: function () {
+      var submission = window.localStorage.getItem('submission')
+      var self = this
+      if (!this.create) {
+        // this.$axios
+        //   .get(`/api/submissions/${self.id}/`)
+        //   .then(function (response) {
+        //     console.log('response', response)
+        //     if (!response.data.sample_data) {
+        //       response.data.sample_data = []
+        //     }
+        //     self.submission = response.data
+        //     Vue.set(self.submission, 'type', response.data.type.id)
+        //   })
+        this.loadSubmission(this.id)
+      } else {
+        this.import = !this.id && this.$route.query.import ? this.$route.query.import : null
+        console.log('import', this.import)
+        this.draft = !this.id && this.$route.query.draft ? this.$route.query.draft : null
+        if (this.import) {
+          this.loadImport()
+        } else if (this.draft) {
+          this.loadDraft(this.draft)
+        } else if (submission && window.JSON && window.JSON.parse) {
+          var message = this.$q.notify({
+            message: `An unsaved draft was found.  Would you like to load it?`,
+            timeout: 0, // in milliseconds; 0 means no timeout
+            type: 'info',
+            position: 'top', // 'top', 'left', 'bottom-left' etc.
+            actions: [
+              {
+                label: 'Restore',
+                handler: () => {
+                  try {
+                    self.submission = window.JSON.parse(submission)
+                    this.$q.notify({message: 'Submission restored.', type: 'positive', position: 'top'})
+                  } catch {
+                    this.$q.notify({message: 'There was an error restoring the submission.', type: 'negative'})
+                  }
+                }
+              },
+              {
+                label: 'Ignore',
+                handler: () => {
+                  self.removeCached()
+                }
+              }
+
+            ]
+          })
+          this.messages.push(message)
+          // if (confirm('An unsaved draft was found.  Would you like to load it?')) {
+          //   this.submission = window.JSON.parse(submission)
+          // } else {
+          //   this.removeCached()
+          // }
+        }
+        console.log('draft', this.draft)
+      }
+      this.type_id = !this.id && this.$route.query.type ? this.$route.query.type : null
+      if (this.type_id) {
+        this.submission.type = this.type_id
+      }
+      if (this.submission.type) {
+        if (this.submission.type.id) {
+          this.submission.type = this.submission.type.id
+        } else {
+          this.type = this.$store.getters.typesDict[this.submission.type]
+        }
+      }
+
+      // this.$axios
+      //   .get('/api/submission_types/?show=true')
+      //   .then(function (response) {
+      //     console.log('response', response)
+      //     console.log('id', self.id)
+      //     self.type_options = response.data.results.map(opt => ({label: opt.name, value: opt.id}))
+      //     self.submission_types = response.data.results
+      //     if (self.create) {
+      //       self.$axios
+      //         .get('/api/submissions/' + self.id)
+      //         .then(function (response) {
+      //           console.log('response', response)
+      //           self.submission = response.data
+      //           Vue.set(self.submission, 'type', response.data.type.id)
+      //         })
+      //     }
+      //   })
+      if (this.$store.getters.isStaff) {
+        this.$axios
+          .get('/api/users/?show=true')
+          .then(function (response) {
+            self.user_options = response.data.results.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
+          })
+      }
+      this.$q.loading.hide()
+    },
     // openSamplesheet () {
     //   if (!this.type || !this.type.sample_schema) {
     //     this.$q.dialog({

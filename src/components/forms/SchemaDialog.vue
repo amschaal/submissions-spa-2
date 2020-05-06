@@ -10,19 +10,44 @@
           </q-btn>
         </q-bar>
         <q-card-section v-if="opened">
-          <Agschema v-model="schema.examples" :schema="schema" :editable="true"  ref="examples" :allow-force-save="false"/>
-          <q-btn :label="exampleLabel"  @click="openExamples"/>
-          <schemaForm v-model="schema" :options="{variables: $store.getters.lab.table_variables}" type="table"/>
-          <q-field
-            label="Help"
-            stack-label
-            borderless
+          <q-card class="p90">
+          <q-tabs
+            v-model="tab"
+            dense
+            class="bg-primary text-grey shadow-2"
+            active-color="white"
+            align="justify"
+            narrow-indicator
           >
-            <q-editor v-model="schema.help"
-              :toolbar="toolbar"
-              :fonts="fonts"
-            />
-          </q-field>
+            <q-tab name="columns" label="Columns" />
+            <q-tab name="options" label="Options" />
+          </q-tabs>
+          <q-separator />
+          <q-tab-panels v-model="tab" animated>
+            <q-tab-panel name="columns">
+              <div class="text-h6">Columns</div>
+              <Agschema v-model="schema.examples" :schema="schema" :editable="true"  ref="examples" :allow-force-save="false"/>
+              <q-btn :label="exampleLabel"  @click="openExamples"/>
+              <schemaForm v-model="schema" :options="{variables: $store.getters.lab.table_variables}" type="table"/>
+            </q-tab-panel>
+            <q-tab-panel name="options">
+              <div class="text-h6">Options</div>
+              <q-input dense label="Description" v-model="schema.description" autogrow placeholder="Enter optional description here."/>
+              <q-field
+                label="Help"
+                stack-label
+                borderless
+              >
+                <q-editor v-model="schema.help"
+                  :toolbar="toolbar"
+                  :fonts="fonts"
+                />
+              </q-field>
+              <h5>Printing options</h5>
+              <q-checkbox dense label="Hidden" v-model="schema.printing.hidden"/>
+            </q-tab-panel>
+          </q-tab-panels>
+        </q-card>
         </q-card-section>
         <q-card-actions align="right">
           <q-btn
@@ -54,6 +79,7 @@ export default {
     return {
       opened: false,
       schema: {},
+      tab: 'columns',
       toolbar: [
         ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
         ['token', 'hr', 'link', 'custom_btn'],
@@ -136,6 +162,9 @@ export default {
       this.schema = _.cloneDeep(this.variable.schema.schema)
       if (!this.schema.examples) {
         this.$set(this.schema, 'examples', [])
+      }
+      if (!this.schema.printing) {
+        this.$set(this.schema, 'printing', { hidden: false })
       }
     },
     open () {
