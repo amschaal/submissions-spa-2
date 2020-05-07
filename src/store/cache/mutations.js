@@ -13,3 +13,6 @@ export const lab = (state, lab) => {
 export const staff = (state, staff) => {
   state.staff = staff
 }
+export const vocabularies = (state, vocabularies) => {
+  state.vocabularies = vocabularies
+}

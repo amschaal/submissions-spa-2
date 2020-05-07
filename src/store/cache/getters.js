@@ -1,3 +1,4 @@
+// this.$store.getters.SOMETHING
 export const validators = (state) => {
   return state.validators
 }
@@ -28,6 +29,9 @@ export const typeOptions = (state) => {
 }
 export const statuses = (state) => {
   return state.statuses
+}
+export const vocabularies = (state) => {
+  return state.vocabularies
 }
 export const statusesDict = (state) => {
   return createDict(state.statuses)

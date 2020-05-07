@@ -3,5 +3,6 @@ export default {
   types: [],
   statuses: [],
   lab: null,
-  staff: []
+  staff: [],
+  vocabularies: []
 }

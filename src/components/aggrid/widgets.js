@@ -58,6 +58,14 @@ class VocabularyWidget extends GridWidget {
     {'variable': 'vocabulary_variable', 'label': 'Variable specifying vocabulary', 'type': 'text'}
     // {'variable': 'bar', 'label': 'Bar', 'type': 'text', 'options': [{'label': 'One', 'value': 1}, {'label': 'Two', 'value': 2}]}
   ]
+  static getSchema (schema, vue) {
+    console.log('getSchema', schema, vue, this.schema)
+    var _schema = this.schema
+    if (vue) {
+      _schema[0].enum = vue.$store.getters.vocabularies
+    }
+    return _schema
+  }
   validateOptions (options, field, schema) {
     console.log('hello!!!', options, field, schema)
     var errors = {}
