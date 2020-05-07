@@ -89,7 +89,8 @@
             </span>
             <span class="col-3" v-if="hasWidgetOptions(data.widget.type)">
               <q-btn label="options" size="sm" @click="open('widget_options')"/>
-              <WidgetOptions :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :fields="widgetSchema(data.widget.type)" :schema="schema" :variable="variable" :title="`${variable} widget options`" ref="widget_options"/>
+              <!-- <WidgetOptions :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :fields="widgetSchema(data.widget.type)" :schema="schema" :variable="variable" :title="`${variable} widget options`" ref="widget_options"/> -->
+              <OptionsModal v-model="data.widget.options" :schema="widget_schema(data.widget.type)" :parent-schema="schema" :variable="variable" :ref="'widget_options'"/>
             </span>
           </q-field>
           <q-field
@@ -110,7 +111,8 @@
           </q-field>
           <div v-for="(v, index) in data.validators" :key="index" :title="validators[v.id].description">
             <q-btn flat dense round icon="delete_outline" @click="removeValidator(index)"/> {{validators[v.id].name}}  <label title="Raise as a warning only"><input type="checkbox" v-model="v.options.warning"/>Warning only</label><q-btn size="sm" v-if="validators[v.id].uses_options" label="Options" @click="open('validator_options_'+v.id)"/>
-            <ValidatorOptions v-model="v.options" :fields="validators[v.id].schema" :schema="schema" :variable="variable" :title="`${validators[v.id].name} validator options`" :ref="`validator_options_${v.id}`" v-if="validators[v.id].uses_options"/>
+            <!-- <ValidatorOptions v-model="v.options" :validator="validators[v.id]" :schema="schema" :variable="variable" :ref="`validator_options_${v.id}_blah`" v-if="validators[v.id].uses_options"/> -->
+            <OptionsModal v-model="v.options" :schema="validator_schema(validators[v.id])" :parent-schema="schema" :variable="variable" :ref="`validator_options_${v.id}`" v-if="validators[v.id].uses_options"/>
           </div>
           <q-input label="Validation Error Message" v-model="data.error_message" autogrow placeholder="Optionally add a custom validation message here." v-if="data.type !== 'table'"/>
           <h5>Printing options</h5>
@@ -145,8 +147,9 @@
 import _ from 'lodash'
 import submissionWidgetFactory from './forms/widgets.js'
 import tableWidgetFactory from './aggrid/widgets.js'
-import WidgetOptions from './modals/WidgetOptions.vue'
-import ValidatorOptions from './modals/ValidatorOptions.vue'
+// import WidgetOptions from './modals/WidgetOptions.vue'
+// import ValidatorOptions from './modals/ValidatorOptions.vue'
+import OptionsModal from './modals/OptionsModal.vue'
 
 export default {
   props: ['value', 'variable', 'type', 'schema'],
@@ -244,6 +247,28 @@ export default {
     getWidget (id) {
       console.log('widgetFactory', this.widgetFactory, id, this.widgetFactory.getWidget(id))
       return this.widgetFactory.getWidget(id)
+    },
+    validator_schema (validator) {
+      var schema = { order: [], properties: {}, layout: {}, title: validator.name, description: validator.description }
+      validator.schema.forEach(function (v) {
+        schema.order.push(v.variable)
+        schema.properties[v.variable] = v
+        schema.properties[v.variable].title = schema.properties[v.variable].label
+      })
+      return schema
+    },
+    widget_schema (id) {
+      var factory = this.type === 'submission' ? submissionWidgetFactory : tableWidgetFactory
+      var widgetSchema = factory.getWidgetSchema(id)
+      var widget = factory.getWidget(id)
+      console.log('widget_schema', widget, widgetSchema)
+      var schema = { order: [], properties: {}, layout: {}, title: widget.name, description: widget.description }
+      widgetSchema.forEach(function (v) {
+        schema.order.push(v.variable)
+        schema.properties[v.variable] = v
+        schema.properties[v.variable].title = schema.properties[v.variable].label
+      })
+      return schema
     }
   },
   computed: {
@@ -263,8 +288,9 @@ export default {
     }
   },
   components: {
-    WidgetOptions,
-    ValidatorOptions
+    // WidgetOptions,
+    // ValidatorOptions,
+    OptionsModal
   }
 }
 

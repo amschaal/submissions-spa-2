@@ -51,6 +51,7 @@ class VocabularyWidget extends GridWidget {
   static id = 'vocabulary'
   static component = VocabularyComponent
   static name = 'Vocabulary Autocomplete'
+  static description = 'Auto complete terms based on a configured vocabulary.'
   static schema =
   [
     {'variable': 'vocabulary', 'label': 'Vocabulary ID', 'type': 'text'},

@@ -9,6 +9,8 @@ export class Widget {
   static schema = [
     // {'variable': 'test', 'label': 'Test', 'type': 'text'}
   ]
+  static name = null
+  static description = null
   /*
   static schema = {
                       'required': [
