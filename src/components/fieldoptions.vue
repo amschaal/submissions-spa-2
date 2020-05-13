@@ -92,6 +92,11 @@
               <OptionsModal :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :schema="widget_schema(data.widget.type)" :parent-schema="schema" :variable="variable" :ref="'widget_options'"/>
             </span>
           </q-field>
+          <q-field stack-label label="Foreign Key Reference" hint="You may validate that the value for this column matches a record from another table.  Select which table and column to reference.">
+            <template v-slot:control>
+              <ForeignKey :schema="rootSchema" v-model="data.fk"/> <span v-if="data.fk"> {{data.fk.join(' -> ')}}</span>
+            </template>
+          </q-field>
           <q-field
             label="Custom validators"
             stack-label
@@ -146,9 +151,10 @@ import _ from 'lodash'
 import submissionWidgetFactory from './forms/widgets.js'
 import tableWidgetFactory from './aggrid/widgets.js'
 import OptionsModal from './modals/OptionsModal.vue'
+import ForeignKey from './forms/ForeignKey.vue'
 
 export default {
-  props: ['value', 'variable', 'type', 'schema'],
+  props: ['value', 'variable', 'type', 'schema', 'rootSchema'],
   data () {
     return {
       opened: false,
@@ -284,7 +290,8 @@ export default {
     }
   },
   components: {
-    OptionsModal
+    OptionsModal,
+    ForeignKey
   }
 }
 

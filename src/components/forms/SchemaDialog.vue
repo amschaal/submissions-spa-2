@@ -28,7 +28,7 @@
               <div class="text-h6">Columns</div>
               <Agschema v-model="schema.examples" :schema="schema" :editable="true"  ref="examples" :allow-force-save="false"/>
               <q-btn :label="exampleLabel"  @click="openExamples"/>
-              <schemaForm v-model="schema" :options="{variables: $store.getters.lab.table_variables}" type="table"/>
+              <schemaForm v-model="schema" :root-schema="rootSchema" :options="{variables: $store.getters.lab.table_variables}" type="table"/>
             </q-tab-panel>
             <q-tab-panel name="options">
               <div class="text-h6">Options</div>
@@ -74,7 +74,7 @@
 import _ from 'lodash'
 
 export default {
-  props: ['value', 'variable'],
+  props: ['value', 'variable', 'rootSchema'],
   data () {
     return {
       opened: false,

@@ -115,7 +115,7 @@
           autogrow
           />
         <h6>Custom Fields</h6>
-        <schemaForm v-model="type.submission_schema" :options="{variables: $store.getters.lab.submission_variables, showWidth: true}" type="submission"/>
+        <schemaForm v-model="type.submission_schema" :root-schema="type.submission_schema" :options="{variables: $store.getters.lab.submission_variables, showWidth: true}" type="submission"/>
 <!--
         <h5>Samplesheet definition</h5>
         <h6>Column Definitions</h6>

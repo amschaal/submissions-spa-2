@@ -38,8 +38,8 @@
 
               </div>
               <div class="col-2">
-                <SchemaDialog v-if="variable.schema.type == 'table'" v-model="variable.schema.schema" :variable="variable"/>
-                <fieldoptions v-else style="display:inline-block" :schema="schema" v-model="schema.properties[variable.variable]" :variable="variable.variable" :type="type"/>
+                <SchemaDialog v-if="variable.schema.type == 'table'" v-model="variable.schema.schema" :root-schema="rootSchema" :variable="variable"/>
+                <fieldoptions v-else style="display:inline-block" :schema="schema" v-model="schema.properties[variable.variable]" :variable="variable.variable" :type="type" :root-schema="rootSchema"/>
                 <q-btn label="Delete" color="negative" @click="deleteVariable(variable.variable, 'submission_schema')"></q-btn>
               </div>
             </div>
@@ -131,6 +131,9 @@ export default {
     type: {
       type: String,
       default: 'submission'
+    },
+    rootSchema: {
+      type: Object
     }
   },
   data () {
