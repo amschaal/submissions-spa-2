@@ -323,7 +323,9 @@ export default {
       })
     },
     variables () {
-      return this.options && this.options.variables && this.options.variables.order ? this.options.variables.order : []
+      var variables = this.options && this.options.variables && this.options.variables.order ? this.options.variables.order.slice() : []
+      variables.sort()
+      return variables
     }
     // nested: {
     //   // return {
