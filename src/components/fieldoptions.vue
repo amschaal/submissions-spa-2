@@ -6,9 +6,6 @@
         <q-bar class="bg-primary text-white">
           Field options for: {{variable}} {{type}}
           <q-space />
-          <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip>Close</q-tooltip>
-          </q-btn>
         </q-bar>
         <q-card-section v-if="opened">
           <q-input dense label="Description" v-model="data.description" autogrow placeholder="Enter description here."/>
@@ -92,11 +89,7 @@
               <OptionsModal :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :schema="widget_schema(data.widget.type)" :parent-schema="schema" :variable="variable" :ref="'widget_options'"/>
             </span>
           </q-field>
-          <q-field stack-label label="Foreign Key Reference" hint="You may validate that the value for this column matches a record from another table.  Select which table and column to reference.">
-            <template v-slot:control>
-              <ForeignKey :schema="rootSchema" v-model="data.fk"/> <span v-if="data.fk"> {{data.fk.join(' -> ')}}</span>
-            </template>
-          </q-field>
+          <ForeignKey :schema="rootSchema" v-model="data.fk"/>
           <q-field
             label="Custom validators"
             stack-label
@@ -117,7 +110,7 @@
             <q-btn flat dense round icon="delete_outline" @click="removeValidator(index)"/> {{validators[v.id].name}}  <label title="Raise as a warning only"><input type="checkbox" v-model="v.options.warning"/>Warning only</label><q-btn size="sm" v-if="validators[v.id].uses_options" label="Options" @click="open('validator_options_'+v.id)"/>
             <OptionsModal v-model="v.options" :schema="validator_schema(validators[v.id])" :parent-schema="schema" :variable="variable" :ref="`validator_options_${v.id}`" v-if="validators[v.id].uses_options"/>
           </div>
-          <q-input label="Validation Error Message" v-model="data.error_message" autogrow placeholder="Optionally add a custom validation message here." v-if="data.type !== 'table'"/>
+          <q-input label="Validation Error Message" dense v-model="data.error_message" autogrow placeholder="Optionally add a custom validation message here." v-if="data.type !== 'table'"/>
           <h5>Printing options</h5>
             <q-input dense label="Field label" v-model="data.printing.label" placeholder="Optionally add a shortened label." v-if="data.type !== 'table'"/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
