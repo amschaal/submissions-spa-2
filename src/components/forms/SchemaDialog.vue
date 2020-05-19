@@ -5,9 +5,6 @@
         <q-bar class="bg-primary text-white">
           Table definition for: {{variable.variable}}
           <q-space />
-          <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip>Close</q-tooltip>
-          </q-btn>
         </q-bar>
         <q-card-section v-if="opened">
           <q-card class="p90">
