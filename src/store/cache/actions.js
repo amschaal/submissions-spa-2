@@ -39,15 +39,6 @@ export const fetchTypes = (context, {axios}) => {
       })
   })
 }
-export const fetchStatuses = (context, {axios}) => {
-  return axios.get('/api/statuses/?page_size=100&show=true')
-    .then(function (response) {
-      context.commit('statuses', response.data.results)
-    })
-    .catch(function (error) {
-      console.log(error.message)
-    })
-}
 
 export const fetchVocabularies = (context, {axios}) => {
   return axios.get('/api/vocabularies/?page_size=100')
@@ -83,7 +74,6 @@ export const fetchAll = (context, {axios}) => {
   fetchLab(context, {axios})
   fetchValidators(context, {axios})
   fetchTypes(context, {axios})
-  fetchStatuses(context, {axios})
   fetchStaff(context, {axios})
   fetchVocabularies(context, {axios})
 }
