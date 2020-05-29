@@ -83,7 +83,7 @@
           <q-td key="email" :props="props">{{ props.row.email }}</q-td>
           <q-td key="pi_name" :props="props">{{ props.row.pi_first_name }} {{ props.row.pi_last_name }}</q-td>
           <q-td key="pi_email" :props="props">{{ props.row.pi_email }}</q-td>
-          <q-td key="sample_data" :props="props">{{ props.row.sample_count }}</q-td>
+          <q-td key="table_count" :props="props"><span v-for="(count, v, index) in props.row.table_count" :key="v">{{count}} {{v}}<span v-if="index != Object.keys(props.row.table_count).length - 1">, </span></span></q-td>
           <q-td key="samples_received" :props="props"><q-icon size="18px" name="check_circle" v-if="props.row.samples_received" color="green"><q-tooltip>Received on {{props.row.samples_received|formatDate}} by {{props.row.received_by_name}}</q-tooltip></q-icon></q-td>
           <q-td key="biocore" :props="props"><q-icon size="18px" name="check_circle" v-if="props.row.biocore" color="green"/></q-td>
         </q-tr>
@@ -107,7 +107,7 @@ var defaultFilters = {
     descending: true,
     sortBy: 'submitted'
   },
-  visibleColumns: ['locked', 'internal_id', 'type', 'status', 'submitted', 'name', 'email', 'pi_name', 'sample_data', 'samples_received']
+  visibleColumns: ['locked', 'internal_id', 'type', 'status', 'submitted', 'name', 'email', 'pi_name', 'table_count', 'samples_received']
 }
 
 export default {
@@ -130,7 +130,7 @@ export default {
         { name: 'email', label: 'Email', field: 'email', sortable: true },
         { name: 'pi_name', label: 'PI', field: 'pi_name' },
         { name: 'pi_email', label: 'PI Email', field: 'pi_email', sortable: true },
-        { name: 'sample_data', label: 'Samples', field: 'sample_data' },
+        { name: 'table_count', label: 'Table rows', field: 'table_count' },
         { name: 'samples_received', label: 'Received', field: 'samples_received', sortable: false },
         { name: 'biocore', label: 'Biocore', field: 'biocore', sortable: true }
       ]

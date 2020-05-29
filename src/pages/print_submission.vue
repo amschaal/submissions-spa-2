@@ -19,17 +19,18 @@
       <tr ><th>Special Instructions / Comments</th><td colspan="7">{{submission.comments}}</td></tr>
     </tbody>
     </table>
+  <div v-for="(v, index) in table_fields()" :key="index">
+    <p class="heading">{{getTitle(submission.submission_schema,v)}}: {{submission.submission_data[v] ? submission.submission_data[v].length : 0}}</p> <!--  page-break-before -->
+    <table class="horizontal full bordered compact page-break-after" v-if="submission.submission_data[v] && submission.submission_data[v].length > 0">
+      <tr>
+        <th></th><th :key="variable" v-for="variable in submission.submission_schema.properties[v].schema.order" v-show="!hidden(submission.submission_schema.properties[v].schema, variable)">{{getTitle(submission.submission_schema.properties[v].schema,variable)}}</th>
+      </tr>
 
-    <p class="heading">Total Number of Samples: {{submission.sample_data.length}}</p> <!--  page-break-before -->
-<table class="horizontal full bordered compact page-break-after">
-  <tr>
-    <th></th><th :key="variable" v-for="variable in submission.sample_schema.order" v-show="!hidden(submission.sample_schema, variable)">{{getTitle(submission.sample_schema,variable)}}</th>
-  </tr>
-
-  <tr :key="index" v-for="(row,index) in submission.sample_data">
-    <td>{{index + 1}}</td><td :key="index" v-for="(variable, index) in submission.sample_schema.order" v-show="!hidden(submission.sample_schema, variable)">{{truncate(submission.sample_schema, variable, row[variable])}}</td>
-  </tr>
-</table>
+      <tr :key="index" v-for="(row,index) in submission.submission_data[v]">
+        <td>{{index + 1}}</td><td :key="index" v-for="(variable, index) in submission.submission_schema.properties[v].schema.order" v-show="!hidden(submission.submission_schema.properties[v].schema, variable)">{{truncate(submission.submission_schema.properties[v].schema, variable, row[variable])}}</td>
+      </tr>
+    </table>
+  </div>
   </div>
 </template>
 
@@ -87,8 +88,13 @@ export default {
     },
     submission_field_data_array (flatten = true) {
       var self = this
-      var arr = this.submission.submission_schema.order.map(v => [self.getTitle(self.submission.submission_schema, v), self.truncate(self.submission.submission_schema, v, self.submission.submission_data[v])])
+      var fields = this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type !== 'table')
+      var arr = fields.map(v => [self.getTitle(self.submission.submission_schema, v), self.truncate(self.submission.submission_schema, v, self.submission.submission_data[v])])
       return flatten ? _.flatten(arr) : arr
+    },
+    table_fields () {
+      var self = this
+      return this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type === 'table' && !self.hidden(self.submission.submission_schema, v))
     },
     payment_array (flatten = true) {
       var arr = _.toPairs(this.submission.payment.display)

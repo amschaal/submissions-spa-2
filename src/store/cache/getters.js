@@ -1,3 +1,4 @@
+// this.$store.getters.SOMETHING
 export const validators = (state) => {
   return state.validators
 }
@@ -29,12 +30,8 @@ export const typeOptions = (state) => {
 export const statuses = (state) => {
   return state.statuses
 }
-export const statusesDict = (state) => {
-  return createDict(state.statuses)
-}
-export const statusOptions = (state) => {
-  console.log('getting status options', state.statuses)
-  return state.statuses.map(opt => ({label: opt.name, value: opt.id}))
+export const vocabularies = (state) => {
+  return state.vocabularies
 }
 export const lab = (state) => {
   return state.lab

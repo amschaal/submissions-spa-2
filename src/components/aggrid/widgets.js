@@ -51,12 +51,21 @@ class VocabularyWidget extends GridWidget {
   static id = 'vocabulary'
   static component = VocabularyComponent
   static name = 'Vocabulary Autocomplete'
+  static description = 'Auto complete terms based on a configured vocabulary.'
   static schema =
   [
     {'variable': 'vocabulary', 'label': 'Vocabulary ID', 'type': 'text'},
     {'variable': 'vocabulary_variable', 'label': 'Variable specifying vocabulary', 'type': 'text'}
     // {'variable': 'bar', 'label': 'Bar', 'type': 'text', 'options': [{'label': 'One', 'value': 1}, {'label': 'Two', 'value': 2}]}
   ]
+  static getSchema (schema, vue) {
+    console.log('getSchema', schema, vue, this.schema)
+    var _schema = this.schema
+    if (vue) {
+      _schema[0].enum = vue.$store.getters.vocabularies
+    }
+    return _schema
+  }
   validateOptions (options, field, schema) {
     console.log('hello!!!', options, field, schema)
     var errors = {}

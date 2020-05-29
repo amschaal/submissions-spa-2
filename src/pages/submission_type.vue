@@ -114,8 +114,17 @@
           v-model="type.confirmation_text"
           autogrow
           />
-        <h6>Submission Fields</h6>
-        <schemaForm v-model="type.submission_schema" :options="{variables: $store.getters.lab.submission_variables, showWidth: true}" type="submission"/>
+        <h6>Custom Fields</h6>
+        <q-input
+        :label-width="12"
+        hint="If you want to import a schema from an existing submission type, or submission, enter the URL and click import."
+        v-model="import_url" placeholder="Enter existing submission or submission type URL here (https://....../submissions/abcd12345678)">
+        <template v-slot:append>
+          <q-btn label="Import" @click="importSchema(import_url)"/>
+        </template>
+        </q-input>
+        <schemaForm v-model="type.submission_schema" :root-schema="type.submission_schema" :options="{variables: $store.getters.lab.submission_variables, showWidth: true}" type="submission"/>
+<!--
         <h5>Samplesheet definition</h5>
         <h6>Column Definitions</h6>
         <schemaForm v-model="type.sample_schema" :options="{variables: $store.getters.lab.sample_variables, showWidth: false}" type="samples"/>
@@ -134,7 +143,7 @@
             :toolbar="toolbar"
             :fonts="fonts"
           />
-        </q-field>
+        </q-field> -->
       </q-card-section>
       <q-separator />
       <q-card-actions>
@@ -150,17 +159,18 @@
 import '../components/forms/docs-input.styl'
 import SchemaForm from '../components/forms/schemaForm.vue'
 import Vue from 'vue'
-import Agschema from '../components/agschema.vue'
+// import Agschema from '../components/agschema.vue'
 import draggable from 'vuedraggable'
 export default {
   name: 'submission_type',
   props: ['id'],
   data () {
     return {
-      type: {active: true, submission_help: '', sample_help: '', help: '', examples: [], statuses: [], default_participants: [], submission_schema: {properties: {}, order: [], required: [], layout: {}, printing: {}}, sample_schema: {properties: {}, order: [], required: [], printing: {}, examples: []}},
+      type: {active: true, submission_help: '', help: '', statuses: [], default_participants: [], submission_schema: {properties: {}, order: [], required: [], layout: {}, printing: {}}, sample_schema: {properties: {}, order: [], required: [], printing: {}, examples: []}},
       errors: {},
+      import_url: null,
       submission_schema: [],
-      examples: [],
+      // examples: [],
       save_message: null,
       watch_changes: false,
       user_options: [],
@@ -255,15 +265,15 @@ export default {
         .get('/api/submission_types/' + id + '/')
         .then(function (response) {
           self.type = response.data
-          if (!self.type.sample_schema.examples) {
-            self.type.sample_schema.examples = []
-          }
+          // if (!self.type.sample_schema.examples) {
+          //   self.type.sample_schema.examples = []
+          // }
           if (!self.type.submission_schema.printing) {
             Vue.set(self.type.submission_schema, 'printing', {})
           }
-          if (!self.type.sample_schema.printing) {
-            Vue.set(self.type.sample_schema, 'printing', {})
-          }
+          // if (!self.type.sample_schema.printing) {
+          //   Vue.set(self.type.sample_schema, 'printing', {})
+          // }
           if (self.$route.query.copy_from) {
             delete self.type['id']
             self.type.name = 'Copy from ' + self.type.name
@@ -293,9 +303,9 @@ export default {
     }
   },
   methods: {
-    openExamples () {
-      this.$refs.samplesheet.openSamplesheet()
-    },
+    // openExamples () {
+    //   this.$refs.samplesheet.openSamplesheet()
+    // },
     submit () {
       var self = this
       var id = this.id
@@ -410,6 +420,20 @@ export default {
         return this.errors[field].join ? this.errors[field].join(', ') : this.errors[field]
       }
       return ''
+    },
+    importSchema (url) {
+      if (confirm('Are you sure you want to import a schema from another submission or submission type?  This will overwrite your current schema.')) {
+        var self = this
+        this.$axios
+          .get(`/api/submission_types/get_submission_schema/?url=${url}`)
+          .then(function (response) {
+            self.type.submission_schema = response.data
+            self.$q.notify({ type: 'positive', message: 'Schema has been loaded.  Click save to retain changes'})
+          })
+          .catch(function () {
+            self.$q.notify({ type: 'negative', message: 'Unable to load schema.  Ensure that the URL is a valid submission or submission type URL.'})
+          })
+      }
     }
   },
   computed: {
@@ -469,7 +493,7 @@ export default {
   },
   components: {
     SchemaForm,
-    Agschema,
+    // Agschema,
     draggable
   }
 }

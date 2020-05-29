@@ -1,163 +1,18 @@
 <template>
   <div>
-<!--
-    <q-modal v-model="opened" :content-css="{minWidth: '80vw', minHeight: '80vh'}" ref="modal">
-      <q-modal-layout>
-        <q-toolbar slot="header">
-          <q-btn
-            flat
-            round
-            dense
-            v-close-overlay
-            icon="keyboard_arrow_left"
-          />
-          <q-toolbar-title>
-            Field options for: {{variable}} {{type}}
-          </q-toolbar-title>
-        </q-toolbar>
-
-        <div class="layout-padding" v-if="opened">
-          <q-field
-            label="Description"
-          >
-            <q-input v-model="data.description" type="textarea" placeholder="Enter description here."/>
-          </q-field>
-          <q-field
-            label="Unique"
-            v-if="type!='submission'"
-          >
-            <q-checkbox v-model="data.unique" indeterminate-icon="check_box_outline_blank"/>
-          </q-field>
-          <q-field
-            label="Pin column"
-            v-if="type!='submission'"
-          >
-          <q-select
-            v-model="data.pinned"
-            radio
-           :options="[{label:'Not pinned',value:undefined},{label:'Pinned left',value:'left'},{label:'Pinned right',value:'right'}]"
-          />
-          </q-field>
-          <q-field v-if="data.type === 'string'"
-            label="Regular Expression"
-            hint="Enter a valid regular expression to validate against. Example for matching values such as '20.3 ul': ^\d+(\.{1}\d+)? ul$"
-          >
-            <q-input v-model="data.pattern" />
-          </q-field>
-          <q-field v-if="data.type === 'string'"
-            label="Choices"
-            hint="If the variable should be constrained to specific choices, enter here."
-          >
-            <q-chips-input v-model="data.enum" placeholder="Enter options" />
-          </q-field>
-          <q-field
-            label="Select multiple"
-            v-if="data.type === 'string' && data.enum && data.enum.length"
-          >
-            <q-checkbox v-model="data.multiple" indeterminate-icon="check_box_outline_blank"/>
-          </q-field>
-          <q-field v-if="data.type === 'number'"
-            label="Minimum"
-            hint="Optionally, enter a minimum valid number."
-          >
-            <q-input v-model="data.minimum" type="number"/>
-          </q-field>
-          <q-field v-if="data.type === 'number'"
-            label="Maximum"
-            hint="Optionally, enter a maximum valid number."
-          >
-            <q-input v-model="data.maximum" type="number"/>
-          </q-field>
-          <q-field
-            label="Widget"
-          >
-          <div class="row inline">
-            <span class="col-9">
-              <q-select
-                v-model="data.widget.type"
-                :options="widgetOptions"
-                clearable
-              />
-            </span>
-            <span class="col-3">
-              <q-btn label="options" size="sm" @click="open('widget_options')"/>
-              <WidgetOptions :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :fields="widgetSchema(data.widget.type)" :schema="schema" :variable="variable" :title="`${variable} widget options`" ref="widget_options"/>
-            </span>
-          </div>
-          </q-field>
-          <q-field v-if="data.validators"
-            label="Custom validators"
-          >
-            <q-btn-dropdown label="Add validator">
-              <q-list link>
-                <q-item v-for="(v, id) in validatorsByType(data.type)" :key="id" v-close-overlay @click.native="addValidator(id)" :title="v.description">
-                  <q-item-main>
-                    <q-item-tile label>{{v.name}}</q-item-tile>
-                  </q-item-main>
-                </q-item>
-              </q-list>
-            </q-btn-dropdown>
-            <div v-for="(v, index) in data.validators" :key="index" :title="validators[v.id].description">
-              <q-btn flat dense round icon="delete_outline" @click="removeValidator(index)"/> {{validators[v.id].name}}  <label title="Raise as a warning only"><input type="checkbox" v-model="v.options.warning"/>Warning only</label><q-btn size="sm" v-if="validators[v.id].uses_options" label="Options" @click="open('validator_options_'+v.id)"/>
-              <ValidatorOptions v-model="v.options" :fields="validators[v.id].schema" :schema="schema" :variable="variable" :title="`${validators[v.id].name} validator options`" :ref="`validator_options_${v.id}`" v-if="validators[v.id].uses_options"/>
-            </div>
-          </q-field>
-          <q-field
-            label="Validation Error Message"
-          >
-            <q-input v-model="data.error_message" type="textarea" placeholder="Optionally add a custom validation message here."/>
-          </q-field>
-          <h5>Printing options</h5>
-            <q-field
-              label="Field label"
-            >
-              <q-input v-model="data.printing.label" placeholder="Optionally add a shortened label."/>
-            </q-field>
-            <q-field
-              label="Hidden"
-            >
-              <q-checkbox v-model="data.printing.hidden" indeterminate-icon="check_box_outline_blank"/>
-            </q-field>
-            <q-field
-              label="Truncate after N characters"
-            >
-              <q-input v-model="data.printing.truncate_at" type="number" />
-            </q-field>
-        </div>
-        <q-toolbar slot="footer">
-          <q-toolbar-title>
-            <q-btn
-              color="negative"
-              label="Discard"
-              @click="discard"
-              class="float-right"
-            />
-            <q-btn
-              color="positive"
-              label="Keep"
-              @click="save"
-              class="float-right"
-            />
-          </q-toolbar-title>
-        </q-toolbar>
-      </q-modal-layout>
-    </q-modal> -->
 
     <q-dialog v-model="opened" ref="modal">
       <q-card style="width: 800px; max-width: 80vw;">
         <q-bar class="bg-primary text-white">
           Field options for: {{variable}} {{type}}
           <q-space />
-          <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip>Close</q-tooltip>
-          </q-btn>
         </q-bar>
         <q-card-section v-if="opened">
           <q-input dense label="Description" v-model="data.description" autogrow placeholder="Enter description here."/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
           <q-checkbox dense label="Unique" v-if="type!='submission'" v-model="data.unique"/>
             <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
-          <q-field label="Pin column" stack-label borderless>
+          <q-field label="Pin column" stack-label borderless v-if="type==='table'">
             <q-radio dense v-model="data.pinned" :val="undefined" label="Not pinned" />
             <q-radio dense v-model="data.pinned" val="left" label="Pinned left" />
             <q-radio dense v-model="data.pinned" val="right" label="Pinned right" />
@@ -218,6 +73,7 @@
             label="Widget"
             borderless
             style="width:100%"
+            v-if="data.type !== 'table'"
           >
             <span class="col-9">
               <q-select
@@ -230,13 +86,15 @@
             </span>
             <span class="col-3" v-if="hasWidgetOptions(data.widget.type)">
               <q-btn label="options" size="sm" @click="open('widget_options')"/>
-              <WidgetOptions :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :fields="widgetSchema(data.widget.type)" :schema="schema" :variable="variable" :title="`${variable} widget options`" ref="widget_options"/>
+              <OptionsModal :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :schema="widget_schema(data.widget.type)" :parent-schema="schema" :variable="variable" :ref="'widget_options'"/>
             </span>
           </q-field>
-          <q-field v-if="data.validators"
+          <ForeignKey :schema="rootSchema" v-model="data.fk"/>
+          <q-field
             label="Custom validators"
             stack-label
             borderless
+            v-if="data.type !== 'table' && data.validators"
           >
             <q-btn-dropdown size="md" label="Add validator">
               <q-list>
@@ -250,15 +108,15 @@
           </q-field>
           <div v-for="(v, index) in data.validators" :key="index" :title="validators[v.id].description">
             <q-btn flat dense round icon="delete_outline" @click="removeValidator(index)"/> {{validators[v.id].name}}  <label title="Raise as a warning only"><input type="checkbox" v-model="v.options.warning"/>Warning only</label><q-btn size="sm" v-if="validators[v.id].uses_options" label="Options" @click="open('validator_options_'+v.id)"/>
-            <ValidatorOptions v-model="v.options" :fields="validators[v.id].schema" :schema="schema" :variable="variable" :title="`${validators[v.id].name} validator options`" :ref="`validator_options_${v.id}`" v-if="validators[v.id].uses_options"/>
+            <OptionsModal v-model="v.options" :schema="validator_schema(validators[v.id])" :parent-schema="schema" :variable="variable" :ref="`validator_options_${v.id}`" v-if="validators[v.id].uses_options"/>
           </div>
-          <q-input label="Validation Error Message" v-model="data.error_message" autogrow placeholder="Optionally add a custom validation message here."/>
+          <q-input label="Validation Error Message" dense v-model="data.error_message" autogrow placeholder="Optionally add a custom validation message here." v-if="data.type !== 'table'"/>
           <h5>Printing options</h5>
-            <q-input dense label="Field label" v-model="data.printing.label" placeholder="Optionally add a shortened label."/>
+            <q-input dense label="Field label" v-model="data.printing.label" placeholder="Optionally add a shortened label." v-if="data.type !== 'table'"/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
             <q-checkbox dense label="Hidden" v-model="data.printing.hidden"/>
             <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
-            <q-input dense label="Truncate after N characters" v-model="data.printing.truncate_at" type="number" />
+            <q-input dense label="Truncate after N characters" v-model="data.printing.truncate_at" type="number" v-if="data.type !== 'table'"/>
         </q-card-section>
         <q-card-actions align="right">
           <q-btn
@@ -284,12 +142,12 @@
 <script>
 import _ from 'lodash'
 import submissionWidgetFactory from './forms/widgets.js'
-import sampleWidgetFactory from './aggrid/widgets.js'
-import WidgetOptions from './modals/WidgetOptions.vue'
-import ValidatorOptions from './modals/ValidatorOptions.vue'
+import tableWidgetFactory from './aggrid/widgets.js'
+import OptionsModal from './modals/OptionsModal.vue'
+import ForeignKey from './forms/ForeignKey.vue'
 
 export default {
-  props: ['value', 'variable', 'type', 'schema'],
+  props: ['value', 'variable', 'type', 'schema', 'rootSchema'],
   data () {
     return {
       opened: false,
@@ -375,7 +233,7 @@ export default {
       this.data.validators.splice(index, 1)
     },
     widgetSchema (id) {
-      var factory = this.type === 'submission' ? submissionWidgetFactory : sampleWidgetFactory
+      var factory = this.type === 'submission' ? submissionWidgetFactory : tableWidgetFactory
       return factory.getWidgetSchema(id)
     },
     hasWidgetOptions (id) {
@@ -384,11 +242,33 @@ export default {
     getWidget (id) {
       console.log('widgetFactory', this.widgetFactory, id, this.widgetFactory.getWidget(id))
       return this.widgetFactory.getWidget(id)
+    },
+    validator_schema (validator) {
+      var schema = { order: [], properties: {}, layout: {}, title: validator.name, description: validator.description }
+      validator.schema.forEach(function (v) {
+        schema.order.push(v.variable)
+        schema.properties[v.variable] = v
+        schema.properties[v.variable].title = schema.properties[v.variable].label
+      })
+      return schema
+    },
+    widget_schema (id) {
+      var factory = this.type === 'submission' ? submissionWidgetFactory : tableWidgetFactory
+      var widgetSchema = factory.getWidgetSchema(id, this.schema, this)
+      var widget = factory.getWidget(id)
+      console.log('widget_schema', widget, widgetSchema)
+      var schema = { order: [], properties: {}, layout: {}, title: widget.name, description: widget.description }
+      widgetSchema.forEach(function (v) {
+        schema.order.push(v.variable)
+        schema.properties[v.variable] = v
+        schema.properties[v.variable].title = schema.properties[v.variable].label
+      })
+      return schema
     }
   },
   computed: {
     widgetFactory () {
-      return this.type === 'submission' ? submissionWidgetFactory : sampleWidgetFactory
+      return this.type === 'submission' ? submissionWidgetFactory : tableWidgetFactory
     },
     widgetOptions () {
       return this.widgetFactory.getWidgets(this.data.type)
@@ -403,8 +283,8 @@ export default {
     }
   },
   components: {
-    WidgetOptions,
-    ValidatorOptions
+    OptionsModal,
+    ForeignKey
   }
 }
 

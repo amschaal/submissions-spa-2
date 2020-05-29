@@ -1,56 +1,16 @@
 <template>
-  <!-- <q-modal v-model="opened" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
-    <q-modal-layout>
-      <q-toolbar slot="header">
-        <q-toolbar-title>
-          {{title}}!!!
-        </q-toolbar-title>
-      </q-toolbar>
-    <div class="layout-padding">
-      <div v-for="(v, i) in fields" :key="i">
-        <q-field
-          :error="hasError(v.variable)"
-          :error-label="error(v.variable)"
-        >
-          <q-input v-model="data[v.variable]" stack-label :label="v.label" />
-        </q-field>
-      </div>
-    </div>
-    <q-toolbar slot="footer">
-      <q-toolbar-title>
-        <q-btn
-          color="positive"
-          @click="save()"
-          label="Save"
-        />
-        <q-btn
-          @click="opened = false"
-          label="Cancel"
-          color="negative"
-        />
-      </q-toolbar-title>
-    </q-toolbar>
-  </q-modal-layout>
-  </q-modal> -->
-
   <q-dialog v-model="opened" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
     <q-card>
       <q-bar class="bg-primary text-white">
-        {{title}}
+        {{schema.title}} options
         <q-space />
         <q-btn dense flat icon="close" v-close-popup>
           <q-tooltip>Close</q-tooltip>
         </q-btn>
       </q-bar>
       <q-card-section v-if="opened">
-        <div v-for="(v, i) in fields" :key="i">
-          <q-field
-            :error="hasError(v.variable)"
-            :error-label="error(v.variable)"
-          >
-            <q-input v-model="data[v.variable]" stack-label :label="v.label" />
-          </q-field>
-        </div>
+        {{schema.description}}
+        <CustomFields v-model="data" :schema="schema" :errors="errors" :warnings="warnings" modify="true"/>
       </q-card-section>
       <q-card-actions align="right">
         <q-btn
@@ -71,23 +31,35 @@
 <script>
 // import Vue from 'vue'
 import _ from 'lodash'
+import CustomFields from '../forms/customFields.vue'
 export default {
-  props: ['fields', 'variable', 'schema', 'value', 'title'],
+  props: ['variable', 'parentSchema', 'value', 'schema', 'WidgetClass'],
   data () {
     return {
       data: _.cloneDeep(this.value),
       opened: false,
-      errors: {}
+      errors: {},
+      warnings: {}
     }
   },
   mounted: function () {
   },
   methods: {
     save () {
+      if (this.widget) {
+        this.errors = this.widget.validateOptions(this.data, this.variable, this.parentSchema)
+        console.log('save', this.errors, this.data)
+        if (this.errors && !_.isEmpty(this.errors)) {
+          return
+        }
+      }
       this.$emit('input', this.data)
       this.close()
     },
     open () {
+      if (this.WidgetClass) {
+        this.widget = new (this.WidgetClass)(this.variable, this.data)
+      }
       this.errors = {}
       this.data = _.cloneDeep(this.value)
       this.opened = true
@@ -103,6 +75,7 @@ export default {
     }
   },
   components: {
+    CustomFields
   }
 }
 </script>

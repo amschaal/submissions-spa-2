@@ -1,35 +1,35 @@
 <template>
   <div>
         <div class="row">
-          <div class="field col-12" v-if="submission.import_data">
+          <div class="field col-12 q-mt-xs q-mb-xs" v-if="submission.import_data">
             <q-banner dense class="text-white bg-light-blue" rounded>
               Imported from <a target="_blank" :href="submission.import_data.url">{{submission.import_data.internal_id}}: {{submission.import_data.type.name}}</a>
             </q-banner>
           </div>
-          <div class="field col-12">
+          <div class="field col-12 q-mt-xs q-mb-xs">
             <SamplesReceived v-if="submission.id" v-model="submission" :admin="$store.getters.isStaff"/>
           </div>
-          <div class="field col-12" v-if="hasWarnings">
+          <div class="field col-12 q-mt-xs q-mb-xs" v-if="hasWarnings">
           <q-banner dense class="text-white bg-warning" rounded>
               There are warnings associated with this submission.
           </q-banner>
           </div>
-          <div v-if="$route.query.created" class="field col-12">
+          <div v-if="$route.query.created" class="field col-12 q-mt-xs q-mb-xs">
               <q-banner dense class="text-white bg-positive" rounded>
               <p>Submission Created!</p>
               <pre id="confirmation">{{submission_type.confirmation_text}}</pre>
             </q-banner>
           </div>
-          <div class="field col-sm-12 col-lg-4">
+          <div class="field col-sm-12 col-lg-4 q-mt-sm q-mb-sm">
             <StatusSelector v-model="submission.status" :submission="submission" v-if="submission.id && isAdmin"/>
           </div>
-          <div class="col-sm-12 col-lg-8">
+          <div class="col-sm-12 col-lg-8 q-mt-sm q-mb-sm">
             <div class="row">
               <div class="col-lg-12">
-                <q-btn v-if="canModify" label="Modify" class="float-right" @click="$router.push({name: 'modify_submission', params: {id: submission.id}})"/>
-                <q-btn label="Print" class="float-right" @click="$router.push({name: 'print_submission', params: {id: submission.id}})"/>
-                <Lock v-if="submission.id && isAdmin" :submission="submission" class="float-right"/>
-                <Cancel v-if="submission.id && canCancel" :submission="submission" class="float-right"/>
+                <q-btn v-if="canModify" label="Modify" class="float-right q-ml-xs" @click="$router.push({name: 'modify_submission', params: {id: submission.id}})"/>
+                <q-btn label="Print" class="float-right q-ml-xs" @click="$router.push({name: 'print_submission', params: {id: submission.id}})"/>
+                <Lock v-if="submission.id && isAdmin" :submission="submission" class="float-right q-ml-xs"/>
+                <Cancel v-if="submission.id && canCancel" :submission="submission" class="float-right q-ml-xs"/>
               </div>
             </div>
           </div>
@@ -132,9 +132,9 @@
         </div>
         <CustomFields v-model="submission.submission_data" :schema="submission_schema" ref="submission_fields" :warnings="submission.warnings ? submission.warnings.submission_data : {}" v-if="submission_schema" :modify="false"/>
           <!-- <Samplesheet v-model="submission.sample_data" :type="type"/> -->
-        <Agschema v-model="submission.sample_data" :type="submission_type" :editable="false" ref="samplesheet" v-if="submission_type && submission_type.sample_schema" :submission="submission"/>
-        <q-icon size="25px" name="warning" v-if="hasWarnings" color="warning" title="Samples contain warnings."/>
-        <q-btn :label="'Samples ('+submission.sample_data.length+')'"  @click="openSamplesheet"/>
+        <!-- <Agschema v-model="submission.sample_data" :type="submission_type" :editable="false" ref="samplesheet" v-if="submission_type && submission_type.sample_schema" :submission="submission"/> -->
+        <!-- <q-icon size="25px" name="warning" v-if="hasWarnings" color="warning" title="Samples contain warnings."/> -->
+        <!-- <q-btn :label="'Samples ('+submission.sample_data.length+')'"  @click="openSamplesheet"/> -->
         <div class="row" v-if="submission.id">
           <div class="col-lg-12">
             <q-btn class="float-right" label="Create copy" description="Create a new submission using data from this submission." @click="copySubmission"/>
@@ -144,11 +144,13 @@
                 :options="formatOptions"
                 v-if="downloadParams.data !== 'all'"
                 class="float-right"
+                map-options emit-value
               />
               <q-select
                 v-model="downloadParams.data"
                 :options="dataOptions"
                 class="float-right"
+                map-options emit-value
               />
           </div>
         </div>
@@ -158,7 +160,7 @@
 
 <script>
 // import './docs-input.styl'
-import Agschema from './agschema.vue'
+// import Agschema from './agschema.vue'
 import CustomFields from './forms/customFields.vue'
 import StatusSelector from './statusSelector.vue'
 import Lock from './lock.vue'
@@ -172,21 +174,7 @@ export default {
   props: ['id', 'submission'],
   data () {
     return {
-      downloadParams: {'data': 'all', 'format': 'xlsx'},
-      dataOptions: [
-        {
-          label: 'Submission + Samples',
-          value: 'all'
-        },
-        {
-          label: 'Submission',
-          value: 'submission'
-        },
-        {
-          label: 'Samples',
-          value: 'samples'
-        }
-      ]
+      downloadParams: {'data': 'all', 'format': 'xlsx'}
     }
   },
   // mounted: function () {
@@ -206,16 +194,16 @@ export default {
   //     })
   // },
   methods: {
-    openSamplesheet () {
-      if (!this.submission_type || !this.submission_type.sample_schema) {
-        this.$q.dialog({
-          title: 'Alert',
-          message: 'Please select a submission type first.'
-        })
-      } else {
-        this.$refs.samplesheet.openSamplesheet()
-      }
-    },
+    // openSamplesheet () {
+    //   if (!this.submission_type || !this.submission_type.sample_schema) {
+    //     this.$q.dialog({
+    //       title: 'Alert',
+    //       message: 'Please select a submission type first.'
+    //     })
+    //   } else {
+    //     this.$refs.samplesheet.openSamplesheet()
+    //   }
+    // },
     download () {
       window.location.href = `/server/api/submissions/${this.submission.id}/download/?format=${this.downloadParams.format}&data=${this.downloadParams.data}`
     },
@@ -262,6 +250,25 @@ export default {
         return options
       }
     },
+    dataOptions () {
+      var opts = [
+        {
+          label: 'All (XLSX)',
+          value: 'all'
+        },
+        {
+          label: 'Submission',
+          value: 'submission'
+        }
+      ]
+      for (var i in this.submission.submission_schema.order) {
+        var v = this.submission.submission_schema.order[i]
+        if (this.submission.submission_schema.properties[v].type === 'table') {
+          opts.push({ label: this.submission.submission_schema.properties[v].title || v, value: v })
+        }
+      }
+      return opts
+    },
     canCancel () {
       return this.submission && !this.submission.cancelled && (!this.submission.locked || this.isAdmin)
     },
@@ -274,7 +281,7 @@ export default {
     }
   },
   components: {
-    Agschema,
+    // Agschema,
     CustomFields,
     StatusSelector,
     Lock,

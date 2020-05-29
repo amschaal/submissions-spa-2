@@ -9,6 +9,8 @@ export class Widget {
   static schema = [
     // {'variable': 'test', 'label': 'Test', 'type': 'text'}
   ]
+  static name = null
+  static description = null
   /*
   static schema = {
                       'required': [
@@ -88,8 +90,9 @@ export class WidgetFactory {
       self.defaults['multiple'] = multipleDefault
     }
   }
-  getWidgetSchema (id) {
-    return this.lookup[id] ? this.lookup[id].schema : {}
+  getWidgetSchema (id, schema, vue) {
+    // vue.$q.notify('getWidgetSchema')
+    return this.lookup[id] ? (this.lookup[id].getSchema ? this.lookup[id].getSchema(schema, vue) : this.lookup[id].schema) : {}
   }
   getWidget (id, type, definition) {
     // console.log('getWidget', id, type, this.lookup, definition)

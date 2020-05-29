@@ -210,10 +210,10 @@
         </div> -->
       </fieldset>
       <fieldset>
-        <legend>Sample Information</legend>
+        <legend>Submission Information</legend>
         <p v-if="!type.id" class="error">***Please select submission type at the top of the form before filling in sample information***</p>
         <CustomFields v-model="submission.submission_data" :schema="submission.submission_schema || type.submission_schema" ref="submission_fields" v-if="type && type.submission_schema" :errors="errors.submission_data" :warnings="errors.warnings ? errors.warnings.submission_data : {}" modify="true"/>
-        <q-field
+<!--        <q-field
           :error="sample_data_error"
           bottom-slots :error-message="sample_data_error_label"
           :warning="sample_data_warning"
@@ -223,7 +223,6 @@
           class="q-pb-xl q-mb-xl"
           borderless
         >
-          <!-- <Samplesheet v-model="submission.sample_data" :type="type"/> -->
           <template v-slot:control>
             <Agschema
               v-model="submission.sample_data"
@@ -239,7 +238,7 @@
               v-on:errors="updateErrors"/>
             <q-btn :label="'Samples ('+submission.sample_data.length+')'"  @click="openSamplesheet" />
           </template>
-        </q-field>
+        </q-field> -->
           <q-input
             :error="hasError('comments')"
             bottom-slots :error-message="errorMessage('comments')"
@@ -251,14 +250,6 @@
           />
       </fieldset>
       <q-checkbox v-model="submission.biocore" label="I want the Bioinformatics Core to analyze my data" />
-        <span v-if="debug">
-          <p>SCHEMA:
-            {{type.sample_schema}}
-          </p>
-          <p>DATA:
-            {{submission.sample_data}}
-          </p>
-        </span>
         <q-card-actions>
           <q-btn @click="submit" color="positive" label="Submit"></q-btn>
           <q-btn @click="saveDraft" v-if="!id" label="Save Draft"></q-btn>
@@ -321,7 +312,7 @@ export default {
   props: ['id', 'submission_types', 'create'],
   data () {
     return {
-      submission: {'submission_data': {}, 'sample_data': [], 'contacts': [], biocore: false, 'payment': {}},
+      submission: {'submission_data': {}, 'contacts': [], biocore: false, 'payment': {}},
       errors: {contacts: [], payment: {}, warnings: {}},
       warnings: {},
       // submission_types: [{ foo: 'bar' }],
@@ -340,100 +331,24 @@ export default {
     }
   },
   mounted: function () {
-    var submission = window.localStorage.getItem('submission')
     var self = this
-    if (!this.create) {
-      // this.$axios
-      //   .get(`/api/submissions/${self.id}/`)
-      //   .then(function (response) {
-      //     console.log('response', response)
-      //     if (!response.data.sample_data) {
-      //       response.data.sample_data = []
-      //     }
-      //     self.submission = response.data
-      //     Vue.set(self.submission, 'type', response.data.type.id)
-      //   })
-      this.loadSubmission(this.id)
-    } else {
-      this.import = !this.id && this.$route.query.import ? this.$route.query.import : null
-      console.log('import', this.import)
-      this.draft = !this.id && this.$route.query.draft ? this.$route.query.draft : null
-      if (this.import) {
-        this.loadImport()
-      } else if (this.draft) {
-        this.loadDraft(this.draft)
-      } else if (submission && window.JSON && window.JSON.parse) {
-        var message = this.$q.notify({
-          message: `An unsaved draft was found.  Would you like to load it?`,
-          timeout: 0, // in milliseconds; 0 means no timeout
-          type: 'info',
-          position: 'top', // 'top', 'left', 'bottom-left' etc.
-          actions: [
-            {
-              label: 'Restore',
-              handler: () => {
-                try {
-                  self.submission = window.JSON.parse(submission)
-                  this.$q.notify({message: 'Submission restored.', type: 'positive', position: 'top'})
-                } catch {
-                  this.$q.notify({message: 'There was an error restoring the submission.', type: 'negative'})
-                }
-              }
-            },
-            {
-              label: 'Ignore',
-              handler: () => {
-                self.removeCached()
-              }
-            }
-
-          ]
-        })
-        this.messages.push(message)
-        // if (confirm('An unsaved draft was found.  Would you like to load it?')) {
-        //   this.submission = window.JSON.parse(submission)
-        // } else {
-        //   this.removeCached()
-        // }
-      }
-      console.log('draft', this.draft)
-    }
-    this.type_id = !this.id && this.$route.query.type ? this.$route.query.type : null
-    if (this.type_id) {
-      this.submission.type = this.type_id
-    }
-    if (this.submission.type) {
-      if (this.submission.type.id) {
-        this.submission.type = this.submission.type.id
+    this.$q.loading.show({
+      delay: 400 // ms
+    })
+    function init () {
+      if (!self.$store.getters.types.length) {
+        setTimeout(init, 500)
       } else {
-        this.type = this.$store.getters.typesDict[this.submission.type]
+        self.initialize()
       }
     }
-
-    // this.$axios
-    //   .get('/api/submission_types/?show=true')
-    //   .then(function (response) {
-    //     console.log('response', response)
-    //     console.log('id', self.id)
-    //     self.type_options = response.data.results.map(opt => ({label: opt.name, value: opt.id}))
-    //     self.submission_types = response.data.results
-    //     if (self.create) {
-    //       self.$axios
-    //         .get('/api/submissions/' + self.id)
-    //         .then(function (response) {
-    //           console.log('response', response)
-    //           self.submission = response.data
-    //           Vue.set(self.submission, 'type', response.data.type.id)
-    //         })
-    //     }
-    //   })
-    if (this.$store.getters.isStaff) {
-      this.$axios
-        .get('/api/users/?show=true')
-        .then(function (response) {
-          self.user_options = response.data.results.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
-        })
-    }
+    init()
+    // if (!this.$store.getters.types.length) {
+    //   setTimeout(init_timeout, 2000)
+    //   // this.initialize()
+    // } else {
+    //   this.initialize()
+    // }
   },
   beforeDestroy: function () {
     if (this.draft_message) {
@@ -442,23 +357,120 @@ export default {
     this.messages.forEach(m => m())
   },
   methods: {
-    openSamplesheet () {
-      if (!this.type || !this.type.sample_schema) {
-        this.$q.dialog({
-          title: 'Alert',
-          message: 'Please select a submission type first.'
-        })
+    initialize: function () {
+      var submission = window.localStorage.getItem('submission')
+      var self = this
+      if (!this.create) {
+        // this.$axios
+        //   .get(`/api/submissions/${self.id}/`)
+        //   .then(function (response) {
+        //     console.log('response', response)
+        //     if (!response.data.sample_data) {
+        //       response.data.sample_data = []
+        //     }
+        //     self.submission = response.data
+        //     Vue.set(self.submission, 'type', response.data.type.id)
+        //   })
+        this.loadSubmission(this.id)
       } else {
-        this.$refs.samplesheet.openSamplesheet()
+        this.import = !this.id && this.$route.query.import ? this.$route.query.import : null
+        console.log('import', this.import)
+        this.draft = !this.id && this.$route.query.draft ? this.$route.query.draft : null
+        if (this.import) {
+          this.loadImport()
+        } else if (this.draft) {
+          this.loadDraft(this.draft)
+        } else if (submission && window.JSON && window.JSON.parse) {
+          var message = this.$q.notify({
+            message: `An unsaved draft was found.  Would you like to load it?`,
+            timeout: 0, // in milliseconds; 0 means no timeout
+            type: 'info',
+            position: 'top', // 'top', 'left', 'bottom-left' etc.
+            actions: [
+              {
+                label: 'Restore',
+                handler: () => {
+                  try {
+                    self.submission = window.JSON.parse(submission)
+                    this.$q.notify({message: 'Submission restored.', type: 'positive', position: 'top'})
+                  } catch {
+                    this.$q.notify({message: 'There was an error restoring the submission.', type: 'negative'})
+                  }
+                }
+              },
+              {
+                label: 'Ignore',
+                handler: () => {
+                  self.removeCached()
+                }
+              }
+
+            ]
+          })
+          this.messages.push(message)
+          // if (confirm('An unsaved draft was found.  Would you like to load it?')) {
+          //   this.submission = window.JSON.parse(submission)
+          // } else {
+          //   this.removeCached()
+          // }
+        }
+        console.log('draft', this.draft)
       }
+      this.type_id = !this.id && this.$route.query.type ? this.$route.query.type : null
+      if (this.type_id) {
+        this.submission.type = this.type_id
+      }
+      if (this.submission.type) {
+        if (this.submission.type.id) {
+          this.submission.type = this.submission.type.id
+        } else {
+          this.type = this.$store.getters.typesDict[this.submission.type]
+        }
+      }
+
+      // this.$axios
+      //   .get('/api/submission_types/?show=true')
+      //   .then(function (response) {
+      //     console.log('response', response)
+      //     console.log('id', self.id)
+      //     self.type_options = response.data.results.map(opt => ({label: opt.name, value: opt.id}))
+      //     self.submission_types = response.data.results
+      //     if (self.create) {
+      //       self.$axios
+      //         .get('/api/submissions/' + self.id)
+      //         .then(function (response) {
+      //           console.log('response', response)
+      //           self.submission = response.data
+      //           Vue.set(self.submission, 'type', response.data.type.id)
+      //         })
+      //     }
+      //   })
+      if (this.$store.getters.isStaff) {
+        this.$axios
+          .get('/api/users/?show=true')
+          .then(function (response) {
+            self.user_options = response.data.results.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
+          })
+      }
+      this.$q.loading.hide()
     },
+    // openSamplesheet () {
+    //   if (!this.type || !this.type.sample_schema) {
+    //     this.$q.dialog({
+    //       title: 'Alert',
+    //       message: 'Please select a submission type first.'
+    //     })
+    //   } else {
+    //     this.$refs.samplesheet.openSamplesheet()
+    //   }
+    // },
     updateWarnings (warnings) {
       console.log('update', warnings)
-      Vue.set(this.error.warnings, 'sample_data', warnings)
+      // Vue.set(this.error.warnings, 'sample_data', warnings)
     },
     updateErrors (errors) {
       console.log('update errors', errors)
-      Vue.set(this.errors, 'sample_data', errors)
+      // Vue.set(this.errors, 'sample_data', errors)
     },
     removeCached () {
       window.localStorage.removeItem('submission')
@@ -605,6 +617,11 @@ export default {
           delete imported['samples_received']
           var internalID = imported['internal_id']
           delete imported['internal_id']
+          if (imported.contacts) {
+            for (var i in imported.contacts) {
+              delete imported.contacts[i]['id']
+            }
+          }
           imported['import_internal_id'] = internalID
           imported['import_data'] = _.cloneDeep(self.imported)
           console.log('import response', response.data)
@@ -624,9 +641,9 @@ export default {
         .get(`/api/submissions/${id}/`)
         .then(function (response) {
           console.log('response', response)
-          if (!response.data.sample_data) {
-            response.data.sample_data = []
-          }
+          // if (!response.data.sample_data) {
+          //   response.data.sample_data = []
+          // }
           self.submission = response.data
           Vue.set(self, 'errors', {contacts: [], payment: {}, warnings: response.data.warnings})
           // Vue.set(self, 'warnings', response.data.warnings || {})
@@ -731,25 +748,25 @@ export default {
     // }
   },
   computed: {
-    sample_schema () {
-      if (this.type && this.type.sample_schema) {
-        return Object.freeze(Object.assign({}, this.type.sample_schema))
-      } else {
-        return {}
-      }
-    },
+    // sample_schema () {
+    //   if (this.type && this.type.sample_schema) {
+    //     return Object.freeze(Object.assign({}, this.type.sample_schema))
+    //   } else {
+    //     return {}
+    //   }
+    // },
     error_message (field) {
       return this.errors[field]
     },
-    sample_data_warning () {
-      return this.errors.warnings && this.errors.warnings.sample_data && _.size(this.errors.warnings.sample_data) > 0
-    },
-    sample_data_error () {
-      return this.errors && this.errors.sample_data && _.size(this.errors.sample_data) > 0
-    },
-    sample_data_error_label () {
-      return _.size(this.submission.sample_data) > 0 ? 'Samples contain errors.' : 'Please click on the Samples button and enter at least 1 sample.'
-    },
+    // sample_data_warning () {
+    //   return this.errors.warnings && this.errors.warnings.sample_data && _.size(this.errors.warnings.sample_data) > 0
+    // },
+    // sample_data_error () {
+    //   return this.errors && this.errors.sample_data && _.size(this.errors.sample_data) > 0
+    // },
+    // sample_data_error_label () {
+    //   return _.size(this.submission.sample_data) > 0 ? 'Samples contain errors.' : 'Please click on the Samples button and enter at least 1 sample.'
+    // },
     type_options () {
       return this.$store.getters.typeOptions
     },
@@ -763,7 +780,7 @@ export default {
   },
   components: {
     // Agschema,
-    Agschema: () => import('../../components/agschema.vue'),
+    // Agschema: () => import('../../components/agschema.vue'),
     CustomFields,
     Account
     // UCDAccount
