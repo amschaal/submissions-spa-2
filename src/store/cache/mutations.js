@@ -8,6 +8,9 @@ export const lab = (state, lab) => {
   state.lab = lab
   state.types = lab.submission_types
 }
+export const labId = (state, labId) => {
+  state.lab_id = labId
+}
 export const labs = (state, labs) => {
   state.labs = labs
 }

@@ -27,8 +27,9 @@ export const fetchValidators = (context, {axios}) => {
     })
 }
 export const fetchTypes = (context, {axios}) => {
+  console.log('context', context)
   return new Promise((resolve, reject) => {
-    return axios.get('/api/submission_types/?page_size=100&active=true')
+    return axios.get(`/api/submission_types/?page_size=100?lab=${context.state.lab_id}&active=true`)
       .then(function (response) {
         context.commit('types', response.data.results)
         resolve(response)
@@ -44,6 +45,18 @@ export const fetchVocabularies = (context, {axios}) => {
   return axios.get('/api/vocabularies/?page_size=100')
     .then(function (response) {
       context.commit('vocabularies', response.data.results.map(vocab => vocab.id))
+    })
+    .catch(function (error) {
+      console.log(error.message)
+    })
+}
+
+export const setLabId = (context, {axios, labId}) => {
+  context.commit('labId', labId)
+  return axios.get(`/api/labs/${labId}/`)
+    .then(function (response) {
+      console.log('lab', response)
+      context.commit('lab', response.data)
     })
     .catch(function (error) {
       console.log(error.message)

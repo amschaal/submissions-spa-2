@@ -3,9 +3,9 @@
     <q-header reveal>
       <q-toolbar
       >
-        <img src="/statics/images/wordmark.png" style="height:60px"/>
+        <router-link :to="{ name: 'index'}"><img src="/statics/images/wordmark.png" style="height:60px"/></router-link>
         <q-toolbar-title>
-          <span v-if="$store.getters.institution"><router-link :to="{ name: 'index'}">{{$store.getters.institution.name}}</router-link></span>
+          <span v-if="$route.params.lab_id && $store.getters.lab"><router-link :to="{ name: 'lab', params: { lab_id: $route.params.lab_id } }">{{$store.getters.lab.name}}</router-link></span>
           <div slot="subtitle">Sample Submission System</div>
           <q-btn v-if="!$store.getters.isLoggedIn" @click="$login()" class="float-right" color="primary">Admin</q-btn>
           <q-btn v-if="$store.getters.isLoggedIn" @click="$logout()" class="float-right" color="primary">Logout</q-btn>

@@ -58,7 +58,8 @@ export default {
     '$route.params.lab_id': {
       handler: function (labId) {
         if (labId) {
-          this.$store.dispatch('fetchLab', {axios: this.$axios, labId: labId})
+          this.$store.dispatch('setLabId', {axios: this.$axios, labId: labId})
+          // this.$store.dispatch('fetchLab', {axios: this.$axios, labId: labId})
         }
       },
       // deep: true,

@@ -82,12 +82,13 @@ export default {
         sortBy = '-' + sortBy
       }
       sortBy += ',name'
+      var lab = '&lab=' + this.$route.params.lab_id
       var search = this.filter !== '' ? `&search=${this.filter}` : ''
       var inactive = !this.showInactive ? '&active=true' : ''
       var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       console.log('inactive', inactive)
       this.$axios
-        .get(`/api/submission_types/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${search}${inactive}`)// ${pagination.descending}&filter=${filter}
+        .get(`/api/submission_types/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${lab}${search}${inactive}`)// ${pagination.descending}&filter=${filter}
         .then(({ data }) => {
         /*
           // updating pagination to reflect in the UI
