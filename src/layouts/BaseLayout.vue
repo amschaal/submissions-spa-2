@@ -5,7 +5,7 @@
       >
         <img src="/statics/images/wordmark.png" style="height:60px"/>
         <q-toolbar-title>
-          {{$store.getters.lab.name}}
+          <span v-if="$store.getters.institution"><router-link :to="{ name: 'index'}">{{$store.getters.institution.name}}</router-link></span>
           <div slot="subtitle">Sample Submission System</div>
           <q-btn v-if="!$store.getters.isLoggedIn" @click="$login()" class="float-right" color="primary">Admin</q-btn>
           <q-btn v-if="$store.getters.isLoggedIn" @click="$logout()" class="float-right" color="primary">Logout</q-btn>
@@ -14,11 +14,12 @@
       <q-tabs
       >
         <q-route-tab to="/" replace label="Home" />
-        <q-route-tab :to="{ name: 'create_submission' }" replace label="Create Submission" />
+        <q-route-tab :to="{ name: 'lab', params: { lab_id: $route.params.lab_id} }" replace label="Core Home" v-if="$route.params.lab_id"/>
+        <q-route-tab :to="{ name: 'create_submission' }" replace label="Create Submission" v-if="$route.params.lab_id"/>
         <q-route-tab :to="{ name: 'submissions' }" v-if="$store.getters.isLoggedIn" replace label="Submissions" />
-        <q-route-tab :to="{ name: 'imports' }" v-if="$store.getters.isLoggedIn" replace label="Imports" />
-        <q-route-tab :to="{ name: 'submission_types' }" v-if="$store.getters.isLoggedIn" label="Submission Types"/>
-        <q-route-tab :to="{ name: 'settings' }" v-if="$store.getters.isLoggedIn" label="Settings"/>
+        <q-route-tab :to="{ name: 'imports' }" v-if="$store.getters.isLoggedIn && $route.params.lab_id" replace label="Imports" />
+        <q-route-tab :to="{ name: 'submission_types' }" v-if="$store.getters.isLoggedIn && $route.params.lab_id" label="Submission Types"/>
+        <q-route-tab :to="{ name: 'settings' }" v-if="$store.getters.isLoggedIn && $route.params.lab_id" label="Settings"/>
       </q-tabs>
 
     </q-header>

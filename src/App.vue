@@ -53,6 +53,17 @@ export default {
     //   .then(function (response) {
     //     self.validators = response.data
     //   })
+  },
+  watch: {
+    '$route.params.lab_id': {
+      handler: function (labId) {
+        if (labId) {
+          this.$store.dispatch('fetchLab', {axios: this.$axios, labId: labId})
+        }
+      },
+      // deep: true,
+      immediate: true
+    }
   }
 }
 </script>

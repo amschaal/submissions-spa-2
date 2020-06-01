@@ -36,6 +36,12 @@ export const vocabularies = (state) => {
 export const lab = (state) => {
   return state.lab
 }
+export const labs = (state) => {
+  return state.labs
+}
+export const institution = (state) => {
+  return state.institution
+}
 export const staff = (state) => {
   return state.staff
 }
