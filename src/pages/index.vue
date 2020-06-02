@@ -39,7 +39,7 @@ export default {
   name: 'PageIndex',
   data () {
     return {
-      lab: null
+      lab: this.$store.getters.labId
     }
   },
   methods: {

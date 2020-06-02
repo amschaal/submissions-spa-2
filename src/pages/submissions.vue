@@ -148,6 +148,7 @@ export default {
       if (pagination.descending) {
         sortBy = '-' + sortBy
       }
+      var lab = '&lab=' + this.$store.getters.labId
       var search = this.filters.filter !== '' ? `&search=${this.filters.filter}` : ''
       var cancelled = !this.filters.showCancelled ? '&cancelled__isnull=true' : ''
       var completed = !this.filters.showCompleted ? '&exclude_status=completed' : ''
@@ -155,7 +156,7 @@ export default {
       var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       // var type = this.$route.query.type ? `&type__name__icontains=${this.$route.query.type}` : ''
       this.$axios
-        .get(`/api/submissions/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${search}${cancelled}${completed}${participating}`)// ${pagination.descending}&filter=${filter}
+        .get(`/api/submissions/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${lab}${search}${cancelled}${completed}${participating}`)// ${pagination.descending}&filter=${filter}
         .then(({ data }) => {
           console.log('data', data)
 

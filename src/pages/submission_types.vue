@@ -82,7 +82,7 @@ export default {
         sortBy = '-' + sortBy
       }
       sortBy += ',name'
-      var lab = '&lab=' + this.$route.params.lab_id
+      var lab = '&lab=' + this.$store.getters.labId
       var search = this.filter !== '' ? `&search=${this.filter}` : ''
       var inactive = !this.showInactive ? '&active=true' : ''
       var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
