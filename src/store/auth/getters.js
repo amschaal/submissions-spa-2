@@ -10,5 +10,5 @@ export const isLoggedIn = (state) => {
 }
 // Replace this later if non staff members authenticate
 export const isStaff = (state) => {
-  return state.user != null
+  return state.user && state.user.labs && state.user.labs.length > 0
 }

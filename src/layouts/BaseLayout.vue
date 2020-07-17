@@ -28,10 +28,10 @@
         <q-route-tab :to="{ name: 'my_submissions', params: {  } }" v-if="$store.getters.isLoggedIn" replace label="My Submissions" />
         <q-route-tab :to="{ name: 'lab', params: { lab_id: $store.getters.labId} }" replace label="Core Home" v-if="$store.getters.labId"/>
         <q-route-tab :to="{ name: 'create_submission', params: { lab_id: $store.getters.labId } }" replace label="Create Submission" v-if="$store.getters.labId"/>
-        <q-route-tab :to="{ name: 'submissions', params: { lab_id: $store.getters.labId } }" v-if="$store.getters.isLoggedIn && $store.getters.labId" replace label="Submissions" />
+        <q-route-tab :to="{ name: 'submissions', params: { lab_id: $store.getters.labId } }" v-if="$store.getters.isStaff && $store.getters.labId" replace label="Submissions" />
         <!-- <q-route-tab :to="{ name: 'imports' }" v-if="$store.getters.isLoggedIn && $store.getters.labId" replace label="Imports" /> -->
-        <q-route-tab :to="{ name: 'submission_types', params: { lab_id: $store.getters.labId} }" v-if="$store.getters.isLoggedIn && $store.getters.labId" label="Submission Types"/>
-        <q-route-tab :to="{ name: 'settings', params: { lab_id: $store.getters.labId} }" v-if="$store.getters.isLoggedIn && $store.getters.labId" label="Settings"/>
+        <q-route-tab :to="{ name: 'submission_types', params: { lab_id: $store.getters.labId} }" v-if="$store.getters.isStaff && $store.getters.labId" label="Submission Types"/>
+        <q-route-tab :to="{ name: 'settings', params: { lab_id: $store.getters.labId} }" v-if="$store.getters.isStaff && $store.getters.labId" label="Settings"/>
       </q-tabs>
 
     </q-header>
