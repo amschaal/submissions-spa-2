@@ -119,9 +119,9 @@ export default {
   methods: {
     save () {
       var self = this
-      if (this.lab.id) {
+      if (this.$store.getters.labId) {
         this.$axios
-          .put(`/api/labs/${this.lab.id}/`, this.lab)
+          .put(`/api/labs/${this.$store.getters.labId}/`, this.lab)
           .then(({ data }) => {
             self.$store.commit('lab', data)
             self.$q.notify({message: `Settings saved for ${data.name}`, type: 'positive'})

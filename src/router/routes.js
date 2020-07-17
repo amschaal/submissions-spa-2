@@ -1,6 +1,48 @@
 
 const routes = [
   {
+    path: '/submissions/',
+    component: () => import('layouts/BaseLayout'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/submissions'),
+        name: 'my_submissions',
+        meta: { authorize: {isLoggedIn: true} },
+        props: { lab: false }
+      },
+      {
+        path: ':id',
+        component: () => import('pages/submission'),
+        name: 'submission',
+        props: true
+      },
+      {
+        path: ':id/modify/',
+        component: () => import('pages/submission'),
+        name: 'modify_submission',
+        props: (route) => ({ id: route.params.id, modify: true })
+      },
+      {
+        path: ':id/confirm/',
+        component: () => import('pages/confirm_submission'),
+        name: 'confirm_submission',
+        props: (route) => ({ id: route.params.id })
+      },
+      {
+        path: 'created/',
+        component: () => import('pages/submission_created'),
+        name: 'submission_created'
+      }
+      // {
+      //   path: 'submissions/:id',
+      //   component: () => import('pages/submission'),
+      //   name: 'submission',
+      //   props: true
+      // }
+    ]
+  },
+  {
     path: '/:lab_id',
     component: () => import('layouts/BaseLayout'),
     children: [
@@ -9,7 +51,8 @@ const routes = [
         path: 'submissions',
         component: () => import('pages/submissions'),
         name: 'submissions',
-        meta: { authorize: {isLoggedIn: true} }
+        meta: { authorize: {isLoggedIn: true} },
+        props: { lab: true }
       },
       {
         path: 'imports',
@@ -22,29 +65,6 @@ const routes = [
         component: () => import('pages/submission'),
         name: 'create_submission',
         props: {create: true, id: null}
-      },
-      {
-        path: 'submissions/:id',
-        component: () => import('pages/submission'),
-        name: 'submission',
-        props: true
-      },
-      {
-        path: 'submissions/:id/modify/',
-        component: () => import('pages/submission'),
-        name: 'modify_submission',
-        props: (route) => ({ id: route.params.id, modify: true })
-      },
-      {
-        path: 'submissions/:id/confirm/',
-        component: () => import('pages/confirm_submission'),
-        name: 'confirm_submission',
-        props: (route) => ({ id: route.params.id })
-      },
-      {
-        path: 'submissions/created/',
-        component: () => import('pages/submission_created'),
-        name: 'submission_created'
       },
       {
         path: 'submission_types',
@@ -76,13 +96,7 @@ const routes = [
     path: '/',
     component: () => import('layouts/BaseLayout'),
     children: [
-      { path: '', name: 'index', component: () => import('pages/index') },
-      // {
-      //   path: '/submissions',
-      //   component: () => import('pages/submissions'),
-      //   name: 'submissions',
-      //   meta: { authorize: {isLoggedIn: true} }
-      // },
+      { path: '', name: 'index', component: () => import('pages/index') }
       // {
       //   path: '/imports',
       //   component: () => import('pages/imports'),
@@ -95,18 +109,18 @@ const routes = [
       //   name: 'create_submission',
       //   props: {create: true, id: null}
       // },
-      {
-        path: '/submissions/:id',
-        component: () => import('pages/submission'),
-        name: 'submission',
-        props: true
-      },
-      {
-        path: '/submissions/:id/modify/',
-        component: () => import('pages/submission'),
-        name: 'modify_submission',
-        props: (route) => ({ id: route.params.id, modify: true })
-      }
+      // {
+      //   path: '/submissions/:id',
+      //   component: () => import('pages/submission'),
+      //   name: 'submission',
+      //   props: true
+      // },
+      // {
+      //   path: '/submissions/:id/modify/',
+      //   component: () => import('pages/submission'),
+      //   name: 'modify_submission',
+      //   props: (route) => ({ id: route.params.id, modify: true })
+      // },
       // {
       //   path: '/submissions/:id/confirm/',
       //   component: () => import('pages/confirm_submission'),
@@ -140,6 +154,12 @@ const routes = [
       //   path: '/settings',
       //   name: 'settings',
       //   component: () => import('pages/settings'),
+      //   meta: { authorize: {isLoggedIn: true} }
+      // }
+      // {
+      //   path: '/submissions',
+      //   component: () => import('pages/submissions'),
+      //   name: 'submissions',
       //   meta: { authorize: {isLoggedIn: true} }
       // }
     ]

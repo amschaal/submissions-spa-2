@@ -7,13 +7,25 @@
         <q-toolbar-title>
           <span v-if="$store.getters.labId && $store.getters.lab"><router-link style="color: white" :to="{ name: 'lab', params: { lab_id: $route.params.lab_id } }">{{$store.getters.lab.name}}</router-link></span>
           <div slot="subtitle">Sample Submission System</div>
-          <q-btn v-if="!$store.getters.isLoggedIn" @click="$login()" class="float-right" color="primary">Admin</q-btn>
-          <q-btn v-if="$store.getters.isLoggedIn" @click="$logout()" class="float-right" color="primary">Logout</q-btn>
+          <q-btn v-if="!$store.getters.isLoggedIn" @click="$login()" class="float-right" color="primary">Login</q-btn>
+          <span v-else class="float-right">
+            <q-btn-dropdown color="primary" class="q-btn--flat" icon="person" :label="$store.getters.getUser.username">
+              <q-list>
+                <q-item clickable v-close-popup @click="$logout()">
+                  <q-item-section>
+                    <q-item-label>Logout</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+            <!-- <q-btn v-if="$store.getters.isLoggedIn" @click="$logout()"  color="primary">Logout</q-btn> -->
+          </span>
         </q-toolbar-title>
       </q-toolbar>
       <q-tabs
       >
         <q-route-tab to="/" replace label="Home" />
+        <q-route-tab :to="{ name: 'my_submissions', params: {  } }" v-if="$store.getters.isLoggedIn" replace label="My Submissions" />
         <q-route-tab :to="{ name: 'lab', params: { lab_id: $store.getters.labId} }" replace label="Core Home" v-if="$store.getters.labId"/>
         <q-route-tab :to="{ name: 'create_submission', params: { lab_id: $store.getters.labId } }" replace label="Create Submission" v-if="$store.getters.labId"/>
         <q-route-tab :to="{ name: 'submissions', params: { lab_id: $store.getters.labId } }" v-if="$store.getters.isLoggedIn && $store.getters.labId" replace label="Submissions" />

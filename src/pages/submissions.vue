@@ -1,5 +1,5 @@
 <template>
-  <q-page class="docs-input justify-center"><!-- row -->
+  <q-page class="docs-input justify-center">
     <q-table
       ref="table"
       :data="serverData"
@@ -30,7 +30,8 @@
         />
         <q-checkbox v-model="filters.showCancelled" label="Show cancelled" @input="refresh"/>
         <q-checkbox v-model="filters.showCompleted" label="Show completed" @input="refresh"><q-tooltip>Include submissions with a status of "completed"</q-tooltip></q-checkbox>
-        <q-checkbox v-model="filters.participating" label="Participating" @input="refresh"><q-tooltip>Only show submissions in which I am a participant</q-tooltip></q-checkbox>
+        <q-checkbox v-if="this.lab" v-model="filters.participating" label="Participating" @input="refresh"><q-tooltip>Only show submissions in which I am a participant</q-tooltip></q-checkbox>
+        <q-checkbox v-if="this.lab" v-model="filters.mySubmissions" label="My submissions" @input="refresh"><q-tooltip>Only show submissions for which I am a submitter or PI</q-tooltip></q-checkbox>
       </template>
       <template slot="top-right">
         <!-- <q-search hide-underline v-model="filters.filter" :props="props"/> -->
@@ -75,7 +76,8 @@
           <q-td key="id" :props="props"><router-link :to="{ name: 'submission', params: { id: props.row.id }}">{{ props.row.id }}</router-link></q-td>
           <q-td key="internal_id" :props="props"><router-link :to="{ name: 'submission', params: { id: props.row.id }}">{{ props.row.internal_id }}</router-link></q-td>
           <q-td key="import_internal_id" :props="props">{{ props.row.import_internal_id }}</q-td>
-          <q-td key="type" :props="props"><router-link :to="{'name': 'submission_type', 'params': { id: props.row.type.id }}">{{ props.row.type.name }}</router-link></q-td>
+          <q-td key="lab" :props="props">{{ props.row.lab.name }}</q-td>
+          <q-td key="type" :props="props"><router-link v-if="lab" :to="{'name': 'submission_type', 'params': { id: props.row.type.id }}">{{ props.row.type.name }}</router-link><span v-else>{{ props.row.type.name }}</span></q-td>
           <q-td key="status" :props="props">{{ props.row.status }}</q-td>
           <q-td key="participant_names" :props="props">{{ props.row.participant_names.join(', ') }}</q-td>
           <q-td key="submitted" :props="props">{{ props.row.submitted | formatDate }}</q-td>
@@ -89,32 +91,35 @@
         </q-tr>
       </template>
     </q-table>
+    Lab: {{lab}}????
   </q-page>
 </template>
 
 <script>
 // import axios from 'axios'
 import _ from 'lodash'
-var defaultFilters = {
-  filter: '',
-  showCancelled: false,
-  showCompleted: false,
-  participating: false,
-  serverPagination: {
-    page: 1,
-    rowsNumber: 0, // specifying this determines pagination is server-side
-    rowsPerPage: 10,
-    descending: true,
-    sortBy: 'submitted'
-  },
-  visibleColumns: ['locked', 'internal_id', 'type', 'status', 'submitted', 'name', 'email', 'pi_name', 'table_count', 'samples_received']
-}
-
 export default {
   name: 'submissions',
+  props: ['lab'],
   data () {
+    var defaultFilters = {
+      filter: '',
+      showCancelled: false,
+      showCompleted: false,
+      participating: false,
+      mySubmissions: !this.lab,
+      serverPagination: {
+        page: 1,
+        rowsNumber: 0, // specifying this determines pagination is server-side
+        rowsPerPage: 10,
+        descending: true,
+        sortBy: 'submitted'
+      },
+      visibleColumns: ['locked', 'internal_id', 'lab', 'type', 'status', 'submitted', 'name', 'email', 'pi_name', 'table_count', 'samples_received']
+    }
     return {
-      filters: this.$store.getters.getUserSettings.submission_filters ? _.cloneDeep(this.$store.getters.getUserSettings.submission_filters) : defaultFilters,
+      defaultFilters: defaultFilters,
+      filters: this.$store.getters.getUserSettings.submission_filters ? _.merge(defaultFilters, this.$store.getters.getUserSettings.submission_filters) : defaultFilters,
       loading: false,
       serverData: [],
       columns: [
@@ -122,6 +127,7 @@ export default {
         { name: 'id', label: 'System ID', field: 'id', sortable: true },
         { name: 'internal_id', label: 'ID', field: 'internal_id', sortable: true },
         { name: 'import_internal_id', label: 'Imported ID', field: 'import_internal_id', sortable: true },
+        { name: 'lab', label: 'Core', field: 'lab' },
         { name: 'type', label: 'Type', field: 'type' },
         { name: 'status', label: 'Status', field: 'status', sortable: true },
         { name: 'participant_names', label: 'Participants', field: 'participant_names', sortable: false },
@@ -148,15 +154,16 @@ export default {
       if (pagination.descending) {
         sortBy = '-' + sortBy
       }
-      var lab = '&lab=' + this.$store.getters.labId
+      var lab = this.$store.getters.labId && this.lab ? '&lab=' + this.$store.getters.labId : ''
       var search = this.filters.filter !== '' ? `&search=${this.filters.filter}` : ''
       var cancelled = !this.filters.showCancelled ? '&cancelled__isnull=true' : ''
       var completed = !this.filters.showCompleted ? '&exclude_status=completed' : ''
-      var participating = this.filters.participating ? '&participating' : ''
+      var participating = this.filters.participating && this.lab ? '&participating' : ''
+      var mySubmissions = this.filters.mySubmissions || !this.lab ? '&my_submissions' : ''
       var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       // var type = this.$route.query.type ? `&type__name__icontains=${this.$route.query.type}` : ''
       this.$axios
-        .get(`/api/submissions/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${lab}${search}${cancelled}${completed}${participating}`)// ${pagination.descending}&filter=${filter}
+        .get(`/api/submissions/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${lab}${search}${cancelled}${completed}${participating}${mySubmissions}`)// ${pagination.descending}&filter=${filter}
         .then(({ data }) => {
           console.log('data', data)
 
@@ -195,7 +202,7 @@ export default {
       this.$store.dispatch('updateSettings', {key: 'submission_filters', value: this.filters, axios: this.$axios, self: this})
     },
     loadDefaults () {
-      this.$set(this, 'filters', _.cloneDeep(defaultFilters))
+      this.$set(this, 'filters', _.cloneDeep(this.defaultFilters))
       this.refresh()
     }
   },
@@ -204,6 +211,9 @@ export default {
     console.log(this.$route.query.search)
     if (this.$route.query.search) {
       this.filters.filter = this.$route.query.search
+    }
+    if (this.lab) {
+      this.filters.visibleColumns.splice(this.defaultFilters.visibleColumns.indexOf('lab'), 1)
     }
     this.refresh()
   }
