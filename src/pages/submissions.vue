@@ -13,62 +13,69 @@
       binary-state-sort
       :rows-per-page-options="[10,25,0]"
     >
-      <template slot="top-left">
-        <q-select
-          v-model="filters.visibleColumns"
-          multiple
-          outlined
-          dense
-          options-dense
-          :display-value="$q.lang.table.columns"
-          emit-value
-          map-options
-          :options="columns"
-          option-value="name"
-          options-cover
-          style="min-width: 150px"
-        />
-        <q-checkbox v-model="filters.showCancelled" label="Show cancelled" @input="refresh"/>
-        <q-checkbox v-model="filters.showCompleted" label="Show completed" @input="refresh"><q-tooltip>Include submissions with a status of "completed"</q-tooltip></q-checkbox>
-        <q-checkbox v-if="this.lab" v-model="filters.participating" label="Participating" @input="refresh"><q-tooltip>Only show submissions in which I am a participant</q-tooltip></q-checkbox>
-        <q-checkbox v-if="this.lab" v-model="filters.mySubmissions" label="My submissions" @input="refresh"><q-tooltip>Only show submissions for which I am a submitter or PI</q-tooltip></q-checkbox>
-      </template>
-      <template slot="top-right">
+      <template slot="top">
+        <div class="row full-width">
+          <div class="col-3">
+            <q-select
+              v-model="filters.visibleColumns"
+              multiple
+              outlined
+              dense
+              options-dense
+              :display-value="$q.lang.table.columns"
+              emit-value
+              map-options
+              :options="columns"
+              option-value="name"
+              options-cover
+              style="min-width: 150px"
+            />
+            <q-checkbox v-model="filters.showCancelled" label="Show cancelled" @input="refresh"/>
+            <q-checkbox v-model="filters.showCompleted" label="Show completed" @input="refresh"><q-tooltip>Include submissions with a status of "completed"</q-tooltip></q-checkbox>
+            <q-checkbox v-if="this.lab" v-model="filters.participating" label="Participating" @input="refresh"><q-tooltip>Only show submissions in which I am a participant</q-tooltip></q-checkbox>
+            <q-checkbox v-if="this.lab" v-model="filters.mySubmissions" label="My submissions" @input="refresh"><q-tooltip>Only show submissions for which I am a submitter or PI</q-tooltip></q-checkbox>
+          </div>
+          <div class="col-6 q-table__title text-center"><span v-if="lab">{{$store.getters.lab.name}} Submissions</span><span v-else>My Submissions</span></div>
         <!-- <q-search hide-underline v-model="filters.filter" :props="props"/> -->
-        <q-input
-          v-model="filters.filter"
-          debounce="500"
-          placeholder="Search"
-          rounded
-          outlined
-          dense
-        >
-          <template v-slot:prepend>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-        <!-- <q-btn size="sm" label="Save Search Settings" @click="saveSettings"/> -->
-        <q-btn>
-          <q-icon name="settings" />
-          <q-menu>
-            <q-list separator class="scroll" style="min-width: 100px">
-              <q-item
-                v-close-popup
-                clickable
-                @click.native="saveSettings"
-              >
-                <q-item-section>Save search settings</q-item-section>
-              </q-item>
-              <q-item
-                v-close-popup
-                clickable
-                @click.native="loadDefaults"
-              >
-                <q-item-section>Load defaults</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
+        <div class="col-3">
+          <q-input
+            v-model="filters.filter"
+            debounce="500"
+            placeholder="Search"
+            rounded
+            outlined
+            dense
+          >
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+            <template v-slot:append>
+              <q-btn round dense flat icon="settings">
+                <q-menu>
+                  <q-list separator class="scroll" style="min-width: 100px">
+                    <q-item
+                      v-close-popup
+                      clickable
+                      @click.native="saveSettings"
+                    >
+                      <q-item-section>Save search settings</q-item-section>
+                    </q-item>
+                    <q-item
+                      v-close-popup
+                      clickable
+                      @click.native="loadDefaults"
+                    >
+                      <q-item-section>Load defaults</q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-menu>
+              </q-btn>
+            </template>
+          </q-input>
+          <!-- <q-btn size="sm" label="Save Search Settings" @click="saveSettings"/> -->
+
+        </div>
+        </div>
       </template>
       <template slot="body" slot-scope="props">
         <q-tr :props="props" v-bind:class="{'cancelled': props.row.cancelled, 'completed': props.row.status && props.row.status.toUpperCase() === 'COMPLETED'}">
@@ -115,6 +122,7 @@ export default {
         descending: true,
         sortBy: 'submitted'
       },
+      title: this.lab ? `${this.$store.getters.lab.name} submissions` : 'My submissions',
       visibleColumns: ['locked', 'internal_id', 'lab', 'type', 'status', 'submitted', 'name', 'email', 'pi_name', 'table_count', 'samples_received']
     }
     return {
