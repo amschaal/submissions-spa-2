@@ -10,6 +10,24 @@
         <div v-for="email in user.emails" :key="email">
           <q-radio v-model="primary_email" :val="email" :label="email" @input="setPrimaryEmail"/>
         </div>
+        <div>
+          <q-input bottom-slots v-model="claim_email" placeholder="Enter email" :dense="dense" v-if="!claim_in_progress">
+          <template v-slot:hint>
+            Add another email to your profile.
+          </template>
+          <template v-slot:after>
+            <q-btn flat label="Request" @click="requestEmail"/>
+          </template>
+        </q-input>
+        <q-input bottom-slots v-model="token" placeholder="Enter confirmation token" :dense="dense" v-else>
+        <template v-slot:hint>
+          Please enter the confirmation token that was sent to your email here.  If you do not receive an email in a couple minutes, you may try again.
+        </template>
+        <template v-slot:after>
+          <q-btn flat label="Confirm" @click="confirmEmail"/>
+        </template>
+      </q-input>
+        </div>
       </q-card-section>
   </q-card>
   </q-page>
@@ -24,7 +42,10 @@ export default {
   data () {
     return {
       user: null,
-      primary_email: null
+      primary_email: null,
+      claim_email: null,
+      claim_in_progress: false,
+      token: null
     }
   },
   methods: {
@@ -50,6 +71,36 @@ export default {
         .catch(function () {
           self.$q.notify({message: `Error setting email as primary: ${self.primary_email}`, type: 'negative'})
           self.primary_email = self.user.email
+        })
+    },
+    requestEmail () {
+      var self = this
+      this.$axios
+        .post('/api/emails/claim/', { email: this.claim_email })
+        .then(function (response) {
+          self.$q.notify(`An code for claiming this email has been sent to ${self.claim_email}.`)
+          self.claim_in_progress = true
+        })
+        .catch(function (error) {
+          self.$q.notify({message: error.response.data.message, type: 'negative'})
+        })
+    },
+    confirmEmail () {
+      var self = this
+      if (!this.token) {
+        self.$q.notify({message: 'Please enter the confimation token sent to your email.', type: 'negative'})
+      }
+      this.$axios
+        .post('/api/emails/validate/', { token: this.token })
+        .then(function (response) {
+          self.$q.notify(`You have successfully added ${self.claim_email} to your account.`)
+          self.user.emails.push(response.data.email)
+          self.claim_in_progress = false
+          self.token = null
+          self.claim_email = null
+        })
+        .catch(function (error) {
+          self.$q.notify({message: error.response.data.message, type: 'negative'})
         })
     }
   },
