@@ -11,6 +11,11 @@
           <span v-else class="float-right">
             <q-btn-dropdown color="primary" class="q-btn--flat" icon="person" :label="$store.getters.getUser.username">
               <q-list>
+                <q-item clickable v-close-popup :to="{ name: 'profile'}" replace>
+                  <q-item-section>
+                    <q-item-label>Profile</q-item-label>
+                  </q-item-section>
+                </q-item>
                 <q-item clickable v-close-popup @click="$logout()">
                   <q-item-section>
                     <q-item-label>Logout</q-item-label>
