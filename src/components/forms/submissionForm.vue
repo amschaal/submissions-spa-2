@@ -804,19 +804,6 @@ export default {
   .docs-input .q-field {
     margin: 2px 0px;
   }
-  fieldset {
-    margin-top: 12px;
-    border: 1px solid #006daf;
-    padding: 12px;
-    border-radius: 8px;
-    padding-bottom: 20px;
-  }
-  legend {
-    color: #006daf;
-    font-style: italic;
-    padding-left: 12px;
-    padding-right: 12px;
-  }
   .error {
     color: var(--q-color-negative);
   }

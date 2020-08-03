@@ -98,7 +98,6 @@
         </q-tr>
       </template>
     </q-table>
-    Lab: {{lab}}????
   </q-page>
 </template>
 
