@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="docs-input row justify-center">
+  <q-page padding class="docs-input row justify-center" v-if="$store.getters.lab">
     <q-card style="width:100%">
       <q-card-section>
         <span v-if="!type.id">Create</span> Submission Type <span class="inactive" v-if="type.id && !type.active"> (Inactive)</span>
@@ -175,7 +175,7 @@ export default {
       watch_changes: false,
       user_options: [],
       status_option: null,
-      status_options: this.$store.getters.lab.statuses.map(status => ({label: status, value: status})),
+      status_options: [],
       toolbar: [
         ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
         ['token', 'hr', 'link', 'custom_btn'],
@@ -251,6 +251,7 @@ export default {
   mounted: function () {
     // Edit, Create, and Copy from logic is a bit convoluted.  Would be good to clean this up.
     var self = this
+    this.init_lab()
     if (!this.id || this.id === 'create') {
       this.create = true
     }
@@ -306,11 +307,19 @@ export default {
     // openExamples () {
     //   this.$refs.samplesheet.openSamplesheet()
     // },
+    init_lab () {
+      if (this.$store.getters.lab) {
+        this.status_options = this.$store.getters.lab.statuses.map(status => ({label: status, value: status}))
+      }
+    },
     submit () {
       var self = this
       var id = this.id
       var action = !this.create ? 'put' : 'post'
       var url = !this.create ? '/api/submission_types/' + id + '/' : '/api/submission_types/'
+      if (this.create) {
+        this.type.lab = this.$store.getters.lab.id
+      }
       this.errors = {}
       this.$axios[action](url, this.type)
         .then(function (response) {
@@ -460,6 +469,9 @@ export default {
     }
   },
   watch: {
+    '$store.getters.lab': function () {
+      this.init_lab()
+    },
     'type': {
       handler (newVal, oldVal) {
         if (!this.watch_changes) {

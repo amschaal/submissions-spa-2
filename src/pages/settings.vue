@@ -140,6 +140,11 @@ export default {
       // return true
     }
   },
+  watch: {
+    '$store.getters.lab': function () {
+      this.lab = _.cloneDeep(this.$store.getters.lab)
+    }
+  },
   components: {
     schemaForm
   }
