@@ -35,7 +35,7 @@
             <q-checkbox v-if="this.lab" v-model="filters.participating" label="Participating" @input="refresh"><q-tooltip>Only show submissions in which I am a participant</q-tooltip></q-checkbox>
             <q-checkbox v-if="this.lab" v-model="filters.mySubmissions" label="My submissions" @input="refresh"><q-tooltip>Only show submissions for which I am a submitter or PI</q-tooltip></q-checkbox>
           </div>
-          <div class="col-6 q-table__title text-center"><span v-if="lab">{{$store.getters.lab.name}} Submissions</span><span v-else>My Submissions</span></div>
+          <div class="col-6 q-table__title text-center"><span v-if="lab && $store.getters.lab">{{$store.getters.lab.name}} Submissions</span><span v-else>My Submissions</span></div>
         <!-- <q-search hide-underline v-model="filters.filter" :props="props"/> -->
         <div class="col-3">
           <q-input
@@ -81,7 +81,7 @@
         <q-tr :props="props" v-bind:class="{'cancelled': props.row.cancelled, 'completed': props.row.status && props.row.status.toUpperCase() === 'COMPLETED'}">
           <q-td key="locked" :props="props"><q-icon size="18px" name="cancel" v-if="props.row.cancelled" color="red" title="Submission cancelled"/><q-icon size="18px" name="warning" v-if="hasWarnings(props.row)" color="warning" title="There are warnings associated with this submission"/><q-icon size="18px" name="lock" v-if="props.row.locked" color="red"/><q-icon size="18px" name="lock_open" v-else color="green"/></q-td>
           <q-td key="id" :props="props"><router-link :to="{ name: 'submission', params: { id: props.row.id }}">{{ props.row.id }}</router-link></q-td>
-          <q-td key="internal_id" :props="props"><router-link :to="{ name: 'submission', params: { id: props.row.id }}">{{ props.row.internal_id }}</router-link></q-td>
+          <q-td key="internal_id" :props="props"><router-link :to="{ name: 'submission', params: { id: props.row.id }}"><span v-if="props.row.internal_id">{{props.row.internal_id}}</span><span v-else>None Assigned</span></router-link></q-td>
           <q-td key="import_internal_id" :props="props">{{ props.row.import_internal_id }}</q-td>
           <q-td key="lab" :props="props">{{ props.row.lab.name }}</q-td>
           <q-td key="type" :props="props"><router-link v-if="lab" :to="{'name': 'submission_type', 'params': { id: props.row.type.id }}">{{ props.row.type.name }}</router-link><span v-else>{{ props.row.type.name }}</span></q-td>
@@ -121,7 +121,6 @@ export default {
         descending: true,
         sortBy: 'submitted'
       },
-      title: this.lab ? `${this.$store.getters.lab.name} submissions` : 'My submissions',
       visibleColumns: ['locked', 'internal_id', 'lab', 'type', 'status', 'submitted', 'name', 'email', 'pi_name', 'table_count', 'samples_received']
     }
     return {

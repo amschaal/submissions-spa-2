@@ -35,19 +35,19 @@
           </div>
         </div>
         <div class="row">
-          <div class="field col-sm-6 col-md-2">
-            <p class="caption">ID</p>
-            {{submission.internal_id}}
+          <div class="field col-sm-6 col-md-4">
+            <p class="caption">Project ID</p>
+            <SubmissionId v-model="submission.internal_id" :submission="submission" v-if="submission.id && isAdmin"/>
           </div>
           <div class="field col-sm-6 col-md-2">
             <p class="caption">Submitted</p>
             {{submission.submitted|formatDate}}
           </div>
-          <div class="field col-sm-12 col-md-5">
+          <div class="field col-sm-12 col-md-6">
             <p class="caption">Type</p>
             {{submission_type.name}}
           </div>
-          <div class="field col-sm-12 col-md-5" v-if="$store.getters.isStaff">
+          <div class="field col-sm-12 col-md-12" v-if="$store.getters.isStaff">
             <p class="caption">Participants</p>
             <span v-if="submission.participant_names">{{submission.participant_names.join(', ')}}</span>
           </div>
@@ -163,6 +163,7 @@
 // import Agschema from './agschema.vue'
 import CustomFields from './forms/customFields.vue'
 import StatusSelector from './statusSelector.vue'
+import SubmissionId from './submissionId.vue'
 import Lock from './lock.vue'
 import Cancel from './cancel.vue'
 import SamplesReceived from './samplesReceived.vue'
@@ -286,7 +287,8 @@ export default {
     StatusSelector,
     Lock,
     Cancel,
-    SamplesReceived
+    SamplesReceived,
+    SubmissionId
   }
 }
 </script>
@@ -299,6 +301,7 @@ export default {
   }
   div.row div p.caption {
     margin: 0 0 5px;
+    font-weight: bold;
   }
   pre#confirmation {
     white-space: pre-wrap;
