@@ -52,6 +52,17 @@
         </q-field>
         <q-select
           dense
+          v-model="type.default_id"
+          :options="prefixes"
+          option-value="id"
+          :option-label="opt => `${opt.generate_id}`"
+          emit-value
+          map-options
+          label="Auto assign internal ID (optional)"
+          clearable
+        />
+        <q-select
+          dense
           label="Default participants"
           :error="hasError('type')"
           :error-message="errorMessage('type')"
@@ -174,6 +185,7 @@ export default {
       save_message: null,
       watch_changes: false,
       user_options: [],
+      prefixes: [],
       status_option: null,
       status_options: [],
       toolbar: [
@@ -310,6 +322,7 @@ export default {
     init_lab () {
       if (this.$store.getters.lab) {
         this.status_options = this.$store.getters.lab.statuses.map(status => ({label: status, value: status}))
+        this.loadPrefixes()
       }
     },
     submit () {
@@ -343,6 +356,19 @@ export default {
         this.save_message()
         this.save_message = null
       }
+    },
+    loadPrefixes () {
+      var self = this
+      this.$axios.get(`/api/prefixes/?lab_id=${this.$store.getters.lab.id}`)
+        .then(
+          function (response) {
+            self.prefixes = response.data.results
+          })
+        .catch(
+          function () {
+            self.$q.notify({message: 'Error getting prefixes.', type: 'negative'})
+          }
+        )
     },
     add_status (status) {
       if (this.type.statuses.indexOf(status) === -1) {
