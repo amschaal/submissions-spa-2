@@ -20,10 +20,7 @@
               <pre id="confirmation">{{submission_type.confirmation_text}}</pre>
             </q-banner>
           </div>
-          <div class="field col-sm-12 col-lg-4 q-mt-sm q-mb-sm">
-            <StatusSelector v-model="submission.status" :submission="submission" v-if="submission.id && isAdmin"/>
-          </div>
-          <div class="col-sm-12 col-lg-8 q-mt-sm q-mb-sm">
+          <div class="col-sm-12 col-lg-12 q-mt-sm q-mb-sm">
             <div class="row">
               <div class="col-lg-12">
                 <q-btn v-if="canModify" label="Modify" class="float-right q-ml-xs" @click="$router.push({name: 'modify_submission', params: {id: submission.id}})"/>
@@ -35,17 +32,21 @@
           </div>
         </div>
         <div class="row">
-          <div class="field col-sm-6 col-md-4">
-            <p class="caption">Project ID</p>
-            <SubmissionId v-model="submission.internal_id" :submission="submission" v-if="submission.id && isAdmin"/>
+          <div class="field col-sm-12 col-md-6">
+            <p class="caption">Status</p>
+            <StatusSelector v-model="submission.status" :submission="submission" v-if="submission.id && isAdmin"/><span v-else-if="submission.status">{{submission.status}}</span><span v-else>None</span>
           </div>
-          <div class="field col-sm-6 col-md-2">
-            <p class="caption">Submitted</p>
-            {{submission.submitted|formatDate}}
+          <div class="field col-sm-12 col-md-6">
+            <p class="caption">Project ID</p>
+            <SubmissionId v-model="submission.internal_id" :submission="submission" v-if="submission.id && isAdmin"/><span v-else-if="submission.internal_id">{{submission.internal_id}}</span><span v-else>Not assigned</span>
           </div>
           <div class="field col-sm-12 col-md-6">
             <p class="caption">Type</p>
             {{submission_type.name}}
+          </div>
+          <div class="field col-sm-12 col-md-6">
+            <p class="caption">Submitted</p>
+            {{submission.submitted|formatDate}}
           </div>
           <div class="field col-sm-12 col-md-12" v-if="$store.getters.isStaff">
             <p class="caption">Participants</p>

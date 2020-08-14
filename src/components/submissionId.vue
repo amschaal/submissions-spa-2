@@ -1,12 +1,11 @@
 <template>
-  <div  class="inline row">
+  <div>
     <div v-if="!edit">
-      <span v-if="internal_id">{{internal_id}}</span><span v-else>Not Assigned </span> <q-btn size="sm" label="Modify" @click="edit=true"/>
+      <span v-if="internal_id">{{internal_id}} </span><span v-else>Not Assigned </span> <q-btn size="sm" label="Modify" @click="edit=true"/>
     </div>
     <div v-else>
       <q-select
         dense
-        class="col-10"
         v-model="prefix_id"
         :options="prefixes"
         option-value="id"
@@ -16,7 +15,7 @@
         label="Assign Project ID"
         @input="idChanged()"
       />
-      <q-checkbox v-model="email" label="Email submitter" class="col-2"/>
+      <q-checkbox v-model="email" label="Email submitter"/>
       <q-btn size="sm" label="Cancel" color="negative" @click="edit=false"/>
     </div>
 </div>

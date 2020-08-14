@@ -2,7 +2,7 @@
   <q-page padding>
     <div v-if="lab">
       <h5>Settings for "{{lab.name}}"</h5>
-      <prefixes :lab="lab"/>
+      <projectIds :lab="lab"/>
       <!-- <draggable :list="statuses">
         <div v-for="status in statuses" :key="status" class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white">
           <div class="q-chip-main ellipsis">{{status}}</div>
@@ -69,7 +69,7 @@
 
 <script>
 import schemaForm from '../components/forms/schemaForm.vue'
-import prefixes from '../components/prefixes.vue'
+import projectIds from '../components/projectIds.vue'
 import _ from 'lodash'
 // import draggable from 'vuedraggable'
 export default {
@@ -149,7 +149,7 @@ export default {
   },
   components: {
     schemaForm,
-    prefixes
+    projectIds
   }
 }
 </script>

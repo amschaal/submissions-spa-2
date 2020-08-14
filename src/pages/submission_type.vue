@@ -53,12 +53,12 @@
         <q-select
           dense
           v-model="type.default_id"
-          :options="prefixes"
+          :options="project_ids"
           option-value="id"
           :option-label="opt => `${opt.generate_id}`"
           emit-value
           map-options
-          label="Auto assign internal ID (optional)"
+          label="Auto-assign Project ID (optional)"
           clearable
         />
         <q-select
@@ -185,7 +185,7 @@ export default {
       save_message: null,
       watch_changes: false,
       user_options: [],
-      prefixes: [],
+      project_ids: [],
       status_option: null,
       status_options: [],
       toolbar: [
@@ -322,7 +322,7 @@ export default {
     init_lab () {
       if (this.$store.getters.lab) {
         this.status_options = this.$store.getters.lab.statuses.map(status => ({label: status, value: status}))
-        this.loadPrefixes()
+        this.loadProjectIDs()
       }
     },
     submit () {
@@ -357,16 +357,16 @@ export default {
         this.save_message = null
       }
     },
-    loadPrefixes () {
+    loadProjectIDs () {
       var self = this
-      this.$axios.get(`/api/prefixes/?lab_id=${this.$store.getters.lab.id}`)
+      this.$axios.get(`/api/project_ids/?lab_id=${this.$store.getters.lab.id}`)
         .then(
           function (response) {
-            self.prefixes = response.data.results
+            self.project_ids = response.data.results
           })
         .catch(
           function () {
-            self.$q.notify({message: 'Error getting prefixes.', type: 'negative'})
+            self.$q.notify({message: 'Error getting project IDs.', type: 'negative'})
           }
         )
     },
