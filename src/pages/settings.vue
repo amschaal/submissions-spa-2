@@ -2,67 +2,119 @@
   <q-page padding>
     <div v-if="lab">
       <h5>Settings for "{{lab.name}}"</h5>
-      <projectIds :lab="lab"/>
-      <!-- <draggable :list="statuses">
-        <div v-for="status in statuses" :key="status" class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white">
-          <div class="q-chip-main ellipsis">{{status}}</div>
-        </div>
-          <button slot="header">Add</button>
-      </draggable> -->
-      <q-select
-        label="Users"
-        v-if="user_options"
-        multiple
-        v-model="lab.users"
-        :options="user_options"
-        map-options emit-value
-      />
-      <q-field
-        label="Home Page"
-        stack-label
-      >
-        <q-editor v-model="lab.home_page"
-        :toolbar="toolbar"
-        />
-      </q-field>
-      <q-field
-        label="Submission Page"
-        stack-label
-        hint="Enter custom content to be shown at the top of the submission page."
-      >
-        <q-editor v-model="lab.submission_page"
-        :toolbar="toolbar"
-        />
-      </q-field>
-      <!-- <q-field
-        label="Statuses"
-        label-width="2"
-        hint="A list of statuses that can be used for submission types.  Special statuses include 'Samples Received' and 'Completed'."
-      >
-        <q-chips-input v-model="lab.statuses" @input="addStatus" @remove="removeStatus"/>
-      </q-field> -->
-      <q-select
-        dense options-dense
-        v-model="lab.statuses"
-        @input="addStatus" @remove="removeStatus"
-        use-input
-        use-chips
-        multiple
-        hide-dropdown-icon
-        input-debounce="0"
-        new-value-mode="add-unique"
-        placeholder="Enter options"
-        stack-label
-        label="Statuses"
-        hint="A list of statuses that can be used for submission types.  Special statuses include 'Samples Received' and 'Completed'."
-        />
-      <h5>Submission variables</h5>
-      <schemaForm v-model="lab.submission_variables" :options="{variables: {}}" type="submission"/>
-      <h5>Table variables</h5>
-      <schemaForm v-model="lab.table_variables" :options="{variables: {}}" type="table"/>
-      <q-card-actions>
-        <q-btn @click="save" label="Save"></q-btn>
-      </q-card-actions>
+      <q-tabs
+          v-model="tab"
+          class="text "
+        >
+        <q-tab name="settings_tab" label="General" />
+        <q-tab name="project_id_tab" label="Project IDs" />
+      </q-tabs>
+      <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="settings_tab">
+          <!-- <draggable :list="statuses">
+            <div v-for="status in statuses" :key="status" class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white">
+              <div class="q-chip-main ellipsis">{{status}}</div>
+            </div>
+              <button slot="header">Add</button>
+          </draggable> -->
+          <q-list bordered class="rounded-borders">
+            <q-expansion-item
+              expand-separator
+              label="Users"
+              caption="Edit users"
+              group="settings"
+            >
+            <q-select
+              label="Users"
+              v-if="user_options"
+              multiple
+              v-model="lab.users"
+              :options="user_options"
+              map-options emit-value
+            />
+            </q-expansion-item>
+            <q-expansion-item
+              expand-separator
+              label="Content"
+              caption="Edit page contents"
+              group="settings"
+            >
+              <q-field
+                label="Home Page"
+                stack-label
+              >
+                <q-editor v-model="lab.home_page"
+                :toolbar="toolbar"
+                />
+              </q-field>
+              <q-field
+                label="Submission Page"
+                stack-label
+                hint="Enter custom content to be shown at the top of the submission page."
+              >
+                <q-editor v-model="lab.submission_page"
+                :toolbar="toolbar"
+                />
+              </q-field>
+            </q-expansion-item>
+            <q-expansion-item
+              expand-separator
+              label="Statuses"
+              caption="Edit available type statuses"
+              group="settings"
+            >
+            <q-select
+              dense options-dense
+              v-model="lab.statuses"
+              @input="addStatus" @remove="removeStatus"
+              use-input
+              use-chips
+              multiple
+              hide-dropdown-icon
+              input-debounce="0"
+              new-value-mode="add-unique"
+              placeholder="Enter options"
+              stack-label
+              label="Statuses"
+              hint="A list of statuses that can be used for submission types.  Special statuses include 'Samples Received' and 'Completed'."
+              />
+            </q-expansion-item>
+            <q-expansion-item
+              expand-separator
+              label="Submission variables"
+              group="settings"
+            >
+              <h5>Submission variables</h5>
+              <schemaForm v-model="lab.submission_variables" :options="{variables: {}}" type="submission"/>
+            </q-expansion-item>
+            <q-expansion-item
+              expand-separator
+              label="Table variables"
+              caption="Table level variables"
+              group="settings"
+            >
+            <h5>Table variables</h5>
+            <schemaForm v-model="lab.table_variables" :options="{variables: {}}" type="table"/>
+            </q-expansion-item>
+          </q-list>
+
+          <!-- <q-field
+            label="Statuses"
+            label-width="2"
+            hint="A list of statuses that can be used for submission types.  Special statuses include 'Samples Received' and 'Completed'."
+          >
+            <q-chips-input v-model="lab.statuses" @input="addStatus" @remove="removeStatus"/>
+          </q-field> -->
+
+          <q-card-actions>
+            <q-btn @click="save" label="Save"></q-btn>
+          </q-card-actions>
+        </q-tab-panel>
+        <q-tab-panel name="project_id_tab">
+          <projectIds :lab="lab"/>
+        </q-tab-panel>
+      </q-tab-panels>
+
     </div>
   </q-page>
 </template>
@@ -83,6 +135,7 @@ export default {
       table_variables: {},
       statuses: ['one', 'two', 'three'],
       user_options: [],
+      tab: 'settings_tab',
       toolbar: [
         ['bold', 'italic', 'strike', 'underline'],
         ['token', 'link', 'custom_btn'],
