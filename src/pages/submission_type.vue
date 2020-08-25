@@ -37,6 +37,7 @@
           v-model="type.name"
           type="text"
           />
+<!--
         <q-field
           dense
           label="Internal ID"
@@ -50,6 +51,7 @@
           <q-input dense v-model="type.next_id" type="number" stack-label label="Next ID" class="col"/>
           <div class="col">Next Internal ID:<br><b>{{next_internal_id}}</b></div>
         </q-field>
+-->
         <q-select
           dense
           v-model="type.default_id"

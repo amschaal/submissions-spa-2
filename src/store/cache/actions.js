@@ -29,7 +29,7 @@ export const fetchValidators = (context, {axios}) => {
 export const fetchTypes = (context, {axios}) => {
   console.log('context', context)
   return new Promise((resolve, reject) => {
-    return axios.get(`/api/submission_types/?page_size=100?lab=${context.state.lab_id}&active=true`)
+    return axios.get(`/api/submission_types/?page_size=100&lab=${context.state.lab_id}&active=true`)
       .then(function (response) {
         context.commit('types', response.data.results)
         resolve(response)

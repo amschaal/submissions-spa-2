@@ -48,9 +48,11 @@
             <p class="caption">Submitted</p>
             {{submission.submitted|formatDate}}
           </div>
-          <div class="field col-sm-12 col-md-12" v-if="$store.getters.isStaff">
+          <div class="field col-sm-12 col-md-12" v-if="isAdmin">
             <p class="caption">Participants</p>
-            <span v-if="submission.participant_names">{{submission.participant_names.join(', ')}}</span>
+            <participants :submission="submission"/>
+            <!-- <userField v-model="submission.participants" v-if="submission.id && isAdmin"/>
+            <span v-else-if="submission.participants"></span> -->
           </div>
         </div>
         <div class="row">
@@ -168,6 +170,7 @@ import SubmissionId from './submissionId.vue'
 import Lock from './lock.vue'
 import Cancel from './cancel.vue'
 import SamplesReceived from './samplesReceived.vue'
+import participants from './participants.vue'
 // import Vue from 'vue'
 import _ from 'lodash'
 
@@ -289,7 +292,8 @@ export default {
     Lock,
     Cancel,
     SamplesReceived,
-    SubmissionId
+    SubmissionId,
+    participants
   }
 }
 </script>

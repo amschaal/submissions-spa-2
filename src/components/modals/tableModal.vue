@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <span>
     <q-dialog
       v-model="opened"
     >
@@ -17,8 +17,8 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <q-btn label="Select" @click="opened = true"/>
-  </div>
+    <q-btn size="sm" label="Modify" @click="opened = true"/>
+  </span>
 </template>
 <script>
 export default {

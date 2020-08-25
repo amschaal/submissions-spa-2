@@ -24,14 +24,7 @@
               caption="Edit users"
               group="settings"
             >
-            <q-select
-              label="Users"
-              v-if="user_options"
-              multiple
-              v-model="lab.users"
-              :options="user_options"
-              map-options emit-value
-            />
+            <userField v-model="lab.users"/>
             </q-expansion-item>
             <q-expansion-item
               expand-separator
@@ -81,19 +74,20 @@
             </q-expansion-item>
             <q-expansion-item
               expand-separator
-              label="Submission variables"
+              label="Submission Level Variables"
+              caption="Edit list of submisison level variables to quickly add to submission types"
               group="settings"
             >
-              <h5>Submission variables</h5>
+              <h5>*Submission level variables are variables that are used to create a single field in a form.  If you only want a single value, this is the type of variable to use.  Otherwise, look at using table level variables.</h5>
               <schemaForm v-model="lab.submission_variables" :options="{variables: {}}" type="submission"/>
             </q-expansion-item>
             <q-expansion-item
               expand-separator
-              label="Table variables"
-              caption="Table level variables"
+              label="Table Level Variables"
+              caption="Edit list of table level variables to quickly add to submission types"
               group="settings"
             >
-            <h5>Table variables</h5>
+            <h5>* Table level variables are variables that are used to create columns in a table.  If a user is to create multiple entries for a variable, that variable should be configured for a table.</h5>
             <schemaForm v-model="lab.table_variables" :options="{variables: {}}" type="table"/>
             </q-expansion-item>
           </q-list>
@@ -107,7 +101,7 @@
           </q-field> -->
 
           <q-card-actions>
-            <q-btn @click="save" label="Save"></q-btn>
+            <q-btn @click="save" label="Save" color="primary"></q-btn>
           </q-card-actions>
         </q-tab-panel>
         <q-tab-panel name="project_id_tab">
@@ -122,6 +116,7 @@
 <script>
 import schemaForm from '../components/forms/schemaForm.vue'
 import projectIds from '../components/projectIds.vue'
+import userField from '../components/forms/userField.vue'
 import _ from 'lodash'
 // import draggable from 'vuedraggable'
 export default {
@@ -202,7 +197,8 @@ export default {
   },
   components: {
     schemaForm,
-    projectIds
+    projectIds,
+    userField
   }
 }
 </script>
