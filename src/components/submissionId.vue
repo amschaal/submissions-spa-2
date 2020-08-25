@@ -6,8 +6,8 @@
     <div v-else>
       <q-select
         dense
-        v-model="prefix_id"
-        :options="prefixes"
+        v-model="project_id"
+        :options="project_ids"
         option-value="id"
         :option-label="opt => `${opt.generate_id}`"
         emit-value
@@ -27,44 +27,45 @@ export default {
   data () {
     return {
       internal_id: this.value ? this.value : null,
-      prefix_id: null,
+      project_id: null,
       email: false,
       edit: false,
-      prefixes: []
+      project_ids: []
     }
   },
   methods: {
     idChanged () {
       var self = this
       console.log('status', this.status)
-      this.$axios.post(`/api/submissions/${this.submission.id}/update_id/`, {prefix_id: this.prefix_id, email: this.email})
+      this.$axios.post(`/api/submissions/${this.submission.id}/update_id/`, {project_id: this.project_id, email: this.email})
         .then(function (response) {
           self.$q.notify({message: response.data.message, type: 'positive'})
-          self.$emit('input', response.data.internal_id)
+          self.internal_id = response.data.internal_id
+          self.$emit('input', self.internal_id)
           self.edit = false
         })
         .catch(function (response) {
           self.$q.notify({message: 'ID assignment failed!', type: 'negative'})
-          self.prefix_id = null
+          self.project_id = null
           self.edit = false
         })
     },
-    loadPrefixes () {
+    loadProjectIds () {
       var self = this
-      this.$axios.get(`/api/prefixes/?lab_id=${this.submission.lab.id}`)
+      this.$axios.get(`/api/project_ids/?lab_id=${this.submission.lab.id}`)
         .then(
           function (response) {
-            self.prefixes = response.data.results
+            self.project_ids = response.data.results
           })
         .catch(
           function () {
-            self.$q.notify({message: 'Error getting prefixes.', type: 'negative'})
+            self.$q.notify({message: 'Error getting project ids.', type: 'negative'})
           }
         )
     }
   },
   mounted () {
-    this.loadPrefixes()
+    this.loadProjectIds()
   }
 }
 </script>

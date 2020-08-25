@@ -21,20 +21,6 @@
           </template>
           </q-input>
       </fieldset>
-          <q-select
-            outlined
-            emit-value map-options
-            label="Participants"
-            label-width="2"
-            color="grey"
-            options-selected-class="selected"
-            :error="hasError('type')"
-            bottom-slots :error-message="errorMessage('type')"
-            v-if="isAdmin && user_options && submission.participants"
-            multiple
-            v-model="submission.participants"
-            :options="user_options"
-          />
         <fieldset>
           <legend>Please select the submission type</legend>
           <q-select
