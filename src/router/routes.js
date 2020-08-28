@@ -59,7 +59,7 @@ const routes = [
         path: 'submissions',
         component: () => import('pages/submissions'),
         name: 'submissions',
-        meta: { authorize: {isLoggedIn: true} },
+        meta: { authorize: {isLoggedIn: true, isStaff: true} },
         props: { lab: true }
       },
       {
@@ -78,14 +78,14 @@ const routes = [
         path: 'submission_types',
         component: () => import('pages/submission_types'),
         name: 'submission_types',
-        meta: { authorize: {isLoggedIn: true} }
+        meta: { authorize: {isLoggedIn: true, isStaff: true} }
       },
       {
         path: 'submission_type/:id',
         component: () => import('pages/submission_type'),
         name: 'submission_type',
         props: true,
-        meta: { authorize: {isLoggedIn: true} }
+        meta: { authorize: {isLoggedIn: true, isStaff: true} }
       },
       {
         path: 'submission_type/create',
@@ -96,7 +96,7 @@ const routes = [
         path: 'settings',
         name: 'settings',
         component: () => import('pages/settings'),
-        meta: { authorize: {isLoggedIn: true} }
+        meta: { authorize: {isLoggedIn: true, isStaff: true} }
       }
     ]
   },

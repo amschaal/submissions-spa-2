@@ -21,19 +21,33 @@ export default function ({ store, ssrContext }) {
   Router.beforeEach((to, from, next) => {
     // redirect to login page if not logged in and trying to access a restricted page
     const { authorize } = to.meta
-    console.log('route', to, from, next)
+    console.log('route', to, from, next, to.params)
+    if (to.params.lab_id && to.params.lab_id !== store.getters.labId) {
+      store.dispatch('setLabId', {axios: axiosInstance, labId: to.params.lab_id})
+    }
+    console.log('route isStaff', authorize, !store.getters.isStaff)
     if (authorize && authorize.isLoggedIn && to.path !== '/' && !store.getters.isLoggedIn) {
       // TODO: Don't repeat the code alread in auth store (use dispatch)
-      console.log('check auth!!!')
-      axiosInstance.get('/api/get_user/')
+      console.log('route check auth!!!')
+      store.dispatch('checkAuth', {axios: axiosInstance})
+      // axiosInstance.get('/api/get_user/')
         .then(function (response) {
+          console.log('checkAuth from route')
+          if (authorize && authorize.isStaff && !store.getters.isStaff) {
+            alert('no soup for you')
+            return next({ path: '/' })
+          }
           next()
         })
         .catch(function (error) {
           console.log('error', error)
           return next({ path: '/' })
         })
+    } else if (authorize && authorize.isStaff && !store.getters.isStaff) {
+      console.log('route NO GOOD!')
+      return next({ path: '/' })
     } else {
+      console.log('route GOOD')
       next()
     }
   })
