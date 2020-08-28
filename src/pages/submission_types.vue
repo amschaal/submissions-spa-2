@@ -12,21 +12,32 @@
       binary-state-sort
       :rows-per-page-options="[10,25,0]"
     >
-      <template slot="top-right" slot-scope="props" :props="props">
-        <q-checkbox v-model="showInactive" label="Show inactive" @input="refresh" class="inactive"/>
-        <q-input
-          v-model="filter"
-          debounce="500"
-          placeholder="Search"
-          rounded
-          outlined
-          dense
-        >
-          <template v-slot:prepend>
-            <q-icon name="search" />
-          </template>
-        </q-input>
+      <template slot="top" slot-scope="props" :props="props">
+        <div class="row full-width">
+          <div class="col-2">
+            <q-btn color="primary" label="Create" class="q-mr-sm" :to="{name: 'create_submission_type'}"/>
+          </div>
+          <div class="col-5">
+            <div class="col-6 q-table__title text-center"><span v-if="$store.getters.lab">{{$store.getters.lab.name}} Submissions Types <selectLabModal page="submission_types"/></span></div>
+          </div>
+          <div class="col-5">
+            <q-checkbox v-model="showInactive" label="Show inactive" @input="refresh" class="inactive"/>
+            <q-input
+              v-model="filter"
+              debounce="500"
+              placeholder="Search"
+              rounded
+              outlined
+              dense
+            >
+              <template v-slot:prepend>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </div>
+        </div>
       </template>
+
       <template slot="body" slot-scope="props">
         <q-tr :props="props" v-bind:class="{'inactive': !props.row.active}">
           <q-td key="sort_order" :props="props">{{ props.row.sort_order }}</q-td>
@@ -36,18 +47,19 @@
           <q-td key="submission_count" :props="props"><router-link :to="{ name: 'submissions', query: { search: props.row.name }}">{{ props.row.submission_count }}</router-link></q-td>
         </q-tr>
       </template>
-      <template slot="top-left" slot-scope="props" :props="props">
-        <q-btn color="primary" label="Create" class="q-mr-sm" :to="{name: 'create_submission_type'}"/>
-      </template>
     </q-table>
   </q-page>
 </template>
 
 <script>
 // import axios from 'axios'
+import selectLabModal from '../components/modals/selectLabModal.vue'
 
 export default {
   name: 'submission_types',
+  components: {
+    selectLabModal
+  },
   data () {
     return {
       filter: '',

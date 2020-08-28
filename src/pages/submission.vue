@@ -98,6 +98,7 @@ export default {
           }
           // self.submission = response.data
           Vue.set(self, 'submission', response.data)
+          self.setLab()
         })
     }
   },
@@ -107,6 +108,11 @@ export default {
       console.log('submissionUpdated', submission)
       Vue.set(this, 'submission', submission)
       // this.submission = submission
+    },
+    setLab () {
+      if (!this.$store.getters.lab || this.$store.getters.lab.lab_id !== this.submission.lab.lab_id) {
+        this.$store.dispatch('setLabId', {axios: this.$axios, labId: this.submission.lab.lab_id})
+      }
     }
   },
   watch: {
@@ -123,6 +129,7 @@ export default {
             console.log('response', response)
             self.submission = response.data
             Vue.set(self.submission, 'type', response.data.type.id)
+            self.setLab()
           })
       } else {
         Vue.set(this, 'submission', {'sample_data': [], 'contacts': [], biocore: false, 'payment': {}})

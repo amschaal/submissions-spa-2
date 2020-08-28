@@ -282,7 +282,7 @@ export default {
       // return this.submission.editable && !submission.cancelled
     },
     isAdmin () {
-      return this.submission.permissions.indexOf('ADMIN') !== -1
+      return this.submission && this.submission.permissions && this.submission.permissions.indexOf('ADMIN') !== -1
     }
   },
   components: {

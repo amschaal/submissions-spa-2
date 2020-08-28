@@ -35,7 +35,7 @@
             <q-checkbox v-if="this.lab" v-model="filters.participating" label="Participating" @input="refresh"><q-tooltip>Only show submissions in which I am a participant</q-tooltip></q-checkbox>
             <q-checkbox v-if="this.lab" v-model="filters.mySubmissions" label="My submissions" @input="refresh"><q-tooltip>Only show submissions for which I am a submitter or PI</q-tooltip></q-checkbox>
           </div>
-          <div class="col-6 q-table__title text-center"><span v-if="lab && $store.getters.lab">{{$store.getters.lab.name}} Submissions</span><span v-else>My Submissions</span></div>
+          <div class="col-6 q-table__title text-center"><span v-if="lab && $store.getters.lab">{{$store.getters.lab.name}} Submissions <selectLabModal page="submissions"/></span><span v-else>My Submissions</span></div>
         <!-- <q-search hide-underline v-model="filters.filter" :props="props"/> -->
         <div class="col-3">
           <q-input
@@ -104,9 +104,13 @@
 <script>
 // import axios from 'axios'
 import _ from 'lodash'
+import selectLabModal from '../components/modals/selectLabModal.vue'
 export default {
   name: 'submissions',
   props: ['lab'],
+  components: {
+    selectLabModal
+  },
   data () {
     var defaultFilters = {
       filter: '',

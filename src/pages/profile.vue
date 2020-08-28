@@ -1,10 +1,12 @@
 <template>
-  <q-page padding class="docs-input row justify-center">
-    <q-card v-if="user">
+  <q-page padding class="docs-input row justify-center row">
+    <q-card v-if="user" class="col-md-6 col-sm-12">
       <q-card-section>
         <h4>Profile</h4>
-        <q-input label="First Name" v-model="user.first_name"/>
-        <q-input label="Last Name" v-model="user.last_name"/>
+        <div class="row">
+          <q-input label="First Name" v-model="user.first_name" class="col6" disable/>
+          <q-input label="Last Name" v-model="user.last_name" class="col6" disable/>
+        </div>
         <h5>Email</h5>
         <h6>Set primary email</h6>
         <div v-for="email in user.emails" :key="email">
@@ -34,6 +36,9 @@
 </template>
 
 <style>
+.min-90w {
+  width: 90%;
+}
 </style>
 
 <script>
@@ -78,7 +83,7 @@ export default {
       this.$axios
         .post('/api/emails/claim/', { email: this.claim_email })
         .then(function (response) {
-          self.$q.notify(`An code for claiming this email has been sent to ${self.claim_email}.`)
+          self.$q.notify(`A code for claiming this email has been sent to ${self.claim_email}.`)
           self.claim_in_progress = true
         })
         .catch(function (error) {
