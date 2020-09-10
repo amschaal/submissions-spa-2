@@ -99,7 +99,7 @@ export default {
         return
       }
       var self = this
-      this.$axios.delete(`/api/submission_files/${file.id}/`)
+      this.$axios.delete(`/api/submission_files/${file.id}/?submission=${this.submission.id}`)
         .then(function () {
           self.$q.notify({message: 'File deleted', type: 'positive'})
           self.refreshTable()

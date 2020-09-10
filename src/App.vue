@@ -39,9 +39,9 @@ export default {
     // this.$store.dispatch('fetchStatuses', {axios: this.$axios})
     this.$store.dispatch('fetchAll', {axios: this.$axios})
     console.log('$store', this.$store)
-    window.onbeforeunload = function () {
-      return 'If you leave this page, any changes will be lost.  Consider opening links in a new tab or window.'
-    }
+    // window.onbeforeunload = function () {
+    //   return 'If you leave this page, any changes will be lost.  Consider opening links in a new tab or window.'
+    // }
     // once mounted, we need to trigger
     // console.log('set axios defaults', [document.cookie, document])
     // axios.defaults.withCredentials = true

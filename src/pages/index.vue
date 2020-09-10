@@ -17,14 +17,15 @@
       <q-select
         filled
         v-model="lab"
-        :options="$store.getters.labs"
+        :options="labs"
         option-value="lab_id"
         option-label="name"
         emit-value
         map-options
         style="min-width: 250px; max-width: 300px"
-        v-if="$store.getters.labs.length"
+        v-if="labs.length"
         @input="goToLab"
+        label="Select Core"
       />
     </q-card-section>
   </q-card>
@@ -35,6 +36,7 @@
 </style>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'PageIndex',
   data () {
@@ -42,14 +44,26 @@ export default {
       lab: this.$store.getters.labId
     }
   },
+  mounted () {
+    console.log('mount labs', this.labs)
+    this.isOnlyLab()
+  },
   methods: {
     goToLab () {
       this.$router.push({ name: 'lab', params: { lab_id: this.lab } })
+    },
+    isOnlyLab () {
+      console.log('checkLabs', this.labs)
+      if (this.labs && this.labs.length === 1) {
+        this.lab = this.labs[0].lab_id
+        this.goToLab()
+      }
     }
   },
-  computed: {
-    institution () {
-      return this.$store.getters.institution
+  computed: mapGetters(['institution', 'labs']),
+  watch: {
+    labs: function (val) {
+      this.isOnlyLab()
     }
   }
 }
