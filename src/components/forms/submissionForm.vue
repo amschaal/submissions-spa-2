@@ -364,6 +364,17 @@ export default {
         this.import = !this.id && this.$route.query.import ? this.$route.query.import : null
         console.log('import', this.import)
         this.draft = !this.id && this.$route.query.draft ? this.$route.query.draft : null
+
+        if (this.create && !this.import && !this.draft && this.$route.query.type) {
+          console.log('types', this.$store.getters.types)
+          for (var i in this.$store.getters.types) {
+            console.log('prefix', this.$store.getters.types[i].prefix)
+            if (this.$store.getters.types[i].prefix === this.$route.query.type) {
+              this.type_id = this.$store.getters.types[i].id
+            }
+          }
+        }
+
         if (this.import) {
           this.loadImport()
         } else if (this.draft) {
@@ -404,8 +415,8 @@ export default {
         }
         console.log('draft', this.draft)
       }
-      this.type_id = !this.id && this.$route.query.type ? this.$route.query.type : null
-      if (this.type_id) {
+      // this.type_id = !this.id && this.$route.query.type ? this.$route.query.type : null
+      if (!this.id && this.type_id) {
         this.submission.type = this.type_id
       }
       if (this.submission.type) {
