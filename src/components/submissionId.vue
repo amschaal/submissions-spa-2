@@ -28,7 +28,7 @@ export default {
     return {
       internal_id: this.value ? this.value : null,
       project_id: null,
-      email: false,
+      email: true,
       edit: false,
       project_ids: []
     }

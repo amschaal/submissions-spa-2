@@ -6,6 +6,7 @@
         <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id"/>
         <q-btn @click="delete_type" color="negative" label="Delete" class="float-right" v-if="type.id"  :disable="type.submission_count !== 0" title="Only types with no associated permissions may be deleted."/>
         <router-link v-if="type.submission_count > 0 && type.id" :to="{'name': 'submissions', 'query': { 'search': type.name }}" class="float-right">{{type.submission_count}} Submissions</router-link>
+
       </q-card-section>
       <!-- <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id"/> -->
       <q-separator />
@@ -20,14 +21,30 @@
         >
           <q-checkbox v-model="type.active" label="Should this type be available for submission?"/>
         </q-field>
-        <q-input
-          dense
-          label="Sort order"
-          hint="Submission types will be displayed in numeric order as specified by this field"
-          :error="hasError('sort_order')"
-          :error-message="errorMessage('sort_order')"
-          v-model="type.sort_order" type="integer"
-          />
+        <div class="row">
+          <q-input
+            dense
+            label="Sort order"
+            hint="Submission types will be displayed in numeric order as specified by this field"
+            :error="hasError('sort_order')"
+            :error-message="errorMessage('sort_order')"
+            v-model="type.sort_order" type="integer"
+            class="col"
+            />
+            <q-input
+              dense
+              label="Identifier"
+              :error="hasError('prefix')"
+              :error-message="errorMessage('prefix')"
+              v-model="type.prefix"
+              type="text"
+              class="col"
+              >
+              <template v-slot:hint>
+                Identifier can be used to link directly to a form for the submission type. <router-link v-if="type.id && type.prefix" :to="{'name': 'create_submission', 'params': {'lab_id': $store.getters.lab.lab_id}, 'query': { 'type': type.prefix }}">Direct link</router-link>
+              </template>
+            </q-input>
+        </div>
         <q-input
           dense
           label="Name"
