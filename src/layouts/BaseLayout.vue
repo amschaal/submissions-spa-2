@@ -3,7 +3,10 @@
     <q-header reveal>
       <q-toolbar
       >
-        <router-link :to="{ name: 'index'}"><img src="/statics/images/wordmark.png" style="height:60px"/></router-link>
+        <router-link :to="{ name: 'index'}">
+          <img v-if="$store.getters.institution && $store.getters.institution.logo" :src="$store.getters.institution.logo" style="max-height:60px;max-width:120px;"/>
+          <img v-else-if="$store.getters.institution && !$store.getters.institution.logo" src="/statics/images/wordmark.png" style="height:60px"/>
+        </router-link>
         <q-toolbar-title>
             <!-- <router-link style="color: white; text-decoration: none;" :to="{ name: 'lab', params: { lab_id: $route.params.lab_id } }">{{$store.getters.lab.name}}</router-link> -->
             <selectLabModal>

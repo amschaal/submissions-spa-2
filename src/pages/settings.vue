@@ -24,7 +24,7 @@
               caption="Edit users"
               group="settings"
             >
-            <userField v-model="lab.users"/>
+            <userField v-model="lab.users" query-params="is_staff=1"/>
             </q-expansion-item>
             <q-expansion-item
               expand-separator
@@ -49,6 +49,12 @@
                 :toolbar="toolbar"
                 />
               </q-field>
+              <q-input v-model="lab.submission_email_text"
+                type="textarea"
+                filled
+                label="Submission email content"
+                hint="Enter any additional text you want at the bottom of all emails sent for successful submissions.  For submission type specific email content, see 'Confirmation Text' field under the submission type configuration"
+              />
             </q-expansion-item>
             <q-expansion-item
               expand-separator
