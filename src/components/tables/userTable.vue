@@ -29,7 +29,7 @@
 <script>
 // import axios from 'axios'
 export default {
-  props: ['value'],
+  props: ['value', 'queryParams'],
   data () {
     return {
       filters: {
@@ -68,7 +68,7 @@ export default {
       var search = this.filters.filter !== '' ? `&search=${this.filters.filter}` : ''
       var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       this.$axios
-        .get(`/api/users/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${search}`)// ${pagination.descending}&filter=${filter}
+        .get(`/api/users/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${search}&${this.queryParams}`)// ${pagination.descending}&filter=${filter}
         .then(({ data }) => {
           console.log('data', data)
 

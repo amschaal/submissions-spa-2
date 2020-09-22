@@ -1,6 +1,6 @@
 <template>
   <div>
-    <userField v-model="participants" @input="update"/>
+    <userField v-model="participants" :query-params="`labs__lab_id=${submission.lab.lab_id}`" @input="update"/>
   </div>
 </template>
 
