@@ -127,9 +127,11 @@ export default {
       },
       visibleColumns: ['locked', 'internal_id', 'lab', 'type', 'status', 'submitted', 'name', 'email', 'pi_name', 'table_count', 'samples_received']
     }
+    var filterNamespace = this.lab ? 'submission_filters' : 'my_submission_filters'
     return {
+      filterNamespace: filterNamespace,
       defaultFilters: defaultFilters,
-      filters: this.$store.getters.getUserSettings.submission_filters ? _.merge(defaultFilters, this.$store.getters.getUserSettings.submission_filters) : defaultFilters,
+      filters: this.$store.getters.getUserSettings[filterNamespace] ? _.merge(defaultFilters, this.$store.getters.getUserSettings[filterNamespace]) : defaultFilters,
       loading: false,
       serverData: [],
       columns: [
@@ -209,7 +211,7 @@ export default {
       return submission.warnings && _.size(submission.warnings) > 0
     },
     saveSettings () {
-      this.$store.dispatch('updateSettings', {key: 'submission_filters', value: this.filters, axios: this.$axios, self: this})
+      this.$store.dispatch('updateSettings', {key: this.filterNamespace, value: this.filters, axios: this.$axios, self: this})
     },
     loadDefaults () {
       this.$set(this, 'filters', _.cloneDeep(this.defaultFilters))
