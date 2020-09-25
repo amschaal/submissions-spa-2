@@ -31,7 +31,7 @@
             hint="Enter a valid regular expression to validate against. Example for matching values such as '20.3 ul': ^\d+(\.{1}\d+)? ul$"
             v-model="data.pattern"
             />
-          <q-select
+          <!-- <q-select
             dense options-dense
             v-model="data.enum"
             use-input
@@ -45,7 +45,27 @@
             stack-label
             label="Choices"
             hint="If the variable should be constrained to specific choices, enter here."
-            />
+            /> -->
+            <q-input
+              dense
+              v-if="data.type === 'string'"
+              label="Choices"
+              hint="If the variable should be constrained to specific choices, enter here.  Choices may be added, reordered, or removed."
+              v-model="option"
+              :error="data.enum.indexOf(option) != -1"
+              error-message="Choices must be unique."
+              bottom-slots
+              >
+              <template v-slot:append>
+                <q-icon name="add_circle" @click="addChoice" class="cursor-pointer" />
+              </template>
+            </q-input>
+            <draggable :list="data.enum">
+              <div v-for="choice in data.enum" :key="choice" class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white draggable">
+                <div class="q-chip-main ellipsis draggable">{{choice}}</div>
+                <div class="q-chip-side q-chip-close q-chip-right row flex-center" @click="deleteChoice(choice)"><i aria-hidden="true" class="q-icon cursor-pointer material-icons">cancel</i></div>
+              </div>
+            </draggable>
           <q-checkbox
             dense
             label="Select multiple"
@@ -145,7 +165,7 @@ import submissionWidgetFactory from './forms/widgets.js'
 import tableWidgetFactory from './aggrid/widgets.js'
 import OptionsModal from './modals/OptionsModal.vue'
 import ForeignKey from './forms/ForeignKey.vue'
-
+import draggable from 'vuedraggable'
 export default {
   props: ['value', 'variable', 'type', 'schema', 'rootSchema'],
   data () {
@@ -153,7 +173,8 @@ export default {
       opened: false,
       data: {enum: [], widget: {}, printing: {}},
       validators: this.$store.getters.validatorDict, // t{unique: {id: 'unique', name: 'Unique'}, foo: {id: 'foo', name: 'Foo'}},
-      add_validator: null
+      add_validator: null,
+      option: null
       // options: this.value && this.value.enum ? this.value.enum : []
     }
   },
@@ -232,6 +253,22 @@ export default {
     removeValidator (index) {
       this.data.validators.splice(index, 1)
     },
+    deleteChoice (choice) {
+      if (confirm(`Are you sure you want to delete "${choice}"?`)) {
+        this.data.enum.splice(this.data.enum.indexOf(choice), 1)
+      }
+    },
+    addChoice () {
+      if (this.option) {
+        if (!this.data.enum) {
+          this.data.enum = []
+        }
+        if (this.data.enum.indexOf(this.option) === -1) {
+          this.data.enum.push(this.option)
+          this.option = ''
+        }
+      }
+    },
     widgetSchema (id) {
       var factory = this.type === 'submission' ? submissionWidgetFactory : tableWidgetFactory
       return factory.getWidgetSchema(id)
@@ -284,7 +321,8 @@ export default {
   },
   components: {
     OptionsModal,
-    ForeignKey
+    ForeignKey,
+    draggable
   }
 }
 
