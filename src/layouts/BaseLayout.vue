@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="lHh Lpr lFf" v-if="$store.getters.institution">
     <q-header reveal>
       <q-toolbar
       >

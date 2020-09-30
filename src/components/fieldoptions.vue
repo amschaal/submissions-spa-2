@@ -10,13 +10,9 @@
         <q-card-section v-if="opened">
           <q-input dense label="Description" v-model="data.description" autogrow placeholder="Enter description here."/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
+          <h5>Validation</h5>
           <q-checkbox dense label="Unique" v-if="type!='submission'" v-model="data.unique"/>
             <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
-          <q-field label="Pin column" stack-label borderless v-if="type==='table'">
-            <q-radio dense v-model="data.pinned" :val="undefined" label="Not pinned" />
-            <q-radio dense v-model="data.pinned" val="left" label="Pinned left" />
-            <q-radio dense v-model="data.pinned" val="right" label="Pinned right" />
-          </q-field>
           <!-- <q-select
             dense options-dense
             label="Pin column"
@@ -55,6 +51,7 @@
               :error="data.enum.indexOf(option) != -1"
               error-message="Choices must be unique."
               bottom-slots
+              @keydown.enter="addChoice"
               >
               <template v-slot:append>
                 <q-icon name="add_circle" @click="addChoice" class="cursor-pointer" />
@@ -88,27 +85,7 @@
             v-model="data.maximum"
             type="number"
             />
-          <q-field
-            dense
-            label="Widget"
-            borderless
-            style="width:100%"
-            v-if="data.type !== 'table'"
-          >
-            <span class="col-9">
-              <q-select
-                dense options-dense
-                v-model="data.widget.type"
-                :options="widgetOptions"
-                clearable
-                map-options emit-value
-              />
-            </span>
-            <span class="col-3" v-if="hasWidgetOptions(data.widget.type)">
-              <q-btn label="options" size="sm" @click="open('widget_options')"/>
-              <OptionsModal :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :schema="widget_schema(data.widget.type)" :parent-schema="schema" :variable="variable" :ref="'widget_options'"/>
-            </span>
-          </q-field>
+
           <ForeignKey :schema="rootSchema" v-model="data.fk"/>
           <q-field
             label="Custom validators"
@@ -131,6 +108,33 @@
             <OptionsModal v-model="v.options" :schema="validator_schema(validators[v.id])" :parent-schema="schema" :variable="variable" :ref="`validator_options_${v.id}`" v-if="validators[v.id].uses_options"/>
           </div>
           <q-input label="Validation Error Message" dense v-model="data.error_message" autogrow placeholder="Optionally add a custom validation message here." v-if="data.type !== 'table'"/>
+          <h5>Display</h5>
+          <q-field label="Pin column" stack-label borderless v-if="type==='table'">
+            <q-radio dense v-model="data.pinned" :val="undefined" label="Not pinned" />
+            <q-radio dense v-model="data.pinned" val="left" label="Pinned left" />
+            <q-radio dense v-model="data.pinned" val="right" label="Pinned right" />
+          </q-field>
+          <q-field
+            dense
+            label="Widget"
+            borderless
+            style="width:100%"
+            v-if="data.type !== 'table'"
+          >
+            <span class="col-9">
+              <q-select
+                dense options-dense
+                v-model="data.widget.type"
+                :options="widgetOptions"
+                clearable
+                map-options emit-value
+              />
+            </span>
+            <span class="col-3" v-if="hasWidgetOptions(data.widget.type)">
+              <q-btn label="options" size="sm" @click="open('widget_options')"/>
+              <OptionsModal :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :schema="widget_schema(data.widget.type)" :parent-schema="schema" :variable="variable" :ref="'widget_options'"/>
+            </span>
+          </q-field>
           <h5>Printing options</h5>
             <q-input dense label="Field label" v-model="data.printing.label" placeholder="Optionally add a shortened label." v-if="data.type !== 'table'"/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
