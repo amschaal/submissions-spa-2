@@ -2,7 +2,7 @@
   <div class="row">
       <!-- <q-editor ng-model="foo" v-if="false"/> -->
       <div v-for="v in fields" :key="v.variable" class="field q-pb-lg q-pl-sm q-pr-sm" v-bind:class="colWidth(v.variable)">
-        <div v-if="$store.getters.isLoggedIn || !v.schema.internal">
+        <div v-if="$store.getters.isStaff || !v.schema.internal">
           <span v-if="v.schema.type=='table'">
             <!-- :error="sample_data_error"
             bottom-slots :error-message="sample_data_error_label"
@@ -24,7 +24,7 @@
                 <Agschema
                   v-model="value[v.variable]"
                   :schema="v.schema.schema"
-                  :editable="modify && ($store.getters.isLoggedIn || !v.schema.internal)"
+                  :editable="modify && ($store.getters.isStaff || !v.schema.internal)"
                   :allow-examples="true"
                   :allow-force-save="true"
                   :ref="v.variable"

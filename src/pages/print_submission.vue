@@ -77,7 +77,9 @@ export default {
       return value
     },
     hidden (schema, variable) {
-      // return true
+      if (schema.properties[variable].internal && !this.$store.getters.isStaff) {
+        return true
+      }
       return schema.properties[variable].printing && schema.properties[variable].printing.hidden
     },
     getDate (timeStamp) {
@@ -88,7 +90,7 @@ export default {
     },
     submission_field_data_array (flatten = true) {
       var self = this
-      var fields = this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type !== 'table')
+      var fields = this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type !== 'table' && !this.hidden(self.submission.submission_schema, v))
       var arr = fields.map(v => [self.getTitle(self.submission.submission_schema, v), self.truncate(self.submission.submission_schema, v, self.submission.submission_data[v])])
       return flatten ? _.flatten(arr) : arr
     },
