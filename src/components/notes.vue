@@ -15,7 +15,7 @@
           </form>
         </q-card-section>
         <q-card-actions v-if="note.edit">
-          <div class="float-left controls" v-if="$store.getters.isLoggedIn">
+          <div class="float-left controls" v-if="$store.getters.isStaff">
             <q-checkbox v-model="note.public" label="Private" :true-value="false" :false-value="true"/> <q-checkbox v-model="note.send_email" label="Email submitter" v-if="note.public && !note.id" title="Select if you want to email the submitter."/>
           </div>
           <div class="float-right controls"><q-btn @click="save(note)" label="Save" color="primary"/></div>
@@ -61,7 +61,7 @@ export default {
       console.log('save', note.submission, note)
       var self = this
       var method = note.id ? 'put' : 'post'
-      var url = note.id ? `/api/notes/${note.id}/` : '/api/notes/'
+      var url = note.id ? `/api/notes/${note.id}/?submission=${note.submission}` : '/api/notes/'
       if (!note.id && !note.public) {
         note.send_email = false
       }

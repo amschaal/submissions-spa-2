@@ -92,7 +92,7 @@ export default {
       // @todo: implement this in axios
       // note.remove()
       // For some reason this does not use the $axios.baseURL in quasar dev mode, but works once built and in production???
-      this.$axios.delete(`/api/notes/${note.id}?submission=${this.submission.id}`)
+      this.$axios.delete(`/api/notes/${note.id}/?submission=${this.submission.id}`)
         .then(removeFunc)
         .catch(function (error) {
           console.log('error', error)

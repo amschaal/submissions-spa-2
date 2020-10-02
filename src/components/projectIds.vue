@@ -1,5 +1,5 @@
 <template>
-  <div v-if="$store.getters.isLoggedIn">
+  <div v-if="$store.getters.isStaff">
     <q-table
       title="Project IDs"
       :data="project_ids"

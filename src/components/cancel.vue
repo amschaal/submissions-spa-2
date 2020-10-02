@@ -1,5 +1,5 @@
 <template>
-  <div><q-btn icon="warning" label="Cancel Submission" title="Cancel submission" @click="cancel" v-if="!submission.cancelled && (!submission.locked || $store.getters.isLoggedIn)" color="red"/><q-btn label="Uncancel" title="Uncancel submission" @click="uncancel" v-if="submission.cancelled && $store.getters.isLoggedIn" color="green"/></div>
+  <div><q-btn icon="warning" label="Cancel Submission" title="Cancel submission" @click="cancel" v-if="!submission.cancelled && (!submission.locked || $store.getters.isStaff)" color="red"/><q-btn label="Uncancel" title="Uncancel submission" @click="uncancel" v-if="submission.cancelled && $store.getters.isStaff" color="green"/></div>
 </template>
 
 <script>

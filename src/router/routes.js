@@ -66,7 +66,7 @@ const routes = [
         path: 'imports',
         component: () => import('pages/imports'),
         name: 'imports',
-        meta: { authorize: {isLoggedIn: true} }
+        meta: { authorize: {isLoggedIn: true, isStaff: true} }
       },
       {
         path: 'submissions/create',
@@ -114,7 +114,13 @@ const routes = [
   },
   { // Always leave this as last one
     path: '*',
-    component: () => import('pages/404')
+    component: () => import('pages/404'),
+    name: 'not_found'
+  },
+  { // Always leave this as last one
+    path: '/error',
+    component: () => import('pages/404'),
+    name: 'not_found'
   }
 ]
 

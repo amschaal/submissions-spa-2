@@ -1,5 +1,5 @@
 <template>
-  <div v-if="$store.getters.isLoggedIn"><q-btn label="Unlocked" title="Click to lock" icon="lock_open" @click="lock" v-if="!submission.locked" color="green"/><q-btn label="Locked" title="Click to unlock" icon="lock" @click="unlock" v-if="submission.locked" color="red"/></div>
+  <div v-if="$store.getters.isStaff"><q-btn label="Unlocked" title="Click to lock" icon="lock_open" @click="lock" v-if="!submission.locked" color="green"/><q-btn label="Locked" title="Click to unlock" icon="lock" @click="unlock" v-if="submission.locked" color="red"/></div>
 </template>
 
 <script>
