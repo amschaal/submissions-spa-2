@@ -80,7 +80,9 @@ export default {
       if (schema.properties[variable].internal && !this.$store.getters.isStaff) {
         return true
       }
-      return schema.properties[variable].printing && schema.properties[variable].printing.hidden
+      // The location of the printing configuration is a little bit inconsistant between table or other variable types....
+      var printing = schema.properties[variable].schema ? schema.properties[variable].schema.printing : schema.properties[variable].printing
+      return printing && printing.hidden
     },
     getDate (timeStamp) {
       return formatDate(timeStamp, 'MM/DD/YYYY')
