@@ -1,11 +1,11 @@
 <template>
-  <q-layout view="lHh Lpr lFf" v-if="$store.getters.institution">
-    <q-header reveal>
+  <q-layout view="lHh Lpr lff" v-if="$store.getters.institution">
+    <q-header reveal elevated>
       <q-toolbar
       >
         <router-link :to="{ name: 'index'}">
           <img v-if="$store.getters.institution && $store.getters.institution.logo" :src="$store.getters.institution.logo" style="max-height:60px;max-width:120px;"/>
-          <img v-else-if="$store.getters.institution && !$store.getters.institution.logo" src="/statics/images/wordmark.png" style="height:60px"/>
+          <img v-else-if="$store.getters.institution && !$store.getters.institution.logo" src="/images/wordmark.png" style="height:60px"/>
         </router-link>
         <q-toolbar-title>
             <!-- <router-link style="color: white; text-decoration: none;" :to="{ name: 'lab', params: { lab_id: $route.params.lab_id } }">{{$store.getters.lab.name}}</router-link> -->
@@ -86,6 +86,11 @@
       <router-view :key="$route.fullPath"/>
     </q-page-container>
     <!-- <Auth ref="auth"/> -->
+    <q-footer elevated>
+      <q-toolbar>
+          Developed by the <a href="https://bioinformatics.ucdavis.edu" target="_blank"> Bioinformatics Core</a> at the <a href="https://genomecenter.ucdavis.edu" target="_blank"> UC Davis Genome Center</a>
+      </q-toolbar>
+    </q-footer>
   </q-layout>
 </template>
 
@@ -115,5 +120,9 @@ export default {
 <style>
 .restricted {
   color: gold;
+}
+footer a {
+  color: white;
+  margin: 0px 5px 0px 5px;
 }
 </style>

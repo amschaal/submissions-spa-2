@@ -20,12 +20,11 @@
     </tbody>
     </table>
   <div v-for="(v, index) in table_fields()" :key="index">
-    <p class="heading">{{getTitle(submission.submission_schema,v)}}: {{submission.submission_data[v] ? submission.submission_data[v].length : 0}}</p> <!--  page-break-before -->
-    <table class="horizontal full bordered compact page-break-after" v-if="submission.submission_data[v] && submission.submission_data[v].length > 0">
+    <p class="heading">{{getTitle(submission.submission_schema,v)}}: {{submission.submission_data[v] ? submission.submission_data[v].length : 0}}</p>
+    <table class="horizontal full bordered compact" v-if="submission.submission_data[v] && submission.submission_data[v].length > 0">
       <tr>
         <th></th><th :key="variable" v-for="variable in submission.submission_schema.properties[v].schema.order" v-show="!hidden(submission.submission_schema.properties[v].schema, variable)">{{getTitle(submission.submission_schema.properties[v].schema,variable)}}</th>
       </tr>
-
       <tr :key="index" v-for="(row,index) in submission.submission_data[v]">
         <td>{{index + 1}}</td><td :key="index" v-for="(variable, index) in submission.submission_schema.properties[v].schema.order" v-show="!hidden(submission.submission_schema.properties[v].schema, variable)">{{truncate(submission.submission_schema.properties[v].schema, variable, row[variable])}}</td>
       </tr>
@@ -145,12 +144,14 @@ table.submission td {
   font-size: 10pt;
   font-weight: bold;
 }
+/*
 .page-break-before{
   page-break-before:  always;
 }
 .page-break-after{
   page-break-after:  always;
 }
+*/
 /*
 .horizontal.compact th{
   word-break: break-word;

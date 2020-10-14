@@ -10,14 +10,14 @@
 // import Vue from 'vue'
 // import VueKeycloak from 'vue-keycloak'
 // Vue.use(VueKeycloak, {
-//   keycloakOptions: '/statics/keycloak.json',
+//   keycloakOptions: '/keycloak.json',
 //   keycloakInitOptions: {
 //     // onLoad: 'check-sso'
 //   }
 // })\
 import moment from 'moment'
 import Vue from 'vue'
-
+import { mapGetters } from 'vuex'
 Vue.filter('formatDateTime', function (value) {
   if (value) {
     return moment(String(value)).format('MM/DD/YYYY hh:mm')
@@ -54,7 +54,11 @@ export default {
     //     self.validators = response.data
     //   })
   },
+  computed: mapGetters(['institution', 'lab']),
   watch: {
+    'institution': function (institution) {
+      console.log('institution watcher', institution)
+    }
     // '$route.params.lab_id': {
     //   handler: function (labId) {
     //     if (labId) {

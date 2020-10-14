@@ -194,12 +194,6 @@
 
   </div>
 </template>
-<!-- <link type="text/css" rel="stylesheet" href="https://docs.handsontable.com/4.0.0/components/handsontable/dist/handsontable.full.min.css"> -->
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/6.5.2/ajv.bundle.js"></script> -->
-
-<!-- <script src='../assets/hot/handsontable.full.min.js'></script>
-<script src='/statics/hot-schema/example_schema.js'></script>
-<script src='/statics/hot-schema/hotschema.js'></script> -->
 
 <script>
 // import { QSelect } from 'quasar'

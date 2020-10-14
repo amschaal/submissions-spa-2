@@ -771,6 +771,9 @@ export default {
     },
     isAdmin () {
       return this.submission.permissions && this.submission.permissions.indexOf('ADMIN') !== -1
+    },
+    isStaff () {
+      return this.submission.permissions && this.submission.permissions.indexOf('STAFF') !== -1
     }
     // type_options () {
     //   return this.submission_types.map(opt => ({label: opt.name, value: opt.id}))

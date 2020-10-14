@@ -297,7 +297,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
   .q-field {
     padding: 0px 0px;
   }
