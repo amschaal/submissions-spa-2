@@ -30,6 +30,14 @@
         </template>
       </q-input>
         </div>
+        <h5>API Key</h5>
+        <q-input filled v-model="token" disable dense>
+          <template v-slot:after>
+            <q-btn dense label="View" @click="getToken" v-if="!view_token"/>
+            <q-btn dense :label="token ? 'Regenerate' : 'Create'" color="green" @click="createToken" v-if="view_token"/>
+            <q-btn dense label="Delete" color="red" @click="deleteToken" v-if="view_token && token"/>
+        </template>
+        </q-input>
       </q-card-section>
   </q-card>
   </q-page>
@@ -50,7 +58,8 @@ export default {
       primary_email: null,
       claim_email: null,
       claim_in_progress: false,
-      token: null
+      token: null,
+      view_token: false
     }
   },
   methods: {
@@ -107,6 +116,55 @@ export default {
         .catch(function (error) {
           self.$q.notify({message: error.response.data.message, type: 'negative'})
         })
+    },
+    getToken () {
+      var self = this
+      this.$axios
+        .get('/api/users/get_token/')
+        .then(function (response) {
+          self.token = response.data.token
+          self.view_token = true
+          if (!self.token) {
+            self.$q.notify({message: 'You do not currently have an auth token, but you may create one.', type: 'positive'})
+          }
+        })
+    },
+    createToken () {
+      var self = this
+      var create = function () {
+        self.$axios
+          .post('/api/users/create_token/')
+          .then(function (response) {
+            self.token = response.data.token
+            self.$q.notify({message: 'A new auth token has been created.', type: 'positive'})
+          })
+      }
+      if (!this.token) {
+        create()
+      } else {
+        this.$q.dialog({
+          title: 'Confirm Auth Token Regeneration',
+          message: 'Are you sure you want to regenerate your auth token?  Your old token will become unusable.',
+          cancel: true
+        }).onOk(
+          create
+        )
+      }
+    },
+    deleteToken () {
+      var self = this
+      this.$q.dialog({
+        title: 'Confirm Auth Token Deletion',
+        message: 'Are you sure you want to delete your auth token?',
+        cancel: true
+      }).onOk(() => {
+        this.$axios
+          .delete('/api/users/delete_token/')
+          .then(function (response) {
+            self.token = response.data.token
+            self.$q.notify({message: 'Your auth token has been deleted.', type: 'positive'})
+          })
+      })
     }
   },
   mounted: function () {
