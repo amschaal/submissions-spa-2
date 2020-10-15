@@ -214,4 +214,7 @@ export default {
 .warning {
   color: orange;
 }
+p.caption {
+  font-weight: bold;
+}
 </style>
