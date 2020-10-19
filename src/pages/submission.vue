@@ -13,10 +13,12 @@
       <q-tab name="files" label="Files"  v-if="submission.id"/>
       <q-tab name="comments" label="comments"  v-if="submission.id"/>
       <q-tab name="charges" label="charges"  v-if="submission.id"/>
+      <template v-for="(tab, i) in $plugins.tabs"><q-tab :key="i" :name="tab.id" :label="tab.label" v-if="submission.id"/></template>
     </q-tabs>
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="submission">
         <q-card-section>
+          <!-- <h6>Plugins here: {{$plugins}}</h6> -->
           <h3 v-if="submission.cancelled" class="text-red">Submission cancelled</h3>
           <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id) || create" v-on:submission_updated="submissionUpdated"/>
           <Submission :submission="submission" v-if="!modify && id"/>
@@ -38,6 +40,14 @@
           <charges :submission="submission"/>
         </q-card-section>
       </q-tab-panel>
+      <template v-for="(tab, i) in $plugins.tabs">
+        <q-tab-panel :key="i" :name="tab.id" v-if="submission.id">
+          <q-card-section>
+            <div v-html="tab.content"/>
+            <component v-bind:is="$plugins.componentName(tab.id)" :submission="submission"></component>
+          </q-card-section>
+        </q-tab-panel>
+      </template>
     </q-tab-panels>
 
   </q-card>
