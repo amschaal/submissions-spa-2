@@ -47,7 +47,7 @@ const routes = [
     component: () => import('layouts/BaseLayout'),
     children: [
       { path: '', name: 'index', component: () => import('pages/index') },
-      { path: 'profile', name: 'profile', component: () => import('pages/profile') }
+      { path: 'profile', name: 'profile', component: () => import('pages/profile'), meta: { authorize: {isLoggedIn: true} } }
     ]
   },
   {

@@ -21,7 +21,7 @@ import urllib2, json
 response = urllib2.urlopen(urllib2.Request('{{api_base}}/api/submissions/?page=1&page_size=10', headers={'Authorization': 'Token {{token}}'}))
 data = json.loads(response.read())
 for submission in data['results']: #do something with submissions
-print("id: {}, project_id: {}".format(submission['id'], submission['internal_id']))
+  print("id: {}, project_id: {}".format(submission['id'], submission['internal_id']))
 </q-banner>
 <strong>Python3</strong>
 <q-banner dense class="bg-black text-white code" rounded>
@@ -31,7 +31,7 @@ req.add_header('Authorization', 'Token {{token}}')
 response = urllib.request.urlopen(req)
 data = json.loads(response.read())
 for submission in data['results']: #do something with submissions
-print("id: {}, project_id: {}".format(submission['id'], submission['internal_id']))
+  print("id: {}, project_id: {}".format(submission['id'], submission['internal_id']))
 </q-banner>
 </div>
 </div>
@@ -103,3 +103,9 @@ export default {
   }
 }
 </script>
+<style scoped>
+.code {
+  overflow-x: scroll;
+  white-space: pre;
+}
+</style>

@@ -69,7 +69,7 @@ class SelectWidget extends EnumWidget {
   // static schema = {
   // }
   getOptions () {
-    return _.merge(this.options, this.getSelectOptions(), {clearable: true})
+    return _.merge(this.options, this.getSelectOptions(), {clearable: true, outlined: true})
   }
 }
 class RadioWidget extends EnumWidget {
@@ -119,6 +119,47 @@ class MultiSelectWidget extends SelectWidget {
     return _.merge(this.options, this.getSelectOptions(), {multiple: true, clearable: true})
   }
 }
+
+// class VocabularyWidget extends Widget {
+//   // @TODO: wrap this in another component as in the guide https://quasar-framework.org/components/autocomplete.html
+//   static type = 'string'
+//   static id = 'vocabulary'
+//   static component = VocabularyComponent
+//   static name = 'Vocabulary Autocomplete'
+//   static description = 'Auto complete terms based on a configured vocabulary.'
+//   static schema =
+//   [
+//     {'variable': 'vocabulary', 'label': 'Vocabulary ID', 'type': 'text'},
+//     {'variable': 'vocabulary_variable', 'label': 'Variable specifying vocabulary', 'type': 'text'}
+//     // {'variable': 'bar', 'label': 'Bar', 'type': 'text', 'options': [{'label': 'One', 'value': 1}, {'label': 'Two', 'value': 2}]}
+//   ]
+//   static getSchema (schema, vue) {
+//     console.log('getSchema', schema, vue, this.schema)
+//     var _schema = this.schema
+//     if (vue) {
+//       _schema[0].enum = vue.$store.getters.vocabularies
+//     }
+//     return _schema
+//   }
+//   validateOptions (options, field, schema) {
+//     console.log('hello!!!', options, field, schema)
+//     var errors = {}
+//     if (options.vocabulary_variable && !schema.properties[options.vocabulary_variable]) {
+//       errors['vocabulary_variable'] = [`Variable "${options.vocabulary_variable}" does not exist.`]
+//     }
+//     if (!options.vocabulary_variable && !options.vocabulary) {
+//       errors['vocabulary_variable'] = errors['vocabulary'] = ['You must enter either a vocabulary id, or a variable name where the vocabulary id will be selected.']
+//     }
+//     return errors
+//   }
+//   getOptions () {
+//     return _.merge(this.options, this.getSelectOptions())
+//   }
+//   getSelectOptions () {
+//     var options = this.variable.schema.enum || []
+//     return {options: options.map(function (val) { return {'label': val, 'value': val} })}
+//   }
+// }
 
 var widgetFactory = new WidgetFactory([TextWidget, WYSIWYGWidget, ChipsWidget, SelectWidget, MultiSelectWidget, CheckboxWidget, RadioWidget, MultiCheckboxWidget, DateWidget], SelectWidget, MultiSelectWidget)
 // export {MultiSelectWidget}
