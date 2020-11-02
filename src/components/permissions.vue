@@ -1,6 +1,8 @@
 <template>
   <div v-if="permissions">
-    Permissions: {{permissions}} {{object}} {{permission_rows}}
+    Permissions: {{permissions}} {{object}}
+    <div>{{permission_rows}}</div>
+    <div>columns: {{columns.length}}</div>
     <q-table
       title="Permissions"
       :data="permission_rows"
@@ -16,12 +18,13 @@
           <q-td key="email" :props="props">
               {{ props.row.email }}
           </q-td>
-          <q-td v-for="(label, perm) in permissions.permissions" :key="perm">
-            {{label}}
+          <q-td v-for="perm in permissions.available_permissions" :key="perm[0]">
+            <q-checkbox v-model="props.row.permissions" :val="perm[0]" />
           </q-td>
         </q-tr>
       </template>
     </q-table>
+    <q-btn label="Save" @click="setPermissions"/>
   </div>
 </template>
 
@@ -32,8 +35,8 @@ export default {
     return {
       permissions: null,
       columns: [
-        { name: 'username', align: 'center', label: 'User', field: 'username', sortable: false },
-        { name: 'email', label: 'Email', field: 'email', sortable: true }
+        { name: 'username', label: 'User', field: 'username', sortable: false, align: 'left'},
+        { name: 'email', label: 'Email', field: 'email', sortable: true, align: 'left' }
       ]
     }
   },
@@ -51,7 +54,7 @@ export default {
             // console.log('columns', columns)
             // self.columns.splice(2, 0, columns)
             // columns.forEach(c => self.columns.push(c))
-            response.data.permissions.forEach(p => self.columns.push({ name: p[0], label: p[1], field: p[0], sortable: false }))
+            response.data.available_permissions.forEach(p => self.columns.push({ name: p[0], label: p[1], field: p[0], sortable: false, align: 'right' }))
             console.log('columns', self.columns)
             self.permissions = response.data
           })
@@ -63,7 +66,7 @@ export default {
     },
     setPermissions () {
       var self = this
-      this.$axios.post(`${this.baseUrl}${this.object.id}/set_permissions/`)
+      this.$axios.post(`${this.baseUrl}${this.object.id}/set_permissions/`, this.permissions)
         .then(
           function (response) {
             self.$q.notify({message: 'Permissions set.', type: 'positive'})
