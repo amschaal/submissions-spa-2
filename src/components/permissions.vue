@@ -10,6 +10,7 @@
       row-key="username"
       v-if="permission_rows"
       :filter="filter"
+      :pagination="initialPagination"
     >
       <template v-slot:body="props">
         <q-tr :props="props">
@@ -54,6 +55,13 @@ export default {
         { name: 'last_name', label: 'User', field: 'last_name', sortable: true, align: 'left'},
         { name: 'email', label: 'Email', field: 'email', sortable: true, align: 'left' }
       ],
+      initialPagination: {
+        sortBy: 'last_name',
+        descending: false,
+        page: 1,
+        rowsPerPage: -1
+        // rowsNumber: xx if getting data from a server
+      },
       new_users: []
     }
   },
