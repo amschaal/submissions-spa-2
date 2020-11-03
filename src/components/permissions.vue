@@ -1,52 +1,80 @@
 <template>
   <div v-if="permissions">
-    Permissions: {{permissions}} {{object}}
+    <!-- Permissions: {{permissions}}
     <div>{{permission_rows}}</div>
-    <div>columns: {{columns.length}}</div>
+    <div>columns: {{columns.length}}</div> -->
     <q-table
       title="Permissions"
       :data="permission_rows"
       :columns="columns"
       row-key="username"
       v-if="permission_rows"
+      :filter="filter"
     >
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td key="username" :props="props">
-            {{ props.row.first_name }} {{ props.row.last_name }}
+          <q-td key="last_name" :props="props">
+            {{ props.row.last_name }}, {{ props.row.first_name }}
           </q-td>
           <q-td key="email" :props="props">
               {{ props.row.email }}
           </q-td>
-          <q-td v-for="perm in permissions.available_permissions" :key="perm[0]">
+          <q-td v-for="perm in permissions.available_permissions" :key="perm[0]" class="text-right">
             <q-checkbox v-model="props.row.permissions" :val="perm[0]" />
           </q-td>
         </q-tr>
       </template>
+      <template v-slot:top-left>
+        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </template>
+      <template v-slot:top-right>
+        <userField v-model="new_users" query-params="is_staff=1" @input="addUsers" :button-props="{ label: 'Add User', size: 'md'}"/>
+        <q-btn label="Save" @click="setPermissions" color="primary"/>
+      </template>
     </q-table>
-    <q-btn label="Save" @click="setPermissions"/>
   </div>
 </template>
 
 <script>
+import userField from './forms/userField.vue'
 export default {
-  props: ['baseUrl', 'object'],
+  props: ['baseUrl'],
+  components: {
+    userField
+  },
   data () {
     return {
+      filter: '',
       permissions: null,
       columns: [
-        { name: 'username', label: 'User', field: 'username', sortable: false, align: 'left'},
+        { name: 'last_name', label: 'User', field: 'last_name', sortable: true, align: 'left'},
         { name: 'email', label: 'Email', field: 'email', sortable: true, align: 'left' }
-      ]
+      ],
+      new_users: []
     }
   },
   mounted () {
     this.getPermissions()
   },
   methods: {
+    addUsers () {
+      while (this.new_users.length) {
+        var user = this.new_users.pop()
+        if (!this.permissions.user_permissions[user.username]) {
+          this.$set(this.permissions.user_permissions, user.username, user)
+          this.$set(user, 'permissions', [])
+        } else {
+          this.$q.notify({message: `The user "${user.first_name} ${user.last_name}" has already has permissions.  Please update them in the permissions table.`, type: 'negative'})
+        }
+      }
+    },
     getPermissions () {
       var self = this
-      this.$axios.get(`${this.baseUrl}${this.object.id}/permissions/`)
+      this.$axios.get(`${this.baseUrl}/permissions/`)
         .then(
           function (response) {
             // self.columns = self.columns.concat(self.columns.response.data.permissions.map(p => ({ name: p[0], label: p[1], field: p[0], sortable: true })))
@@ -66,7 +94,7 @@ export default {
     },
     setPermissions () {
       var self = this
-      this.$axios.post(`${this.baseUrl}${this.object.id}/set_permissions/`, this.permissions)
+      this.$axios.post(`${this.baseUrl}/set_permissions/`, this.permissions)
         .then(
           function (response) {
             self.$q.notify({message: 'Permissions set.', type: 'positive'})

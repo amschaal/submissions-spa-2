@@ -8,6 +8,7 @@
         >
         <q-tab name="settings_tab" label="General" />
         <q-tab name="project_id_tab" label="Project IDs" />
+        <q-tab name="permissions_tab" label="Permissions" />
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="settings_tab">
@@ -113,6 +114,10 @@
         <q-tab-panel name="project_id_tab">
           <projectIds :lab="lab"/>
         </q-tab-panel>
+        <q-tab-panel name="permissions_tab">
+          <!-- {{institution}} -->
+          <permissions :base-url="`/api/labs/${lab.lab_id}`" v-if="lab && lab.lab_id"/>
+        </q-tab-panel>
       </q-tab-panels>
 
     </div>
@@ -123,6 +128,7 @@
 import schemaForm from '../components/forms/schemaForm.vue'
 import projectIds from '../components/projectIds.vue'
 import userField from '../components/forms/userField.vue'
+import permissions from '../components/permissions.vue'
 import _ from 'lodash'
 // import draggable from 'vuedraggable'
 export default {
@@ -204,7 +210,8 @@ export default {
   components: {
     schemaForm,
     projectIds,
-    userField
+    userField,
+    permissions
   }
 }
 </script>

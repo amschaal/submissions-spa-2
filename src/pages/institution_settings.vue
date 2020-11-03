@@ -10,11 +10,8 @@
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="permissions_tab">
-          {{institution}}
-          <permissions base-url="/api/institutions/" :object="institution"/>
-        </q-tab-panel>
-        <q-tab-panel name="project_id_tab">
-          <projectIds :lab="lab"/>
+          <!-- {{institution}} -->
+          <permissions :base-url="`/api/institutions/${institution.id}`" v-if="institution && institution.id"/>
         </q-tab-panel>
       </q-tab-panels>
 
