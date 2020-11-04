@@ -1,6 +1,6 @@
 import Vue from 'vue'
-var plugins = []
-// var plugins = ['test', 'bioshare']
+// var plugins = []
+var plugins = ['test', 'bioshare']
 
 class PluginManager {
   constructor () {
