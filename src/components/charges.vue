@@ -57,7 +57,7 @@ export default {
   mounted: function () {
     var self = this
     this.$axios
-      .get(`/api/billing/services/?ordering=code,name&page=1&page_size=1000`)// ${pagination.descending}&filter=${filter}
+      .get(`/api/billing/services/?lab=${self.$store.getters.lab.id}&ordering=code,name&page=1&page_size=1000`)// ${pagination.descending}&filter=${filter}
       .then(({ data }) => {
         self.services = data.results
       })
@@ -111,7 +111,7 @@ export default {
     search (terms, done) {
       console.log('search', terms)
       this.$axios
-        .get(`/api/billing/services/?search=${terms}&ordering=code,name&page=1&page_size=15`)// ${pagination.descending}&filter=${filter}
+        .get(`/api/billing/services/?lab=${this.$store.getters.lab.id}&search=${terms}&ordering=code,name&page=1&page_size=15`)// ${pagination.descending}&filter=${filter}
         .then(({ data }) => {
           console.log(data.results)
           done(data.results)
