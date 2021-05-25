@@ -33,6 +33,7 @@ export default {
   props: ['authenticated', 'blah'],
   mounted () {
     // var self = this
+    this.$perms.init(this.$store)
     this.$store.dispatch('checkAuth', {axios: this.$axios})
     // this.$store.dispatch('fetchValidators', {axios: this.$axios})
     // this.$store.dispatch('fetchTypes', {axios: this.$axios})

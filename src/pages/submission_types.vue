@@ -15,7 +15,7 @@
       <template slot="top" slot-scope="props" :props="props">
         <div class="row full-width">
           <div class="col-2">
-            <q-btn color="primary" label="Create" class="q-mr-sm" :to="{name: 'create_submission_type'}"/>
+            <q-btn color="primary" label="Create" class="q-mr-sm" :to="{name: 'create_submission_type'}" v-if="$perms.hasLabPerm('member') || $perms.hasLabPerm('admin')"/>
           </div>
           <div class="col-5">
             <div class="col-6 q-table__title text-center"><span v-if="$store.getters.lab">{{$store.getters.lab.name}} Submissions Types <selectLabModal page="submission_types"/></span></div>

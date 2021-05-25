@@ -3,10 +3,10 @@
     <q-card style="width:100%">
       <q-card-section>
         <span v-if="!type.id">Create</span> Submission Type <span class="inactive" v-if="type.id && !type.active"> (Inactive)</span>
-        <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id"/>
-        <q-btn @click="delete_type" color="negative" label="Delete" class="float-right" v-if="type.id"  :disable="type.submission_count !== 0" title="Only types with no associated permissions may be deleted."/>
+        <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id && can_modify"/>
+        <q-btn @click="delete_type" color="negative" label="Delete" class="float-right" v-if="type.id && can_modify"  :disable="type.submission_count !== 0" title="Only types with no associated permissions may be deleted."/>
         <router-link v-if="type.submission_count > 0 && type.id" :to="{'name': 'submissions', 'query': { 'search': type.name }}" class="float-right">{{type.submission_count}} Submissions</router-link>
-
+        <b v-if="!can_modify"> (Viewing with read only permissions)</b>
       </q-card-section>
       <!-- <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id"/> -->
       <q-separator />
@@ -177,7 +177,7 @@
       </q-card-section>
       <q-separator />
       <q-card-actions>
-        <q-btn @click="submit" label="Save" color="primary"></q-btn>
+        <q-btn @click="submit" label="Save" color="primary" v-if="can_modify"></q-btn>
       </q-card-actions>
 
     </q-card>
@@ -196,6 +196,7 @@ export default {
   props: ['id'],
   data () {
     return {
+      can_modify: this.$perms.hasLabPerm('member') || this.$perms.hasLabPerm('admin'),
       type: {active: true, submission_help: '', help: '', statuses: [], default_participants: [], submission_schema: {properties: {}, order: [], required: [], layout: {}, printing: {}}, sample_schema: {properties: {}, order: [], required: [], printing: {}, examples: []}},
       errors: {},
       import_url: null,
@@ -519,7 +520,7 @@ export default {
     },
     'type': {
       handler (newVal, oldVal) {
-        if (!this.watch_changes) {
+        if (!this.watch_changes || !this.can_modify) {
           return
         }
         // if (window.JSON && window.JSON.stringify) { // && (!newVal.updated || Date.now() - newVal.updated < 5000)
