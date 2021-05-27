@@ -196,7 +196,6 @@ export default {
   props: ['id'],
   data () {
     return {
-      can_modify: this.$perms.hasLabPerm('member') || this.$perms.hasLabPerm('admin'),
       type: {active: true, submission_help: '', help: '', statuses: [], default_participants: [], submission_schema: {properties: {}, order: [], required: [], layout: {}, printing: {}}, sample_schema: {properties: {}, order: [], required: [], printing: {}, examples: []}},
       errors: {},
       import_url: null,
@@ -512,6 +511,9 @@ export default {
     },
     type_key () {
       return this.id && this.id !== 'create' ? `submission_type_${this.id}` : 'submission_type'
+    },
+    can_modify () {
+      return this.$perms.hasLabPerm('member') || this.$perms.hasLabPerm('admin')
     }
   },
   watch: {
