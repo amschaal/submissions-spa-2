@@ -25,6 +25,30 @@ class Permissions {
   }
   hasInstitutionPerm (perm) {
   }
+  hasSubmissionPerms (submission, perms, operator) {
+    // ["ADMIN", "MODIFY", "VIEW", "STAFF"]
+    if (!operator) {
+      operator = 'ALL'
+    }
+    if (!submission || !submission.permissions) {
+      return false
+    }
+    if (operator === 'ANY') {
+      for (var i in perms) {
+        if (submission.permissions.indexOf(perms[i]) !== -1) {
+          return true
+        }
+      }
+      return false
+    } else {
+      for (var j in perms) {
+        if (submission.permissions.indexOf(perms[j]) === -1) {
+          return false
+        }
+      }
+      return true
+    }
+  }
 }
 var permissions = new Permissions()
 Vue.prototype.$perms = permissions

@@ -10,10 +10,10 @@
       narrow-indicator
     >
       <q-tab name="submission"  default><span v-if="submission.id">Submission</span><span v-else>Create Submission</span></q-tab>
-      <q-tab name="files" label="Files"  v-if="submission.id"/>
+      <q-tab name="files" label="Files"  v-if="submission.id && $perms.hasSubmissionPerms(submission, ['VIEW'], 'ALL')"/>
       <q-tab name="comments" label="comments"  v-if="submission.id"/>
-      <q-tab name="charges" label="charges"  v-if="submission.id"/>
-      <template v-for="(tab, i) in $plugins.tabs"><q-tab :key="i" :name="tab.id" :label="tab.label" v-if="submission.id"/></template>
+      <q-tab name="charges" label="charges"  v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN', 'STAFF'], 'ANY')"/>
+      <template v-for="(tab, i) in $plugins.tabs"><q-tab :key="i" :name="tab.id" :label="tab.label" v-if="submission.id && hasPluginPermission(submission, tab.id)"/></template>
     </q-tabs>
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="submission">
@@ -35,7 +35,7 @@
           <notes-tree :submission="submission"/>
         </q-card-section>
       </q-tab-panel>
-      <q-tab-panel name="charges" v-if="submission.id">
+      <q-tab-panel name="charges" v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN', 'STAFF'], 'ANY')">
         <q-card-section>
           <charges :submission="submission"/>
         </q-card-section>
@@ -123,6 +123,20 @@ export default {
       if (!this.$store.getters.lab || this.$store.getters.lab.lab_id !== this.submission.lab.lab_id) {
         this.$store.dispatch('setLabId', {axios: this.$axios, labId: this.submission.lab.lab_id})
       }
+    },
+    hasPluginPermission (submission, tabId) {
+      var permissions = this.$plugins.getPermissions(tabId)
+      console.log('permissions', tabId, permissions)
+      if (!permissions) {
+        return true
+      }
+      if (permissions.ANY) {
+        return this.$perms.hasSubmissionPerms(this.submission, permissions.ANY, 'ANY')
+      }
+      if (permissions.ALL) {
+        return this.$perms.hasSubmissionPerms(this.submission, permissions.ALL, 'ALL')
+      }
+      return true
     }
   },
   watch: {
