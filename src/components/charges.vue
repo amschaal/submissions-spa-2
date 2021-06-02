@@ -12,7 +12,7 @@
     </q-input>
   -->
     <q-select
-        v-if="$store.getters.isStaff && services"
+        v-if="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY') && services"
         placeholder="Select a service to add"
         filter
         v-model="select"
@@ -22,7 +22,7 @@
       />
     <table class="q-table q-table-horizontal-separator">
       <thead><tr><th>Service</th><th>Quantity</th><th>Notes</th></tr></thead>
-      <tbody v-if="$store.getters.isStaff">
+      <tbody v-if="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')">
         <tr v-if="line_items.length == 0"><td colspan="3">No charges have been added.</td></tr>
         <tr v-for="item in line_items" :key="item.service.id">
           <td><q-btn round color="red" icon="delete" size="sm" @click="deleteItem(item)"/><q-btn round color="green" icon="save" size="sm" @click="saveItem(item)"/> {{item.service.code}} - {{item.service.name}}</td>

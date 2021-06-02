@@ -15,7 +15,7 @@
           </form>
         </q-card-section>
         <q-card-actions v-if="note.edit">
-          <div class="float-left controls" v-if="$store.getters.isStaff">
+          <div class="float-left controls" v-if="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')">
             <q-checkbox v-model="note.public" label="Private" :true-value="false" :false-value="true"/> <q-checkbox v-model="note.send_email" label="Email submitter" v-if="note.public && !note.id" title="Select if you want to email the submitter."/>
           </div>
           <div class="float-right controls"><q-btn @click="save(note)" label="Save" color="primary"/></div>
@@ -30,7 +30,7 @@
 
 export default {
   name: 'notes',
-  props: ['notes', 'noteHash', 'addNote', 'deleteNote'],
+  props: ['submission', 'notes', 'noteHash', 'addNote', 'deleteNote'],
   data () {
     return {
       // note: {}

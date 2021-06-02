@@ -6,12 +6,12 @@
           v-model="tab"
           class="text "
         >
-        <q-tab name="settings_tab" label="General" v-if="$perms.hasLabPerm('admin')"/>
-        <q-tab name="project_id_tab" label="Project IDs" v-if="$perms.hasLabPerm('member') || $perms.hasLabPerm('admin')"/>
-        <q-tab name="permissions_tab" label="Permissions" v-if="$perms.hasLabPerm('admin')"/>
+        <q-tab name="settings_tab" label="General" v-if="$perms.hasLabPerm('ADMIN')"/>
+        <q-tab name="project_id_tab" label="Project IDs" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')"/>
+        <q-tab name="permissions_tab" label="Permissions" v-if="$perms.hasLabPerm('ADMIN')"/>
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
-        <q-tab-panel name="settings_tab" v-if="$perms.hasLabPerm('admin')">
+        <q-tab-panel name="settings_tab" v-if="$perms.hasLabPerm('ADMIN')">
           <!-- <draggable :list="statuses">
             <div v-for="status in statuses" :key="status" class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white">
               <div class="q-chip-main ellipsis">{{status}}</div>
@@ -111,10 +111,10 @@
             <q-btn @click="save" label="Save" color="primary"></q-btn>
           </q-card-actions>
         </q-tab-panel>
-        <q-tab-panel name="project_id_tab" v-if="$perms.hasLabPerm('member') || $perms.hasLabPerm('admin')">
+        <q-tab-panel name="project_id_tab" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')">
           <projectIds :lab="lab"/>
         </q-tab-panel>
-        <q-tab-panel name="permissions_tab" v-if="$perms.hasLabPerm('admin')">
+        <q-tab-panel name="permissions_tab" v-if="$perms.hasLabPerm('ADMIN')">
           <!-- {{institution}} -->
           <!-- {{$perms.labPermissions()}} -->
           <permissions :base-url="`/api/labs/${lab.lab_id}`" v-if="lab && lab.lab_id"/>

@@ -51,7 +51,7 @@
         <!-- <q-route-tab class="restricted" :to="{ name: 'submission_types', params: { lab_id: $store.getters.labId} }" v-if="$store.getters.isStaff && $store.getters.labId" label="Submission Types"/> -->
         <!-- <q-route-tab class="restricted" :to="{ name: 'settings', params: { lab_id: $store.getters.labId} }" v-if="$store.getters.isStaff && $store.getters.labId" label="Settings"/> -->
         <!-- <q-btn-dropdown auto-close stretch flat label="Core" class="restricted" icon="vpn_key" v-if="$store.getters.isStaff && $store.getters.labId"> -->
-          <q-btn-dropdown auto-close stretch flat label="Core" class="restricted" icon="vpn_key" v-if="$store.getters.labId && ($perms.hasLabPerm('member') || $perms.hasLabPerm('admin') || $perms.hasLabPerm('associate'))">
+          <q-btn-dropdown auto-close stretch flat label="Core" class="restricted" icon="vpn_key" v-if="$store.getters.labId && ($perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN') || $perms.hasLabPerm('ASSOCIATE'))">
           <q-list>
             <q-item clickable :to="{ name: 'submissions', params: { lab_id: $store.getters.labId} }">
               <q-item-section>Submissions</q-item-section>
@@ -59,7 +59,7 @@
             <q-item clickable :to="{ name: 'submission_types', params: { lab_id: $store.getters.labId} }">
               <q-item-section>Submission Types</q-item-section>
             </q-item>
-            <q-item clickable :to="{ name: 'settings', params: { lab_id: $store.getters.labId} }" v-if="$perms.hasLabPerm('member') || $perms.hasLabPerm('admin')">
+            <q-item clickable :to="{ name: 'settings', params: { lab_id: $store.getters.labId} }" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')">
               <q-item-section>Settings</q-item-section>
             </q-item>
           </q-list>

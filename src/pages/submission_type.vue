@@ -513,7 +513,7 @@ export default {
       return this.id && this.id !== 'create' ? `submission_type_${this.id}` : 'submission_type'
     },
     can_modify () {
-      return this.$perms.hasLabPerm('member') || this.$perms.hasLabPerm('admin')
+      return this.$perms.hasLabPerm('MEMBER') || this.$perms.hasLabPerm('ADMIN')
     }
   },
   watch: {
