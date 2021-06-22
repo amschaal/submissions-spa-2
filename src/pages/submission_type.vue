@@ -318,7 +318,7 @@ export default {
       self.watch_changes = true
     }, 5000)
     this.$axios
-      .get(`/api/users/?show=true&labs__lab_id=${this.$store.getters.labId}`)
+      .get(`/api/users/?show=true&lab=${this.$store.getters.labId}`)
       .then(function (response) {
         self.user_options = response.data.results.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
       })
