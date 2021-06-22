@@ -21,7 +21,7 @@
           <div class="float-right controls"><q-btn @click="save(note)" label="Save" color="primary"/></div>
         </q-card-actions>
       </q-card>
-      <notes :notes="getResponses(note)" :noteHash="noteHash" :addNote="addNote" :deleteNote="deleteNote"/>
+      <notes :notes="getResponses(note)" :noteHash="noteHash" :addNote="addNote" :deleteNote="deleteNote" :submission="submission"/>
     </div>
   </div>
 </template>

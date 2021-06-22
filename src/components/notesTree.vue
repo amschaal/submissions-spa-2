@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="submission">
     <q-btn @click="newNote" color="primary">Add note</q-btn>
     <notes :notes="getNotes" :noteHash="noteHash" :addNote="addNote" :deleteNote="deleteNote" :submission="submission"/>
   </div>
