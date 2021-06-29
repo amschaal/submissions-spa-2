@@ -10,13 +10,9 @@
         <q-card-section v-if="opened">
           <q-input dense label="Description" v-model="data.description" autogrow placeholder="Enter description here."/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
+          <h5>Validation</h5>
           <q-checkbox dense label="Unique" v-if="type!='submission'" v-model="data.unique"/>
             <!-- :false-value="undefined" toggle-indeterminate="false" indeterminate-value="none"/> -->
-          <q-field label="Pin column" stack-label borderless v-if="type==='table'">
-            <q-radio dense v-model="data.pinned" :val="undefined" label="Not pinned" />
-            <q-radio dense v-model="data.pinned" val="left" label="Pinned left" />
-            <q-radio dense v-model="data.pinned" val="right" label="Pinned right" />
-          </q-field>
           <!-- <q-select
             dense options-dense
             label="Pin column"
@@ -31,7 +27,7 @@
             hint="Enter a valid regular expression to validate against. Example for matching values such as '20.3 ul': ^\d+(\.{1}\d+)? ul$"
             v-model="data.pattern"
             />
-          <q-select
+          <!-- <q-select
             dense options-dense
             v-model="data.enum"
             use-input
@@ -45,7 +41,28 @@
             stack-label
             label="Choices"
             hint="If the variable should be constrained to specific choices, enter here."
-            />
+            /> -->
+            <q-input
+              dense
+              v-if="data.type === 'string'"
+              label="Choices"
+              hint="If the variable should be constrained to specific choices, enter here.  Choices may be added, reordered, or removed."
+              v-model="option"
+              :error="data.enum.indexOf(option) != -1"
+              error-message="Choices must be unique."
+              bottom-slots
+              @keydown.enter="addChoice"
+              >
+              <template v-slot:append>
+                <q-icon name="add_circle" @click="addChoice" class="cursor-pointer" />
+              </template>
+            </q-input>
+            <draggable :list="data.enum">
+              <div v-for="choice in data.enum" :key="choice" class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white draggable">
+                <div class="q-chip-main ellipsis draggable">{{choice}}</div>
+                <div class="q-chip-side q-chip-close q-chip-right row flex-center" @click="deleteChoice(choice)"><i aria-hidden="true" class="q-icon cursor-pointer material-icons">cancel</i></div>
+              </div>
+            </draggable>
           <q-checkbox
             dense
             label="Select multiple"
@@ -68,27 +85,7 @@
             v-model="data.maximum"
             type="number"
             />
-          <q-field
-            dense
-            label="Widget"
-            borderless
-            style="width:100%"
-            v-if="data.type !== 'table'"
-          >
-            <span class="col-9">
-              <q-select
-                dense options-dense
-                v-model="data.widget.type"
-                :options="widgetOptions"
-                clearable
-                map-options emit-value
-              />
-            </span>
-            <span class="col-3" v-if="hasWidgetOptions(data.widget.type)">
-              <q-btn label="options" size="sm" @click="open('widget_options')"/>
-              <OptionsModal :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :schema="widget_schema(data.widget.type)" :parent-schema="schema" :variable="variable" :ref="'widget_options'"/>
-            </span>
-          </q-field>
+
           <ForeignKey :schema="rootSchema" v-model="data.fk"/>
           <q-field
             label="Custom validators"
@@ -111,6 +108,33 @@
             <OptionsModal v-model="v.options" :schema="validator_schema(validators[v.id])" :parent-schema="schema" :variable="variable" :ref="`validator_options_${v.id}`" v-if="validators[v.id].uses_options"/>
           </div>
           <q-input label="Validation Error Message" dense v-model="data.error_message" autogrow placeholder="Optionally add a custom validation message here." v-if="data.type !== 'table'"/>
+          <h5>Display</h5>
+          <q-field label="Pin column" stack-label borderless v-if="type==='table'">
+            <q-radio dense v-model="data.pinned" :val="undefined" label="Not pinned" />
+            <q-radio dense v-model="data.pinned" val="left" label="Pinned left" />
+            <q-radio dense v-model="data.pinned" val="right" label="Pinned right" />
+          </q-field>
+          <q-field
+            dense
+            label="Widget"
+            borderless
+            style="width:100%"
+            v-if="data.type !== 'table'"
+          >
+            <span class="col-9">
+              <q-select
+                dense options-dense
+                v-model="data.widget.type"
+                :options="widgetOptions"
+                clearable
+                map-options emit-value
+              />
+            </span>
+            <span class="col-3" v-if="hasWidgetOptions(data.widget.type)">
+              <q-btn label="options" size="sm" @click="open('widget_options')"/>
+              <OptionsModal :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :schema="widget_schema(data.widget.type)" :parent-schema="schema" :variable="variable" :ref="'widget_options'"/>
+            </span>
+          </q-field>
           <h5>Printing options</h5>
             <q-input dense label="Field label" v-model="data.printing.label" placeholder="Optionally add a shortened label." v-if="data.type !== 'table'"/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
@@ -145,7 +169,7 @@ import submissionWidgetFactory from './forms/widgets.js'
 import tableWidgetFactory from './aggrid/widgets.js'
 import OptionsModal from './modals/OptionsModal.vue'
 import ForeignKey from './forms/ForeignKey.vue'
-
+import draggable from 'vuedraggable'
 export default {
   props: ['value', 'variable', 'type', 'schema', 'rootSchema'],
   data () {
@@ -153,7 +177,8 @@ export default {
       opened: false,
       data: {enum: [], widget: {}, printing: {}},
       validators: this.$store.getters.validatorDict, // t{unique: {id: 'unique', name: 'Unique'}, foo: {id: 'foo', name: 'Foo'}},
-      add_validator: null
+      add_validator: null,
+      option: null
       // options: this.value && this.value.enum ? this.value.enum : []
     }
   },
@@ -232,6 +257,22 @@ export default {
     removeValidator (index) {
       this.data.validators.splice(index, 1)
     },
+    deleteChoice (choice) {
+      if (confirm(`Are you sure you want to delete "${choice}"?`)) {
+        this.data.enum.splice(this.data.enum.indexOf(choice), 1)
+      }
+    },
+    addChoice () {
+      if (this.option) {
+        if (!this.data.enum) {
+          this.data.enum = []
+        }
+        if (this.data.enum.indexOf(this.option) === -1) {
+          this.data.enum.push(this.option)
+          this.option = ''
+        }
+      }
+    },
     widgetSchema (id) {
       var factory = this.type === 'submission' ? submissionWidgetFactory : tableWidgetFactory
       return factory.getWidgetSchema(id)
@@ -284,7 +325,8 @@ export default {
   },
   components: {
     OptionsModal,
-    ForeignKey
+    ForeignKey,
+    draggable
   }
 }
 

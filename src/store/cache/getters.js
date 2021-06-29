@@ -36,10 +36,22 @@ export const vocabularies = (state) => {
 export const lab = (state) => {
   return state.lab
 }
+export const labPermissions = (state) => {
+  return state.lab ? state.lab.user_permissions : []
+}
+export const labId = (state) => {
+  return state.lab_id
+}
+export const labs = (state) => {
+  return state.labs
+}
+export const institution = (state) => {
+  return state.institution
+}
 export const staff = (state) => {
   return state.staff
 }
 export const staffOptions = (state) => {
-  console.log('staffOptions', state.staff)
-  return state.staff.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
+  // console.log('staffOptions', state.staff)
+  return state.lab.users.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
 }

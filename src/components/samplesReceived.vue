@@ -98,9 +98,7 @@ export default {
       console.log('root', this.$root.validators)
 
       console.log('openModal', this.value, this.data)
-      this.$refs.modal.show().then(() => {
-
-      })
+      this.$refs.modal.show()
     },
     open (ref) {
       console.log('open', this.$refs[ref], ref)

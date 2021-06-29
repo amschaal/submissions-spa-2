@@ -53,7 +53,7 @@ export default {
   methods: {
     set (table, column) {
       this.model = [table, column]
-      // this.change()
+      this.change()
     },
     change () {
       this.$emit('input', this.model)

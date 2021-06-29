@@ -1,11 +1,12 @@
 <template>
-  <q-page padding class="docs-input row justify-center">
+  <q-page padding class="docs-input row justify-center" v-if="$store.getters.lab">
     <q-card style="width:100%">
       <q-card-section>
         <span v-if="!type.id">Create</span> Submission Type <span class="inactive" v-if="type.id && !type.active"> (Inactive)</span>
-        <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id"/>
-        <q-btn @click="delete_type" color="negative" label="Delete" class="float-right" v-if="type.id"  :disable="type.submission_count !== 0" title="Only types with no associated permissions may be deleted."/>
+        <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id && can_modify"/>
+        <q-btn @click="delete_type" color="negative" label="Delete" class="float-right" v-if="type.id && can_modify"  :disable="type.submission_count !== 0" title="Only types with no associated permissions may be deleted."/>
         <router-link v-if="type.submission_count > 0 && type.id" :to="{'name': 'submissions', 'query': { 'search': type.name }}" class="float-right">{{type.submission_count}} Submissions</router-link>
+        <b v-if="!can_modify"> (Viewing with read only permissions)</b>
       </q-card-section>
       <!-- <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id"/> -->
       <q-separator />
@@ -20,14 +21,30 @@
         >
           <q-checkbox v-model="type.active" label="Should this type be available for submission?"/>
         </q-field>
-        <q-input
-          dense
-          label="Sort order"
-          hint="Submission types will be displayed in numeric order as specified by this field"
-          :error="hasError('sort_order')"
-          :error-message="errorMessage('sort_order')"
-          v-model="type.sort_order" type="integer"
-          />
+        <div class="row">
+          <q-input
+            dense
+            label="Sort order"
+            hint="Submission types will be displayed in numeric order as specified by this field"
+            :error="hasError('sort_order')"
+            :error-message="errorMessage('sort_order')"
+            v-model="type.sort_order" type="integer"
+            class="col"
+            />
+            <q-input
+              dense
+              label="Identifier"
+              :error="hasError('prefix')"
+              :error-message="errorMessage('prefix')"
+              v-model="type.prefix"
+              type="text"
+              class="col"
+              >
+              <template v-slot:hint>
+                Identifier can be used to link directly to a form for the submission type. <router-link v-if="type.id && type.prefix" :to="{'name': 'create_submission', 'params': {'lab_id': $store.getters.lab.lab_id}, 'query': { 'type': type.prefix }}">Direct link</router-link>
+              </template>
+            </q-input>
+        </div>
         <q-input
           dense
           label="Name"
@@ -37,6 +54,7 @@
           v-model="type.name"
           type="text"
           />
+<!--
         <q-field
           dense
           label="Internal ID"
@@ -50,6 +68,18 @@
           <q-input dense v-model="type.next_id" type="number" stack-label label="Next ID" class="col"/>
           <div class="col">Next Internal ID:<br><b>{{next_internal_id}}</b></div>
         </q-field>
+-->
+        <q-select
+          dense
+          v-model="type.default_id"
+          :options="project_ids"
+          option-value="id"
+          :option-label="opt => `${opt.generate_id}`"
+          emit-value
+          map-options
+          label="Auto-assign Project ID (optional)"
+          clearable
+        />
         <q-select
           dense
           label="Default participants"
@@ -147,7 +177,7 @@
       </q-card-section>
       <q-separator />
       <q-card-actions>
-        <q-btn @click="submit" label="Save" color="primary"></q-btn>
+        <q-btn @click="submit" label="Save" color="primary" v-if="can_modify"></q-btn>
       </q-card-actions>
 
     </q-card>
@@ -174,8 +204,9 @@ export default {
       save_message: null,
       watch_changes: false,
       user_options: [],
+      project_ids: [],
       status_option: null,
-      status_options: this.$store.getters.lab.statuses.map(status => ({label: status, value: status})),
+      status_options: [],
       toolbar: [
         ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
         ['token', 'hr', 'link', 'custom_btn'],
@@ -251,6 +282,7 @@ export default {
   mounted: function () {
     // Edit, Create, and Copy from logic is a bit convoluted.  Would be good to clean this up.
     var self = this
+    this.init_lab()
     if (!this.id || this.id === 'create') {
       this.create = true
     }
@@ -286,7 +318,7 @@ export default {
       self.watch_changes = true
     }, 5000)
     this.$axios
-      .get('/api/users/?show=true')
+      .get(`/api/users/?show=true&lab=${this.$store.getters.labId}`)
       .then(function (response) {
         self.user_options = response.data.results.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
       })
@@ -306,11 +338,20 @@ export default {
     // openExamples () {
     //   this.$refs.samplesheet.openSamplesheet()
     // },
+    init_lab () {
+      if (this.$store.getters.lab) {
+        this.status_options = this.$store.getters.lab.statuses.map(status => ({label: status, value: status}))
+        this.loadProjectIDs()
+      }
+    },
     submit () {
       var self = this
       var id = this.id
       var action = !this.create ? 'put' : 'post'
       var url = !this.create ? '/api/submission_types/' + id + '/' : '/api/submission_types/'
+      if (this.create) {
+        this.type.lab = this.$store.getters.lab.id
+      }
       this.errors = {}
       this.$axios[action](url, this.type)
         .then(function (response) {
@@ -334,6 +375,19 @@ export default {
         this.save_message()
         this.save_message = null
       }
+    },
+    loadProjectIDs () {
+      var self = this
+      this.$axios.get(`/api/project_ids/?lab_id=${this.$store.getters.lab.id}`)
+        .then(
+          function (response) {
+            self.project_ids = response.data.results
+          })
+        .catch(
+          function () {
+            self.$q.notify({message: 'Error getting project IDs.', type: 'negative'})
+          }
+        )
     },
     add_status (status) {
       if (this.type.statuses.indexOf(status) === -1) {
@@ -457,12 +511,18 @@ export default {
     },
     type_key () {
       return this.id && this.id !== 'create' ? `submission_type_${this.id}` : 'submission_type'
+    },
+    can_modify () {
+      return this.$perms.hasLabPerm('MEMBER') || this.$perms.hasLabPerm('ADMIN')
     }
   },
   watch: {
+    '$store.getters.lab': function () {
+      this.init_lab()
+    },
     'type': {
       handler (newVal, oldVal) {
-        if (!this.watch_changes) {
+        if (!this.watch_changes || !this.can_modify) {
           return
         }
         // if (window.JSON && window.JSON.stringify) { // && (!newVal.updated || Date.now() - newVal.updated < 5000)

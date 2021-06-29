@@ -1,13 +1,20 @@
 <template>
-  <div  class="inline row">
-    <q-select
-      v-model="status"
-     :options="statusOptions"
-     @input="statusChanged()"
-     map-options emit-value
-    />
-    <q-checkbox v-model="email" label="Email submitter" />
-</div>
+  <div>
+    <div v-if="!edit">
+      <span v-if="value">{{value}} </span><span v-else>None </span> <q-btn size="sm" label="Modify" @click="edit=true"/>
+    </div>
+    <div v-else>
+      <q-select
+        label="Set Status"
+        v-model="status"
+       :options="statusOptions"
+       @input="statusChanged()"
+       map-options emit-value
+      />
+      <q-checkbox v-model="email" label="Email submitter"/>
+      <q-btn size="sm" label="Cancel" color="negative" @click="edit=false"/>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -17,7 +24,8 @@ export default {
     return {
       status: this.value ? this.value : null,
       email: false,
-      options: this.$store.getters.statusOptions
+      options: this.$store.getters.statusOptions,
+      edit: false
     }
   },
   methods: {

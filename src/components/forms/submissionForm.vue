@@ -1,7 +1,8 @@
 <template>
   <div>
       <q-btn class="pull-right" color="primary" @click="show_help = true" label="Help" icon="fas fa-question-circle" v-if="type && type.submission_help"><q-tooltip ref="help_tooltip">Click for help with {{type.name}}</q-tooltip></q-btn>
-      <div v-html="$store.getters.lab.submission_page" v-if="$store.getters.lab.submission_page"></div>
+      <h5 v-if="$store.getters.lab">{{$store.getters.lab.name}} Submission Form <selectLabModal page="create_submission"/></h5>
+      <div v-html="$store.getters.lab.submission_page" v-if="$store.getters.lab && $store.getters.lab.submission_page"></div>
       <q-checkbox v-model="debug" label="Debug" v-if="$store.getters.isStaff && false" />
         <span v-if="debug">
           warnings: {{this.warnings}}
@@ -21,20 +22,6 @@
           </template>
           </q-input>
       </fieldset>
-          <q-select
-            outlined
-            emit-value map-options
-            label="Participants"
-            label-width="2"
-            color="grey"
-            options-selected-class="selected"
-            :error="hasError('type')"
-            bottom-slots :error-message="errorMessage('type')"
-            v-if="isAdmin && user_options && submission.participants"
-            multiple
-            v-model="submission.participants"
-            :options="user_options"
-          />
         <fieldset>
           <legend>Please select the submission type</legend>
           <q-select
@@ -300,8 +287,9 @@ import './docs-input.styl'
 // import axios from 'axios'
 // import Samplesheet from '../../components/samplesheet.vue'
 // import Agschema from '../../components/agschema.vue'
-import CustomFields from '../../components/forms/customFields.vue'
-import Account from '../../components/payment/ucdAccount.vue'
+import CustomFields from './customFields.vue'
+import selectLabModal from '../modals/selectLabModal.vue'
+import Account from '../payment/ucdAccount.vue'
 // import PPMS from '../../components/payment/ppms.vue'
 // import Files from '../../components/files.vue'
 import Vue from 'vue'
@@ -376,6 +364,17 @@ export default {
         this.import = !this.id && this.$route.query.import ? this.$route.query.import : null
         console.log('import', this.import)
         this.draft = !this.id && this.$route.query.draft ? this.$route.query.draft : null
+
+        if (this.create && !this.import && !this.draft && this.$route.query.type) {
+          console.log('types', this.$store.getters.types)
+          for (var i in this.$store.getters.types) {
+            console.log('prefix', this.$store.getters.types[i].prefix)
+            if (this.$store.getters.types[i].prefix === this.$route.query.type) {
+              this.type_id = this.$store.getters.types[i].id
+            }
+          }
+        }
+
         if (this.import) {
           this.loadImport()
         } else if (this.draft) {
@@ -416,8 +415,8 @@ export default {
         }
         console.log('draft', this.draft)
       }
-      this.type_id = !this.id && this.$route.query.type ? this.$route.query.type : null
-      if (this.type_id) {
+      // this.type_id = !this.id && this.$route.query.type ? this.$route.query.type : null
+      if (!this.id && this.type_id) {
         this.submission.type = this.type_id
       }
       if (this.submission.type) {
@@ -772,6 +771,9 @@ export default {
     },
     isAdmin () {
       return this.submission.permissions && this.submission.permissions.indexOf('ADMIN') !== -1
+    },
+    isStaff () {
+      return this.submission.permissions && this.submission.permissions.indexOf('STAFF') !== -1
     }
     // type_options () {
     //   return this.submission_types.map(opt => ({label: opt.name, value: opt.id}))
@@ -782,7 +784,8 @@ export default {
     // Agschema,
     // Agschema: () => import('../../components/agschema.vue'),
     CustomFields,
-    Account
+    Account,
+    selectLabModal
     // UCDAccount
     // PPMS
   }
@@ -803,19 +806,6 @@ export default {
   }
   .docs-input .q-field {
     margin: 2px 0px;
-  }
-  fieldset {
-    margin-top: 12px;
-    border: 1px solid #006daf;
-    padding: 12px;
-    border-radius: 8px;
-    padding-bottom: 20px;
-  }
-  legend {
-    color: #006daf;
-    font-style: italic;
-    padding-left: 12px;
-    padding-right: 12px;
   }
   .error {
     color: var(--q-color-negative);

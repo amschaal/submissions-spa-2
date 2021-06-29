@@ -3,8 +3,6 @@
   "version": "0.0.1",
   "description": "Sample Submission System",
   "productName": "submissions",
-  "cordovaId": "edu.ucdavis.genomecenter.submissions",
-  "capacitorId": "",
   "author": "adam <amschaal@gmail.com>",
   "private": true,
   "scripts": {
@@ -12,15 +10,20 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.0.0",
+    "@quasar/extras": "^1.9.8",
+    "ag-grid-community": "^24.0.0",
+    "ag-grid-enterprise": "^24.0.0",
+    "ag-grid-vue": "^24.0.0",
     "axios": "^0.18.1",
+    "core-js": "^3.0.0",
     "moment": "^2.24.0",
-    "quasar": "^1.0.0",
+    "quasar": "^1.14.1",
     "vue-i18n": "^8.0.0",
+    "vue-property-decorator": "^8.4.1",
     "vuedraggable": "^2.23.2"
   },
   "devDependencies": {
-    "@quasar/app": "^1.0.0",
+    "@quasar/app": "^2.0.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.0",
@@ -38,9 +41,7 @@
     "yarn": ">= 1.21.1"
   },
   "browserslist": [
-    "last 1 version, not dead, ie >= 11"
-  ],
-  "resolutions": {
-    "@babel/parser": "7.7.5"
-  }
+    "defaults",
+    "ie >= 11"
+  ]
 }

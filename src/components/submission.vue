@@ -7,7 +7,7 @@
             </q-banner>
           </div>
           <div class="field col-12 q-mt-xs q-mb-xs">
-            <SamplesReceived v-if="submission.id" v-model="submission" :admin="$store.getters.isStaff"/>
+            <SamplesReceived v-if="submission.id" v-model="submission" :admin="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')"/>
           </div>
           <div class="field col-12 q-mt-xs q-mb-xs" v-if="hasWarnings">
           <q-banner dense class="text-white bg-warning" rounded>
@@ -20,10 +20,7 @@
               <pre id="confirmation">{{submission_type.confirmation_text}}</pre>
             </q-banner>
           </div>
-          <div class="field col-sm-12 col-lg-4 q-mt-sm q-mb-sm">
-            <StatusSelector v-model="submission.status" :submission="submission" v-if="submission.id && isAdmin"/>
-          </div>
-          <div class="col-sm-12 col-lg-8 q-mt-sm q-mb-sm">
+          <div class="col-sm-12 col-lg-12 q-mt-sm q-mb-sm">
             <div class="row">
               <div class="col-lg-12">
                 <q-btn v-if="canModify" label="Modify" class="float-right q-ml-xs" @click="$router.push({name: 'modify_submission', params: {id: submission.id}})"/>
@@ -35,21 +32,27 @@
           </div>
         </div>
         <div class="row">
-          <div class="field col-sm-6 col-md-2">
-            <p class="caption">ID</p>
-            {{submission.internal_id}}
+          <div class="field col-sm-12 col-md-6">
+            <p class="caption">Status</p>
+            <StatusSelector v-model="submission.status" :submission="submission" v-if="submission.id && isAdmin"/><span v-else-if="submission.status">{{submission.status}}</span><span v-else>None</span>
           </div>
-          <div class="field col-sm-6 col-md-2">
-            <p class="caption">Submitted</p>
-            {{submission.submitted|formatDate}}
+          <div class="field col-sm-12 col-md-6">
+            <p class="caption">Project ID</p>
+            <SubmissionId v-model="submission.internal_id" :submission="submission" v-if="submission.id && isAdmin"/><span v-else-if="submission.internal_id">{{submission.internal_id}}</span><span v-else>Not assigned</span>
           </div>
-          <div class="field col-sm-12 col-md-5">
+          <div class="field col-sm-12 col-md-6">
             <p class="caption">Type</p>
             {{submission_type.name}}
           </div>
-          <div class="field col-sm-12 col-md-5" v-if="$store.getters.isStaff">
+          <div class="field col-sm-12 col-md-6">
+            <p class="caption">Submitted</p>
+            {{submission.submitted|formatDate}}
+          </div>
+          <div class="field col-sm-12 col-md-12" v-if="isAdmin">
             <p class="caption">Participants</p>
-            <span v-if="submission.participant_names">{{submission.participant_names.join(', ')}}</span>
+            <participants :submission="submission"/>
+            <!-- <userField v-model="submission.participants" v-if="submission.id && isAdmin"/>
+            <span v-else-if="submission.participants"></span> -->
           </div>
         </div>
         <div class="row">
@@ -96,7 +99,7 @@
             {{submission.comments}}
           </div>
         </div>
-        <p class="caption" v-if="submission.contacts && submission.contacts.length">Additional Contacts</p>
+        <p class="caption" v-if="submission.contacts && submission.contacts.length">Additional Contacts:</p>
         <div class="row" v-for="(c, index) in submission.contacts" :key="index">
           <div class="field col-sm-12 col-md-12 col-lg-4">
             <p class="caption">First name</p>
@@ -163,9 +166,11 @@
 // import Agschema from './agschema.vue'
 import CustomFields from './forms/customFields.vue'
 import StatusSelector from './statusSelector.vue'
+import SubmissionId from './submissionId.vue'
 import Lock from './lock.vue'
 import Cancel from './cancel.vue'
 import SamplesReceived from './samplesReceived.vue'
+import participants from './participants.vue'
 // import Vue from 'vue'
 import _ from 'lodash'
 
@@ -277,7 +282,7 @@ export default {
       // return this.submission.editable && !submission.cancelled
     },
     isAdmin () {
-      return this.submission.permissions.indexOf('ADMIN') !== -1
+      return this.submission && this.submission.permissions && this.submission.permissions.indexOf('ADMIN') !== -1
     }
   },
   components: {
@@ -286,11 +291,13 @@ export default {
     StatusSelector,
     Lock,
     Cancel,
-    SamplesReceived
+    SamplesReceived,
+    SubmissionId,
+    participants
   }
 }
 </script>
-<style>
+<style scoped>
   .q-field {
     padding: 0px 0px;
   }
@@ -299,8 +306,12 @@ export default {
   }
   div.row div p.caption {
     margin: 0 0 5px;
+    font-weight: bold;
   }
   pre#confirmation {
     white-space: pre-wrap;
+  }
+  .caption {
+    font-weight: bold;
   }
 </style>

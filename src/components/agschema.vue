@@ -194,12 +194,6 @@
 
   </div>
 </template>
-<!-- <link type="text/css" rel="stylesheet" href="https://docs.handsontable.com/4.0.0/components/handsontable/dist/handsontable.full.min.css"> -->
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/6.5.2/ajv.bundle.js"></script> -->
-
-<!-- <script src='../assets/hot/handsontable.full.min.js'></script>
-<script src='/statics/hot-schema/example_schema.js'></script>
-<script src='/statics/hot-schema/hotschema.js'></script> -->
 
 <script>
 // import { QSelect } from 'quasar'
@@ -388,14 +382,14 @@ export default {
       // var columnDefs = [{ headerName: '', lockPosition: true, valueGetter: this.rowIndex, cellClass: 'locked-col', width: 60, suppressNavigable: true, pinned: 'left' }]
       if (schema.order) {
         for (var i in schema.order) {
-          if (!this.editable || this.$store.getters.isLoggedIn || !schema.properties[schema.order[i]].internal) {
+          if (!this.editable || this.$store.getters.isStaff || !schema.properties[schema.order[i]].internal) {
             col = this.getColDef(schema.order[i], schema.properties[schema.order[i]], schema)
             columnDefs.push(col)
           }
         }
       } else {
         for (var prop in schema.properties) {
-          if (schema.properties.hasOwnProperty(prop) && (!this.editable || this.$store.getters.isLoggedIn || !schema.properties[prop].internal)) {
+          if (schema.properties.hasOwnProperty(prop) && (!this.editable || this.$store.getters.isStaff || !schema.properties[prop].internal)) {
             col = this.getColDef(prop, schema.properties[prop], schema)
             columnDefs.push(col)
           }
@@ -559,7 +553,7 @@ export default {
           self.errors = {}
           self.warnings = {}
           self.gridOptions.api.redrawRows() // redrawCells({force: true})
-          self.$q.notify({message: 'Samples successfully validated.  Please save the submission.', type: 'positive'})
+          self.$q.notify({message: 'Successfully validated.  Please hit the SUBMIT button when ready to save your changes.', type: 'positive'})
           if (save) {
             self.save()
           }

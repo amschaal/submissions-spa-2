@@ -17,7 +17,7 @@
       </template> -->
       <template slot="body" slot-scope="props">
         <q-tr :props="props">
-          <q-td key="file" :props="props"><q-btn v-if="$store.getters.isLoggedIn" class="float-left" color="red" label="Delete" @click="deleteFile(props.row)"/><a :href="props.row.file" target="_blank">{{ props.row.filename }}</a></q-td>
+          <q-td key="file" :props="props"><q-btn v-if="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')" class="float-left" color="red" label="Delete" @click="deleteFile(props.row)"/><a :href="props.row.file" target="_blank">{{ props.row.filename }}</a></q-td>
           <q-td key="uploaded_at" :props="props">{{ props.row.uploaded_at | formatDate }}</q-td>
         </q-tr>
       </template>
@@ -99,7 +99,7 @@ export default {
         return
       }
       var self = this
-      this.$axios.delete(`/api/submission_files/${file.id}/`)
+      this.$axios.delete(`/api/submission_files/${file.id}/?submission=${this.submission.id}`)
         .then(function () {
           self.$q.notify({message: 'File deleted', type: 'positive'})
           self.refreshTable()

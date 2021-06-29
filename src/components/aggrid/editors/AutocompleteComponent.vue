@@ -27,7 +27,6 @@
 
 <script>
 import Vue from 'vue'
-// import { filter } from 'quasar'
 export default Vue.extend({
   data () {
     return {

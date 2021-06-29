@@ -10,13 +10,16 @@
       narrow-indicator
     >
       <q-tab name="submission"  default><span v-if="submission.id">Submission</span><span v-else>Create Submission</span></q-tab>
+      <!-- <q-tab name="files" label="Files"  v-if="submission.id && $perms.hasSubmissionPerms(submission, ['VIEW'], 'ALL')"/> -->
       <q-tab name="files" label="Files"  v-if="submission.id"/>
       <q-tab name="comments" label="comments"  v-if="submission.id"/>
       <q-tab name="charges" label="charges"  v-if="submission.id"/>
+      <template v-for="(tab, i) in $plugins.tabs"><q-tab :key="i" :name="tab.id" :label="tab.label" v-if="submission.id && hasPluginPermission(submission, tab.id)"/></template>
     </q-tabs>
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="submission">
         <q-card-section>
+          <!-- <h6>Plugins here: {{$plugins}}</h6> -->
           <h3 v-if="submission.cancelled" class="text-red">Submission cancelled</h3>
           <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id) || create" v-on:submission_updated="submissionUpdated"/>
           <Submission :submission="submission" v-if="!modify && id"/>
@@ -34,10 +37,19 @@
         </q-card-section>
       </q-tab-panel>
       <q-tab-panel name="charges" v-if="submission.id">
+        <!-- <q-tab-panel name="charges" v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN', 'STAFF'], 'ANY')"> -->
         <q-card-section>
           <charges :submission="submission"/>
         </q-card-section>
       </q-tab-panel>
+      <template v-for="(tab, i) in $plugins.tabs">
+        <q-tab-panel :key="i" :name="tab.id" v-if="submission.id">
+          <q-card-section>
+            <div v-html="tab.content"/>
+            <component v-bind:is="$plugins.componentName(tab.id)" :submission="submission"></component>
+          </q-card-section>
+        </q-tab-panel>
+      </template>
     </q-tab-panels>
 
   </q-card>
@@ -98,6 +110,7 @@ export default {
           }
           // self.submission = response.data
           Vue.set(self, 'submission', response.data)
+          self.setLab()
         })
     }
   },
@@ -107,6 +120,25 @@ export default {
       console.log('submissionUpdated', submission)
       Vue.set(this, 'submission', submission)
       // this.submission = submission
+    },
+    setLab () {
+      if (!this.$store.getters.lab || this.$store.getters.lab.lab_id !== this.submission.lab.lab_id) {
+        this.$store.dispatch('setLabId', {axios: this.$axios, labId: this.submission.lab.lab_id})
+      }
+    },
+    hasPluginPermission (submission, tabId) {
+      var permissions = this.$plugins.getPermissions(tabId)
+      console.log('permissions', tabId, permissions)
+      if (!permissions) {
+        return true
+      }
+      if (permissions.ANY) {
+        return this.$perms.hasSubmissionPerms(this.submission, permissions.ANY, 'ANY')
+      }
+      if (permissions.ALL) {
+        return this.$perms.hasSubmissionPerms(this.submission, permissions.ALL, 'ALL')
+      }
+      return true
     }
   },
   watch: {
@@ -123,6 +155,7 @@ export default {
             console.log('response', response)
             self.submission = response.data
             Vue.set(self.submission, 'type', response.data.type.id)
+            self.setLab()
           })
       } else {
         Vue.set(this, 'submission', {'sample_data': [], 'contacts': [], biocore: false, 'payment': {}})

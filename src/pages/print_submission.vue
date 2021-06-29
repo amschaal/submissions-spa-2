@@ -20,12 +20,11 @@
     </tbody>
     </table>
   <div v-for="(v, index) in table_fields()" :key="index">
-    <p class="heading">{{getTitle(submission.submission_schema,v)}}: {{submission.submission_data[v] ? submission.submission_data[v].length : 0}}</p> <!--  page-break-before -->
-    <table class="horizontal full bordered compact page-break-after" v-if="submission.submission_data[v] && submission.submission_data[v].length > 0">
+    <p class="heading">{{getTitle(submission.submission_schema,v)}}: {{submission.submission_data[v] ? submission.submission_data[v].length : 0}}</p>
+    <table class="horizontal full bordered compact" v-if="submission.submission_data[v] && submission.submission_data[v].length > 0">
       <tr>
         <th></th><th :key="variable" v-for="variable in submission.submission_schema.properties[v].schema.order" v-show="!hidden(submission.submission_schema.properties[v].schema, variable)">{{getTitle(submission.submission_schema.properties[v].schema,variable)}}</th>
       </tr>
-
       <tr :key="index" v-for="(row,index) in submission.submission_data[v]">
         <td>{{index + 1}}</td><td :key="index" v-for="(variable, index) in submission.submission_schema.properties[v].schema.order" v-show="!hidden(submission.submission_schema.properties[v].schema, variable)">{{truncate(submission.submission_schema.properties[v].schema, variable, row[variable])}}</td>
       </tr>
@@ -77,8 +76,12 @@ export default {
       return value
     },
     hidden (schema, variable) {
-      // return true
-      return schema.properties[variable].printing && schema.properties[variable].printing.hidden
+      if (schema.properties[variable].internal && !this.$store.getters.isStaff) {
+        return true
+      }
+      // The location of the printing configuration is a little bit inconsistant between table or other variable types....
+      var printing = schema.properties[variable].schema ? schema.properties[variable].schema.printing : schema.properties[variable].printing
+      return printing && printing.hidden
     },
     getDate (timeStamp) {
       return formatDate(timeStamp, 'MM/DD/YYYY')
@@ -88,7 +91,7 @@ export default {
     },
     submission_field_data_array (flatten = true) {
       var self = this
-      var fields = this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type !== 'table')
+      var fields = this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type !== 'table' && !this.hidden(self.submission.submission_schema, v))
       var arr = fields.map(v => [self.getTitle(self.submission.submission_schema, v), self.truncate(self.submission.submission_schema, v, self.submission.submission_data[v])])
       return flatten ? _.flatten(arr) : arr
     },
@@ -141,12 +144,14 @@ table.submission td {
   font-size: 10pt;
   font-weight: bold;
 }
+/*
 .page-break-before{
   page-break-before:  always;
 }
 .page-break-after{
   page-break-after:  always;
 }
+*/
 /*
 .horizontal.compact th{
   word-break: break-word;
