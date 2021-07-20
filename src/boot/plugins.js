@@ -36,6 +36,9 @@ class PluginManager {
     return this.permissions[tabId]
   }
   initLab (labId, plugins) {
+    if (!plugins || !plugins.length) {
+      plugins = []
+    }
     console.log('initLab', this)
     if (!this.labs[labId]) {
       this.labs[labId] = {'tabs': []}
@@ -46,6 +49,9 @@ class PluginManager {
       }
     }
     console.log('initLab', labId, this.labs)
+  }
+  initLabs (labs) {
+    labs.forEach(lab => this.initLab(lab.lab_id, lab.plugins))
   }
   getTabs (labId) {
     if (!labId) {
