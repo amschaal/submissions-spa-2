@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="docs-input row justify-center">
-    <q-card class="p90">
+    <q-card class="p90" v-if="submission.id">
     <q-tabs
       v-model="tab"
       dense
@@ -13,10 +13,10 @@
       <!-- <q-tab name="files" label="Files"  v-if="submission.id && $perms.hasSubmissionPerms(submission, ['VIEW'], 'ALL')"/> -->
       <q-tab name="files" label="Files"  v-if="submission.id"/>
       <q-tab name="comments" label="comments"  v-if="submission.id"/>
-      <q-tab name="charges" label="charges"  v-if="submission.id"/>
-      <template v-for="(tab, i) in $plugins.tabs"><q-tab :key="i" :name="tab.id" :label="tab.label" v-if="submission.id && hasPluginPermission(submission, tab.id)"/></template>
+      <q-tab name="charges" label="charges"  v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')"/>
+      <template v-for="(tab, i) in $plugins.getTabs(submission.lab.lab_id)"><q-tab :key="i" :name="tab.id" :label="tab.label" v-if="submission.id && hasPluginPermission(submission, tab.id)"/></template>
     </q-tabs>
-    <q-tab-panels v-model="tab" animated>
+    <q-tab-panels v-model="tab" animated v-if="submission.id">
       <q-tab-panel name="submission">
         <q-card-section>
           <!-- <h6>Plugins here: {{$plugins}}</h6> -->
@@ -36,16 +36,17 @@
           <notes-tree :submission="submission"/>
         </q-card-section>
       </q-tab-panel>
-      <q-tab-panel name="charges" v-if="submission.id">
+      <q-tab-panel name="charges" v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')">
         <!-- <q-tab-panel name="charges" v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN', 'STAFF'], 'ANY')"> -->
         <q-card-section>
           <charges :submission="submission"/>
         </q-card-section>
       </q-tab-panel>
-      <template v-for="(tab, i) in $plugins.tabs">
-        <q-tab-panel :key="i" :name="tab.id" v-if="submission.id">
+      <template v-for="(tab, i) in $plugins.getTabs(submission.lab.lab_id)">
+        <q-tab-panel :key="i" :name="tab.id">
           <q-card-section>
             <div v-html="tab.content"/>
+            <h1 tab-test>{{tab.id}}</h1>
             <component v-bind:is="$plugins.componentName(tab.id)" :submission="submission"></component>
           </q-card-section>
         </q-tab-panel>
