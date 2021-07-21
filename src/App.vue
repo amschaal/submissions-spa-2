@@ -38,9 +38,9 @@ export default {
     // this.$store.dispatch('fetchValidators', {axios: this.$axios})
     // this.$store.dispatch('fetchTypes', {axios: this.$axios})
     // this.$store.dispatch('fetchStatuses', {axios: this.$axios})
-    this.$store.dispatch('fetchLabs', {axios: this.$axios}).then(labs => {
-      this.$plugins.initLabs(this.$store.getters.labs)
-    })
+    // this.$store.dispatch('fetchLabs', {axios: this.$axios}).then(labs => {
+    //   this.$plugins.initLabs(this.$store.getters.labs)
+    // })
     this.$store.dispatch('fetchAll', {axios: this.$axios})
     console.log('$store', this.$store)
 
@@ -65,7 +65,7 @@ export default {
       console.log('institution watcher', institution)
     },
     'labs': function (labs) {
-      console.log('Labs resolved', labs)
+      this.$plugins.initLabs(labs)
     }
     // '$route.params.lab_id': {
     //   handler: function (labId) {

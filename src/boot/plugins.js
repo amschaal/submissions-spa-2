@@ -1,10 +1,10 @@
 import Vue from 'vue'
+import _ from 'lodash'
 // var plugins = []
 var plugins = ['test', 'bioshare']
 
 class PluginManager {
   constructor (plugins) {
-    console.log('PluginManager', plugins, this)
     this.labs = {}
     this.plugins = {}
     // this.tabs = []
@@ -14,7 +14,6 @@ class PluginManager {
     plugins.forEach(p =>
       import('assets/plugins/' + p + '/config.js')
         .then(module => {
-          console.log('plugin', module, self, this)
           manager.plugins[p] = {'config': module.config, 'tabs': module.config.submission_tabs}
           // register Vue component for tabs
           module.config.submission_tabs.forEach(t => Vue.component(manager.componentName(t.id), t.component))
@@ -27,7 +26,6 @@ class PluginManager {
           console.log('plugin error', err.message)
         })
     )
-    console.log('plugins', this.plugins)
   }
   componentName (pluginId) {
     return `submission-tab-${pluginId}`
@@ -36,19 +34,16 @@ class PluginManager {
     return this.permissions[tabId]
   }
   initLab (labId, plugins) {
-    if (!plugins || !plugins.length) {
-      plugins = []
-    }
-    console.log('initLab', this)
+    console.log('initLab', labId, plugins)
+    var labPlugins = plugins != null ? plugins : {}
     if (!this.labs[labId]) {
       this.labs[labId] = {'tabs': []}
-      for (var i in plugins) {
-        var p = plugins[i]
-        console.log('init lab', labId, p, this.plugins[p])
+      var pluginIds = _.keys(labPlugins)
+      for (var i in pluginIds) {
+        var p = pluginIds[i]
         this.labs[labId].tabs = this.labs[labId].tabs.concat(this.plugins[p].tabs)
       }
     }
-    console.log('initLab', labId, this.labs)
   }
   initLabs (labs) {
     labs.forEach(lab => this.initLab(lab.lab_id, lab.plugins))
@@ -59,7 +54,6 @@ class PluginManager {
     } else if (!this.labs[labId]) {
       this.initLab(labId, [])
     }
-    console.log('getTabs', labId, this.labs[labId].tabs)
     return this.labs[labId].tabs
   }
 }
