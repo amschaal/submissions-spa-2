@@ -47,7 +47,7 @@
           <q-card-section>
             <div v-html="tab.content"/>
             <h1 tab-test>{{tab.id}}</h1>
-            <component v-bind:is="$plugins.componentName(tab.id)" :submission="submission"></component>
+            <component v-bind:is="$plugins.componentName(tab.id)" :config="$plugins.getLabConfig(submission.lab.lab_id, tab.id)" :submission="submission"></component>
           </q-card-section>
         </q-tab-panel>
       </template>

@@ -37,7 +37,7 @@ class PluginManager {
     console.log('initLab', labId, plugins)
     var labPlugins = plugins != null ? plugins : {}
     if (!this.labs[labId]) {
-      this.labs[labId] = {'tabs': []}
+      this.labs[labId] = {'tabs': [], 'plugins': labPlugins}
       var pluginIds = _.keys(labPlugins)
       for (var i in pluginIds) {
         var p = pluginIds[i]
@@ -55,6 +55,9 @@ class PluginManager {
       this.initLab(labId, [])
     }
     return this.labs[labId].tabs
+  }
+  getLabConfig (labId, pluginId) {
+    return this.labs[labId].plugins[pluginId]
   }
 }
 var pluginManager = new PluginManager(plugins)
