@@ -134,7 +134,7 @@
       <fieldset>
         <legend>Additional Contacts (<a @click="addContact" class="link">Add</a>)</legend>
         <div class="row" v-for="(c, index) in submission.contacts" :key="index">
-          <div class="col-sm-12 col-md-4 col-lg-4 q-p-xl">
+          <div class="col-sm-12 col-md-3 col-lg-3 q-pa-sm">
             <q-input
               :error="hasContactError(index,'first_name')"
               bottom-slots :error-message="getContactError(index,'first_name')"
@@ -143,7 +143,7 @@
               stack-label label="* First Name"
               />
           </div>
-          <div class="col-sm-12 col-md-4 col-lg-4">
+          <div class="col-sm-12 col-md-3 col-lg-3 q-pa-sm">
              <q-input
                :error="hasContactError(index,'last_name')"
                bottom-slots :error-message="getContactError(index,'last_name')"
@@ -152,15 +152,18 @@
                stack-label label="* Last Name"
                />
           </div>
-          <div class="col-sm-12 col-md-4 col-lg-4">
+          <div class="col-sm-12 col-md-6 col-lg-6 q-pa-sm">
             <q-input
               :error="hasContactError(index,'email')"
               bottom-slots :error-message="getContactError(index,'email')"
               v-model="c.email"
               type="text"
               stack-label label="* Email"
-              />
-            <q-btn @click="removeContact(index)" color="negative" label="remove"/>
+              >
+              <template v-slot:after>
+                <q-btn @click="removeContact(index)" color="negative" label="remove"/>
+              </template>
+            </q-input>
           </div>
         </div>
       </fieldset>
