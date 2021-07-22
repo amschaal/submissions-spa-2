@@ -9,6 +9,7 @@
         <q-tab name="settings_tab" label="General" v-if="$perms.hasLabPerm('ADMIN')"/>
         <q-tab name="project_id_tab" label="Project IDs" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')"/>
         <q-tab name="permissions_tab" label="Permissions" v-if="$perms.hasLabPerm('ADMIN')"/>
+        <q-tab name="plugins_tab" label="Plugins" v-if="$perms.hasLabPerm('ADMIN')"/>
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="settings_tab" v-if="$perms.hasLabPerm('ADMIN')">
@@ -119,6 +120,25 @@
           <!-- {{$perms.labPermissions()}} -->
           <permissions :base-url="`/api/labs/${lab.lab_id}`" v-if="lab && lab.lab_id"/>
         </q-tab-panel>
+        <q-tab-panel name="plugins_tab" v-if="$perms.hasLabPerm('ADMIN')">
+          <q-tabs
+              v-model="plugin_tab"
+              class="text "
+            >
+            <template v-for="(config, plugin) in lab.plugins">
+              <q-tab :key="plugin" :name="plugin" :label="plugin"/>
+            </template>
+          </q-tabs>
+          <q-tab-panels v-model="plugin_tab" animated>
+            <template v-for="(config, plugin) in lab.plugins">
+              <q-tab-panel :key="plugin" :name="plugin">
+                <q-checkbox v-model="config.enabled" label="Enabled" />
+                {{config}}, {{plugin}}!!
+              </q-tab-panel>
+            </template>
+          </q-tab-panels>
+          {{lab.plugins}}
+        </q-tab-panel>
       </q-tab-panels>
 
     </div>
@@ -144,6 +164,7 @@ export default {
       statuses: ['one', 'two', 'three'],
       user_options: [],
       tab: 'settings_tab',
+      plugin_tab: null,
       toolbar: [
         ['bold', 'italic', 'strike', 'underline'],
         ['token', 'link', 'custom_btn'],
