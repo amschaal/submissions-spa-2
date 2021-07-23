@@ -2,10 +2,14 @@
   <q-page padding>
     <div v-if="lab">
       <h5>Settings for "{{lab.name}}"</h5>
+      <q-card class="p90">
       <q-tabs
-          v-model="tab"
-          class="text "
-        >
+        v-model="tab"
+        dense
+        class="bg-primary text-grey shadow-2"
+        active-color="white"
+        narrow-indicator
+      >
         <q-tab name="settings_tab" label="General" v-if="$perms.hasLabPerm('ADMIN')"/>
         <q-tab name="project_id_tab" label="Project IDs" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')"/>
         <q-tab name="permissions_tab" label="Permissions" v-if="$perms.hasLabPerm('ADMIN')"/>
@@ -123,7 +127,10 @@
         <q-tab-panel name="plugins_tab" v-if="$perms.hasLabPerm('ADMIN')">
           <q-tabs
               v-model="plugin_tab"
-              class="text "
+              dense
+              class="bg-primary text-grey shadow-2"
+              active-color="white"
+              narrow-indicator
             >
             <template v-for="(config, plugin) in lab.plugins">
               <q-tab :key="plugin" :name="plugin" :label="plugin"/>
@@ -132,15 +139,13 @@
           <q-tab-panels v-model="plugin_tab" animated>
             <template v-for="(config, plugin) in lab.plugins">
               <q-tab-panel :key="plugin" :name="plugin">
-                <q-checkbox v-model="config.enabled" label="Enabled" />
-                {{config}}, {{plugin}}!!
+                <pluginSettings :updateUrl="'/api/labs/'+lab.lab_id+'/update_plugin/'" :plugin="plugin" :config="config"/>
               </q-tab-panel>
             </template>
           </q-tab-panels>
-          {{lab.plugins}}
         </q-tab-panel>
       </q-tab-panels>
-
+    </q-card>
     </div>
   </q-page>
 </template>
@@ -150,6 +155,7 @@ import schemaForm from '../components/forms/schemaForm.vue'
 import projectIds from '../components/projectIds.vue'
 import userField from '../components/forms/userField.vue'
 import permissions from '../components/permissions.vue'
+import pluginSettings from '../components/pluginSettings.vue'
 import _ from 'lodash'
 // import draggable from 'vuedraggable'
 export default {
@@ -233,7 +239,8 @@ export default {
     schemaForm,
     projectIds,
     userField,
-    permissions
+    permissions,
+    pluginSettings
   }
 }
 </script>
