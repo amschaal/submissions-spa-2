@@ -40,7 +40,7 @@
         <div class="col-3">
           <q-input
             v-model="filters.filter"
-            debounce="500"
+            debounce="1500"
             placeholder="Search"
             rounded
             outlined
