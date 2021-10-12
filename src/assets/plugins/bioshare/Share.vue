@@ -3,66 +3,78 @@
     <div v-if="share">
       <p><a class="text-h5" target="_blank" :href="share.url">{{share.url}}</a></p>
       <div v-if="permissions">
-      <q-markup-table flat bordered>
-        <thead>
-          <tr>
-            <th colspan="3">
-              <div class="row no-wrap items-center">
-                <div class="text-h4 q-ml-md">Participant sharing (Full permissions)<q-btn label="Update Sharing" @click="shareWithParticipants" color="primary"/></div>
-              </div>
-            </th>
-          </tr>
-          <tr>
-            <th class="text-left">Participant</th>
-            <th class="text-right">Email</th>
-            <th class="text-right">Shared</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr v-for="p in submission.participants">
-          <td class="text-left">{{p.first_name}} {{p.last_name}}</td>
-          <td class="text-right">{{p.email}}</td>
-          <td class="text-right"><q-icon name="check_circle" color="green" v-if="sharedWith(p.email)"/><q-icon name="cancel" color="red" v-else/></td>
-        </tr>
-      </tbody>
-      </q-markup-table>
-      <q-markup-table flat bordered>
-        <thead>
-          <tr>
-            <th colspan="4">
-              <div class="row no-wrap items-center">
-                <div class="text-h4 q-ml-md">Submitter/PI/Contact Sharing (Download only) <q-btn label="Update Sharing" @click="shareWithSubmitter" color="primary"/></div>
-              </div>
-            </th>
-          </tr>
-          <tr>
-            <th class="text-left">Type</th>
-            <th class="text-left">Name</th>
-            <th class="text-right">Email</th>
-            <th class="text-right">Shared</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="text-left">Submitter</td>
-            <td class="text-right">{{submission.first_name}} {{submission.last_name}}</td>
-            <td class="text-right">{{submission.email}}</td>
-            <td class="text-right"><q-icon name="check_circle" color="green" v-if="sharedWith(submission.email)"/><q-icon name="cancel" color="red" v-else/></td>
-          </tr>
-          <tr>
-            <td class="text-left">PI</td>
-            <td class="text-right">{{submission.pi_first_name}} {{submission.pi_last_name}}</td>
-            <td class="text-right">{{submission.pi_email}}</td>
-            <td class="text-right"><q-icon name="check_circle" color="green" v-if="sharedWith(submission.pi_email)"/><q-icon name="cancel" color="red" v-else/></td>
-          </tr>
-        <tr v-for="c in submission.contacts">
-          <td class="text-left">Contact</td>
-          <td class="text-right">{{c.first_name}} {{c.last_name}}</td>
-          <td class="text-right">{{c.email}}</td>
-          <td class="text-right"><q-icon name="check_circle" color="green" v-if="sharedWith(c.email)"/><q-icon name="cancel" color="red" v-else/></td>
-        </tr>
-      </tbody>
-      </q-markup-table>
+        <q-btn color="primary" @click="open = true" label="Show permissions" />
+        <q-dialog v-model="open" full-width>
+          <q-layout view="Lhh lpR fff" container class="bg-white">
+            <q-page-container>
+            <q-page padding>
+              <h4>{{share.url}}</h4>
+              <q-markup-table flat bordered>
+                <thead>
+                  <tr>
+                    <th colspan="3">
+                      <div class="row no-wrap items-center">
+                        <div class="text-h4 q-ml-md">Participant sharing (Full permissions)<q-btn label="Update Sharing" @click="shareWithParticipants" color="primary"/></div>
+                      </div>
+                    </th>
+                  </tr>
+                  <tr>
+                    <th class="text-left">Participant</th>
+                    <th class="text-right">Email</th>
+                    <th class="text-right">Shared</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <tr v-for="p in submission.participants">
+                  <td class="text-left">{{p.first_name}} {{p.last_name}}</td>
+                  <td class="text-right">{{p.email}}</td>
+                  <td class="text-right"><q-icon name="check_circle" color="green" v-if="sharedWith(p.email)"/><q-icon name="cancel" color="red" v-else/></td>
+                </tr>
+              </tbody>
+              </q-markup-table>
+              <q-markup-table flat bordered>
+                <thead>
+                  <tr>
+                    <th colspan="4">
+                      <div class="row no-wrap items-center">
+                        <div class="text-h4 q-ml-md">Submitter/PI/Contact Sharing (Download only) <q-btn label="Update Sharing" @click="shareWithSubmitter" color="primary"/></div>
+                      </div>
+                    </th>
+                  </tr>
+                  <tr>
+                    <th class="text-left">Type</th>
+                    <th class="text-left">Name</th>
+                    <th class="text-right">Email</th>
+                    <th class="text-right">Shared</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-left">Submitter</td>
+                    <td class="text-right">{{submission.first_name}} {{submission.last_name}}</td>
+                    <td class="text-right">{{submission.email}}</td>
+                    <td class="text-right"><q-icon name="check_circle" color="green" v-if="sharedWith(submission.email)"/><q-icon name="cancel" color="red" v-else/></td>
+                  </tr>
+                  <tr>
+                    <td class="text-left">PI</td>
+                    <td class="text-right">{{submission.pi_first_name}} {{submission.pi_last_name}}</td>
+                    <td class="text-right">{{submission.pi_email}}</td>
+                    <td class="text-right"><q-icon name="check_circle" color="green" v-if="sharedWith(submission.pi_email)"/><q-icon name="cancel" color="red" v-else/></td>
+                  </tr>
+                <tr v-for="c in submission.contacts">
+                  <td class="text-left">Contact</td>
+                  <td class="text-right">{{c.first_name}} {{c.last_name}}</td>
+                  <td class="text-right">{{c.email}}</td>
+                  <td class="text-right"><q-icon name="check_circle" color="green" v-if="sharedWith(c.email)"/><q-icon name="cancel" color="red" v-else/></td>
+                </tr>
+              </tbody>
+              </q-markup-table>
+              <q-btn color="primary" @click="open = false" label="Close" />
+            </q-page>
+          </q-page-container>
+        </q-layout>
+
+        </q-dialog>
       </div>
     </div>
   </div>
@@ -73,7 +85,8 @@ export default {
   props: ['submission', 'share', 'config'],
   data () {
     return {
-      permissions: null
+      permissions: null,
+      open: false
     }
   },
   methods: {
