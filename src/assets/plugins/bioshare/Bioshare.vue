@@ -1,10 +1,22 @@
 <template>
   <div>{{config}}
     <div v-if="shares.length > 0">
-      {{shares}}
-      <div v-for="share in shares">
-        <Share :share="share" :submission="submission"/>{{share}}
-      </div>
+      <!-- {{shares}} -->
+      <q-markup-table>
+       <thead>
+         <tr>
+           <th class="text-left">URL</th>
+           <th class="text-right">Name</th>
+           <th class="text-right">Description</th>
+           <th class="text-right">Shared with</th>
+           <th class="text-right">Action</th>
+         </tr>
+       </thead>
+       <tbody v-for="share in shares">
+         <Share :share="share" :submission="submission"/>
+       </tbody>
+     </q-markup-table>
+
     </div>
     <div v-else>
       <h4>No shares have been created yet.</h4>
@@ -47,7 +59,8 @@ export default {
       shares: [],
       permissions: null,
       createDialog: false,
-      shareName: ''
+      shareName: '',
+      shareDescription: ''
     }
   },
   methods: {
@@ -77,7 +90,7 @@ export default {
     },
     createShare () {
       var self = this
-      this.$axios.post('/api/bioshare/submission_shares/', {submission: this.submission.id})
+      this.$axios.post('/api/bioshare/submission_shares/', {submission: this.submission.id, name: this.shareName, notes: this.shareDescription})
         .then(function (response) {
           self.shares.push(response.data)
           self.createDialog = false

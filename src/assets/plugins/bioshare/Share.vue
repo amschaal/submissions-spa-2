@@ -1,9 +1,12 @@
 <template>
-  <div>{{config}}
-    <div v-if="share">
-      <p><a class="text-h5" target="_blank" :href="share.url">{{share.url}}</a></p>
+  <tr v-if="share">
+    <th class="text-left"><a target="_blank" :href="share.url">{{share.url}}</a></th>
+    <th class="text-right">{{share.name}}</th>
+    <th class="text-right">{{share.notes}}</th>
+    <th class="text-right">{{sharedWithEmails}}</th>
+    <th class="text-right">
       <div v-if="permissions">
-        <q-btn color="primary" @click="open = true" label="Show permissions" />
+        <q-btn color="primary" @click="open = true" label="Manage permissions" />
         <q-dialog v-model="open" full-width>
           <q-layout view="Lhh lpR fff" container class="bg-white">
             <q-page-container>
@@ -76,8 +79,8 @@
 
         </q-dialog>
       </div>
-    </div>
-  </div>
+    </th>
+  </tr>
 </template>
 
 <script>
@@ -145,6 +148,11 @@ export default {
   },
   mounted () {
     this.getPermissions()
+  },
+  computed: {
+    sharedWithEmails: function () {
+      return this.permissions ? Object.keys(this.permissions.permissions.user_perms).join(', ') : ''
+    }
   }
 }
 </script>
