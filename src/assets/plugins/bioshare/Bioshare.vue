@@ -10,8 +10,31 @@
       <h4>No shares have been created yet.</h4>
     </div>
     <div v-if="$perms.hasLabPerm('ADMIN') || $perms.hasLabPerm('MEMBER')">
-      <q-btn label="Create Share" @click="createShare" color="primary"/>
+      <q-btn label="Create Share"  @click="createShareDialog" color="primary"/>
     </div>
+    <q-dialog v-model="createDialog" persistent >
+      <q-card style="width: 700px; max-width: 80vw;">
+        <q-card-section>
+          <div class="text-h6">Create a New Share</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input dense outlined hint="Share name" v-model="shareName" autofocus @keyup.enter="prompt = false" />
+          <q-input
+            v-model="shareDescription"
+            outlined
+            type="textarea"
+            hint="Description"
+            dense
+          />
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn label="Cancel" color="negative" v-close-popup />
+          <q-btn label="Create Share" color="primary" @click="createShare" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -22,7 +45,9 @@ export default {
   data () {
     return {
       shares: [],
-      permissions: null
+      permissions: null,
+      createDialog: false,
+      shareName: ''
     }
   },
   methods: {
@@ -43,12 +68,20 @@ export default {
           }
         })
     },
+    createShareDialog () {
+      this.shareName = `${this.submission.pi_last_name}, ${this.submission.pi_first_name}: ` + this.submission.internal_id || this.submission.id
+      if (this.shares.length > 0) {
+        this.shareName += ' #' + (this.shares.length + 1)
+      }
+      this.createDialog = true
+    },
     createShare () {
       var self = this
       this.$axios.post('/api/bioshare/submission_shares/', {submission: this.submission.id})
         .then(function (response) {
           self.shares.push(response.data)
-          self.$q.notify({message: `Submission created!`, type: 'positive'})
+          self.createDialog = false
+          self.$q.notify({message: `Share created!`, type: 'positive'})
         })
         .catch(function (error) {
           // console.log('ERROR', error)
