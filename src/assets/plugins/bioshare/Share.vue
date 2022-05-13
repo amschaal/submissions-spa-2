@@ -11,13 +11,13 @@
           <q-layout view="Lhh lpR fff" container class="bg-white">
             <q-page-container>
             <q-page padding>
-              <h4>{{share.url}}</h4>
+              <h5><a :href="share.url" target="_blank">{{share.name || share.url}}</a></h5>
               <q-markup-table flat bordered>
                 <thead>
                   <tr>
                     <th colspan="3">
                       <div class="row no-wrap items-center">
-                        <div class="text-h4 q-ml-md">Participant sharing (Full permissions)<q-btn label="Update Sharing" @click="shareWithParticipants" color="primary"/></div>
+                        <div class="text-h5 q-ml-md">Participant sharing (Full permissions)<q-btn label="Update Sharing" @click="shareWithParticipants" color="primary"/></div>
                       </div>
                     </th>
                   </tr>
@@ -40,7 +40,7 @@
                   <tr>
                     <th colspan="4">
                       <div class="row no-wrap items-center">
-                        <div class="text-h4 q-ml-md">Submitter/PI/Contact Sharing (Download only) <q-btn label="Update Sharing" @click="shareWithSubmitter" color="primary"/></div>
+                        <div class="text-h5 q-ml-md">Submitter/PI/Contact Sharing (Download only) <q-btn label="Update Sharing" @click="shareWithSubmitter" color="primary"/></div>
                       </div>
                     </th>
                   </tr>
