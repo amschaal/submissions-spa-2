@@ -24,14 +24,14 @@
               <button slot="header">Add</button>
           </draggable> -->
           <q-list bordered class="rounded-borders">
-            <q-expansion-item
+            <!-- <q-expansion-item
               expand-separator
               label="Users"
               caption="Edit users"
               group="settings"
             >
             <userField v-model="lab.users" query-params="is_staff=1"/>
-            </q-expansion-item>
+            </q-expansion-item> -->
             <q-expansion-item
               expand-separator
               label="Content"
@@ -153,7 +153,7 @@
 <script>
 import schemaForm from '../components/forms/schemaForm.vue'
 import projectIds from '../components/projectIds.vue'
-import userField from '../components/forms/userField.vue'
+// import userField from '../components/forms/userField.vue'
 import permissions from '../components/permissions.vue'
 import pluginSettings from '../components/pluginSettings.vue'
 import _ from 'lodash'
@@ -238,7 +238,7 @@ export default {
   components: {
     schemaForm,
     projectIds,
-    userField,
+    // userField,
     permissions,
     pluginSettings
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="col-sm-12 col-md-12 q-pb-lg" v-if="this.$store.getters.isStaff">
+    <div class="col-sm-12 col-md-12 q-pa-sm" v-if="this.$store.getters.isStaff">
       <q-input
         compact
         :error="hasError('ppms_order_id')"
@@ -11,7 +11,7 @@
         stack-label label="PPMS Order Ref #"
         />
     </div>
-    <div class="col-sm-12 col-md-6">
+    <div class="col-sm-12 col-md-6 q-pa-sm">
       <q-select
         compact
         outlined
@@ -29,12 +29,13 @@
         :hint="type_help"
       />
     </div>
-    <div class="col-sm-12 col-md-6">
+    <div class="col-sm-12 col-md-6 q-pa-sm">
       <q-input
         :error="hasError('payment_info')"
         bottom-slots :error-message="errorMessage('payment_info')"
         v-model="value.payment_info" type="text"
         stack-label label="Payment Info"
+        :disable="value.payment_type === 'Credit Card'"
         />
     </div>
   </div>
@@ -85,9 +86,11 @@ export default {
     QSelect
   },
   watch: {
-    // payment: function (newValue, oldValue) {
-    //   this.$emit('input', this.payment)
-    // }
+    'value.payment_type': function (newValue, oldValue) {
+      if (this.value.payment_type === 'Credit Card') {
+        this.value.payment_info = ''
+      }
+    }
   }
 }
 </script>

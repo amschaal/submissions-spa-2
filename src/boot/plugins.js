@@ -48,7 +48,8 @@ class PluginManager {
   initLabs (labs) {
     labs.forEach(lab => this.initLab(lab.lab_id, lab.plugins))
   }
-  getTabs (labId) {
+  getTabs (lab) {
+    var labId = lab && lab.lab_id ? lab.lab_id : lab
     if (!labId) {
       return []
     } else if (!this.labs[labId]) {

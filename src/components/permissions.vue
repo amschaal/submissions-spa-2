@@ -13,7 +13,7 @@
       :pagination="initialPagination"
     >
       <template v-slot:body="props">
-        <q-tr :props="props">
+        <q-tr :props="props" :class="{ selected: props.row.modified }">
           <q-td key="last_name" :props="props">
             {{ props.row.last_name }}, {{ props.row.first_name }}
           </q-td>
@@ -75,6 +75,7 @@ export default {
         if (!this.permissions.user_permissions[user.username]) {
           this.$set(this.permissions.user_permissions, user.username, user)
           this.$set(user, 'permissions', [])
+          this.$set(user, 'modified', true)
         } else {
           this.$q.notify({message: `The user "${user.first_name} ${user.last_name}" has already has permissions.  Please update them in the permissions table.`, type: 'negative'})
         }

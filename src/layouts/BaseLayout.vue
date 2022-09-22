@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lff" v-if="$store.getters.institution">
+  <q-layout view="lHh Lpr lff" ><!--v-if="$store.getters.institution"-->
     <q-header reveal elevated>
       <q-toolbar
       >
@@ -84,7 +84,19 @@
  -->
 
     <q-page-container>
-      <router-view :key="$route.fullPath"/>
+      <div v-if="!$store.getters.institution">
+        <q-banner v-if="error" inline-actions class="text-white bg-red">
+          Unable to load institution data.  Please try reloading the page.
+        </q-banner>
+        <q-circular-progress
+          v-else
+          indeterminate
+          size="50px"
+          color="lime"
+          class="q-ma-md"
+        />
+      </div>
+      <router-view v-else :key="$route.fullPath"/>
     </q-page-container>
     <!-- <Auth ref="auth"/> -->
     <q-footer elevated>
@@ -105,11 +117,27 @@ export default {
   data () {
     return {
       leftDrawerOpen: this.$q.platform.is.desktop,
-      show_login: false
+      show_login: false,
+      error: false
     }
   },
   methods: {
     openURL
+  },
+  mounted: function () {
+    if (!this.$store.getters.institution) {
+      var self = this
+      setTimeout(function () {
+        if (!self.$store.getters.institution) {
+          self.error = true
+        }
+      }, 2000)
+    }
+  },
+  computed: {
+    institution () {
+      return this.$store.getters.institution
+    }
   },
   components: {
     // Auth
