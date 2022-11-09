@@ -91,6 +91,16 @@ module.exports = function (ctx) {
     devServer: {
       https: false,
       port: 8080,
+      proxy: {
+        // proxy all requests starting with /api to jsonplaceholder
+        '/server': {
+          target: 'http://0.0.0.0:8000/server',
+          changeOrigin: true,
+          pathRewrite: {
+            '^/server': ''
+          }
+        }
+      },
       open: true // opens browser window automatically
     },
 
