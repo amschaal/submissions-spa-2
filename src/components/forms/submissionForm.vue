@@ -116,7 +116,7 @@
               bottom-slots :error-message="errorMessage('email')"
               v-model="submission.email"
               type="email"
-              :disable="submission.id != undefined"
+              :disable="submission.id != undefined && !isStaff"
               stack-label label="* Email"
               />
           </div>
