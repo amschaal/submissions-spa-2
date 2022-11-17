@@ -21,8 +21,9 @@
         <q-card-section>
           <!-- <h6>Plugins here: {{$plugins}}</h6> -->
           <h3 v-if="submission.cancelled" class="text-red">Submission cancelled</h3>
-          <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id) || create" v-on:submission_updated="submissionUpdated"/>
-          <Submission :submission="submission" v-if="!modify && id"/>
+          <h3 v-if="modify && id && !canModify">You do not have permission to modify this submission.</h3>
+          <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id && canModify) || create" v-on:submission_updated="submissionUpdated"/>
+          <Submission :submission="submission" v-if="(!modify || !canModify) && id"/>
         </q-card-section>
       </q-tab-panel>
       <q-tab-panel name="files"  v-if="submission.id">
@@ -167,6 +168,13 @@ export default {
   computed: {
     error_message (field) {
       return this.errors[field]
+    },
+    isAdmin () {
+      return this.submission && this.submission.permissions && this.submission.permissions.indexOf('ADMIN') !== -1
+    },
+    canModify () {
+      return !this.submission.locked || this.isAdmin
+      // return this.submission.editable && !submission.cancelled
     }
     // type_options () {
     //   return this.submission_types.map(opt => ({label: opt.name, value: opt.id}))
