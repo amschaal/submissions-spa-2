@@ -1,30 +1,20 @@
 import Vue from 'vue'
 import _ from 'lodash'
+
 // var plugins = []
-var plugins = ['test', 'bioshare']
+// var plugins = ['test', 'bioshare']
 
 class PluginManager {
   constructor (plugins) {
+    console.log('plugins.config', plugins)
     this.labs = {}
     this.plugins = {}
     // this.tabs = []
     this.permissions = {} // tab IDs assumed to be unique, should probably namespace under plugin id
     // this.plugins.append(plugins[i])
-    var manager = this
+    // var manager = this
     plugins.forEach(p =>
-      import('assets/plugins/' + p + '/config.js')
-        .then(module => {
-          manager.plugins[p] = {'config': module.config, 'tabs': module.config.submission_tabs}
-          // register Vue component for tabs
-          module.config.submission_tabs.forEach(t => Vue.component(manager.componentName(t.id), t.component))
-          for (var j in module.config.submission_tabs) {
-            manager.permissions[module.config.submission_tabs[j].id] = module.config.submission_tabs[j].permissions
-          }
-          // module.loadPageInto(main);
-        })
-        .catch(err => {
-          console.log('plugin error', err.message)
-        })
+      this.initPlugin(p)
     )
   }
   componentName (pluginId) {
@@ -39,11 +29,34 @@ class PluginManager {
     if (!this.labs[labId]) {
       this.labs[labId] = {'tabs': [], 'plugins': labPlugins}
       var pluginIds = _.keys(labPlugins)
-      for (var i in pluginIds) {
-        var p = pluginIds[i]
-        this.labs[labId].tabs = this.labs[labId].tabs.concat(this.plugins[p].tabs)
-      }
+      console.log('pluginIds', pluginIds)
+      pluginIds.forEach((pluginId) => {
+        if (!this.plugins[pluginId]) {
+          var manager = this
+          manager.initPlugin(pluginId).then(() => {
+            console.log('initPlugin', pluginId, Object.keys(manager.plugins))
+            manager.labs[labId].tabs = manager.labs[labId].tabs.concat(manager.plugins[pluginId].tabs)
+          })
+        }
+      })
     }
+  }
+  initPlugin (pluginId) {
+    // var manager = this
+    return import('assets/plugins/' + pluginId + '/config.js')
+      .then(module => {
+        console.log('set plugin', this, pluginId)
+        this.plugins[pluginId] = {'config': module.config, 'tabs': module.config.submission_tabs}
+        // register Vue component for tabs
+        module.config.submission_tabs.forEach(t => Vue.component(this.componentName(t.id), t.component))
+        for (var j in module.config.submission_tabs) {
+          this.permissions[module.config.submission_tabs[j].id] = module.config.submission_tabs[j].permissions
+        }
+        // module.loadPageInto(main);
+      })
+      .catch(err => {
+        console.log('plugin error', err.message)
+      })
   }
   initLabs (labs) {
     labs.forEach(lab => this.initLab(lab.lab_id, lab.plugins))
@@ -61,6 +74,19 @@ class PluginManager {
     return this.labs[labId].plugins[pluginId]
   }
 }
-var pluginManager = new PluginManager(plugins)
+console.log('plugins', this)
+var pluginManager = new PluginManager([])
+// pluginManager.config(plugins)
+// axios.get('/api/plugins/', {
+//   // headers: auth.getAuthHeader(),
+// })
+//   .then(function (response) {
+//     pluginManager.config(['test', 'bioshare'])
+//   })
+//   .catch(function (error) {
+//     console.log('error!!!', error.message)
+//     return Promise.reject(new Error('failed'))
+//   })
+
 Vue.prototype.$plugins = pluginManager
-export { plugins }
+export { pluginManager }
