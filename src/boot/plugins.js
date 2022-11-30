@@ -6,7 +6,6 @@ import _ from 'lodash'
 
 class PluginManager {
   constructor (plugins) {
-    console.log('plugins.config', plugins)
     this.labs = {}
     this.plugins = {}
     // this.tabs = []
@@ -26,26 +25,29 @@ class PluginManager {
   initLab (labId, plugins) {
     console.log('initLab', labId, plugins)
     var labPlugins = plugins != null ? plugins : {}
+    var promises = []
     if (!this.labs[labId]) {
       this.labs[labId] = {'tabs': [], 'plugins': labPlugins}
       var pluginIds = _.keys(labPlugins)
-      console.log('pluginIds', pluginIds)
+      // console.log('pluginIds', pluginIds)
       pluginIds.forEach((pluginId) => {
         if (!this.plugins[pluginId]) {
           var manager = this
-          manager.initPlugin(pluginId).then(() => {
-            console.log('initPlugin', pluginId, Object.keys(manager.plugins))
+          var promise = manager.initPlugin(pluginId).then(() => {
+            // console.log('initPlugin', pluginId, Object.keys(manager.plugins))
             manager.labs[labId].tabs = manager.labs[labId].tabs.concat(manager.plugins[pluginId].tabs)
           })
+          promises.push(promise)
         }
       })
     }
+    return Promise.all(promises)
   }
   initPlugin (pluginId) {
     // var manager = this
     return import('assets/plugins/' + pluginId + '/config.js')
       .then(module => {
-        console.log('set plugin', this, pluginId)
+        // console.log('set plugin', this, pluginId)
         this.plugins[pluginId] = {'config': module.config, 'tabs': module.config.submission_tabs}
         // register Vue component for tabs
         module.config.submission_tabs.forEach(t => Vue.component(this.componentName(t.id), t.component))
@@ -65,11 +67,29 @@ class PluginManager {
     var labId = lab && lab.lab_id ? lab.lab_id : lab
     if (!labId) {
       return []
-    } else if (!this.labs[labId]) {
-      this.initLab(labId, [])
     }
-    return this.labs[labId].tabs
+    return new Promise((resolve, reject) => {
+      this.initLab(labId, lab.plugins).then(() => {
+        console.log('getTabsPromise', this, lab)
+        resolve(this.labs[labId].tabs)
+      })
+    })
+    // return new Promise((resolve, reject) => {
+    //   setTimeout(() => {
+    //     console.log('getTabsPromise', this, lab)
+    //     resolve(this.labs[labId].tabs)
+    //   }, 5000)
+    // })
+    // return this.labs[labId].tabs
   }
+  // getTabsPromiseOld (lab) {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       console.log('getTabsPromise', this, lab)
+  //       resolve(this.getTabs(lab))
+  //     }, 5000)
+  //   })
+  // }
   getLabConfig (labId, pluginId) {
     return this.labs[labId].plugins[pluginId]
   }
