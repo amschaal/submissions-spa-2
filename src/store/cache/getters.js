@@ -55,3 +55,6 @@ export const staffOptions = (state) => {
   // console.log('staffOptions', state.staff)
   return state.lab.users.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
 }
+export const plugins = (state) => {
+  return state.plugins
+}

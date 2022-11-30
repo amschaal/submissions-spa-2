@@ -55,7 +55,6 @@ export const setLabId = (context, {axios, labId}) => {
   context.commit('labId', labId)
   return axios.get(`/api/labs/${labId}/`)
     .then(function (response) {
-      console.log('lab', response)
       context.commit('lab', response.data)
     })
     .catch(function (error) {
@@ -66,7 +65,6 @@ export const setLabId = (context, {axios, labId}) => {
 export const fetchLab = (context, {axios, labId}) => {
   return axios.get(`/api/labs/${labId}/`)
     .then(function (response) {
-      console.log('lab', response)
       context.commit('lab', response.data)
     })
     .catch(function (error) {
@@ -77,7 +75,6 @@ export const fetchLab = (context, {axios, labId}) => {
 export const fetchLabs = (context, {axios}) => {
   return axios.get('/api/labs/')
     .then(function (response) {
-      console.log('labs', response)
       context.commit('labs', response.data.results)
     })
     .catch(function (error) {
@@ -88,7 +85,6 @@ export const fetchLabs = (context, {axios}) => {
 export const fetchInstitution = (context, {axios}) => {
   return axios.get('/api/institutions/default/')
     .then(function (response) {
-      console.log('institution', response)
       context.commit('institution', response.data)
     })
     .catch(function (error) {
@@ -99,14 +95,25 @@ export const fetchInstitution = (context, {axios}) => {
 export const fetchStaff = (context, {axios}) => {
   return axios.get('/api/users/?show=true&page_size=1000')
     .then(function (response) {
-      console.log('staff', response.data.results)
       context.commit('staff', response.data.results)
     })
     .catch(function (error) {
       console.log(error.message)
     })
 }
-export const fetchAll = (context, {axios}) => {
+
+export const fetchPlugins = (context, {axios, plugins}) => {
+  return axios.get('/api/plugins/')
+    .then((response) => {
+      context.commit('plugins', response.data, plugins)
+      // plugins.config(response.data)
+    })
+    .catch((error) => {
+      console.log(error.message)
+    })
+}
+
+export const fetchAll = (context, {axios, plugins}) => {
   // fetchLab(context, {axios})
   fetchLabs(context, {axios})
   fetchInstitution(context, {axios})
@@ -114,4 +121,5 @@ export const fetchAll = (context, {axios}) => {
   // fetchTypes(context, {axios})
   // fetchStaff(context, {axios})
   fetchVocabularies(context, {axios})
+  fetchPlugins(context, {axios, plugins})
 }
