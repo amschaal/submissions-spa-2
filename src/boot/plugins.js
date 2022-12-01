@@ -31,13 +31,15 @@ class PluginManager {
       var pluginIds = _.keys(labPlugins)
       // console.log('pluginIds', pluginIds)
       pluginIds.forEach((pluginId) => {
-        if (!this.plugins[pluginId]) {
-          var manager = this
+        var manager = this
+        if (!this.plugins[pluginId]) { // Plugin is not yet loaded.  Load it, then add to the lab config.
           var promise = manager.initPlugin(pluginId).then(() => {
             // console.log('initPlugin', pluginId, Object.keys(manager.plugins))
             manager.labs[labId].tabs = manager.labs[labId].tabs.concat(manager.plugins[pluginId].tabs)
           })
           promises.push(promise)
+        } else { // If plugin is already loaded, add it to the lab config
+          manager.labs[labId].tabs = manager.labs[labId].tabs.concat(manager.plugins[pluginId].tabs)
         }
       })
     }
