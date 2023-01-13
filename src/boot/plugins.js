@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import _ from 'lodash'
+import Payment from '../components/payment/ucdAccount.vue'
 
 // var plugins = []
 // var plugins = ['test', 'bioshare']
@@ -50,7 +51,7 @@ class PluginManager {
     return import('assets/plugins/' + pluginId + '/config.js')
       .then(module => {
         console.log('set plugin', pluginId)
-        this.plugins[pluginId] = {'config': module.config, 'tabs': module.config.submission_tabs}
+        this.plugins[pluginId] = {'config': module.config, 'tabs': module.config.submission_tabs, 'payment': module.config.payment}
         // register Vue component for tabs
         module.config.submission_tabs.forEach(t => Vue.component(this.componentName(t.id), t.component))
         for (var j in module.config.submission_tabs) {
@@ -72,6 +73,11 @@ class PluginManager {
     // }
     return this.initLab(lab.lab_id, lab.plugins).then(() => {
       return this.labs[lab.lab_id].tabs
+    })
+  }
+  getPayment (lab) {
+    return this.initLab(lab.lab_id, lab.plugins).then(() => {
+      return this.plugins[lab.payment_type_id] ? this.plugins[lab.payment_type_id].payment : Payment
     })
   }
   getLabConfig (labId, pluginId) {
