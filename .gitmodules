@@ -1,0 +1,6 @@
+#[submodule "bioshare"]
+#	path = src/assets/plugins/bioshare
+#	url = https://github.com/amschaal/bioshare_coreomics_plugin-ui
+[submodule "ppms"]
+	path = src/assets/plugins/ppms
+	url = https://github.com/amschaal/coreomics-plugin-ppms-ui
