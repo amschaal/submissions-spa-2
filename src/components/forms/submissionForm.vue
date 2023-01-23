@@ -419,11 +419,8 @@ export default {
           //   this.removeCached()
           // }
         }
-        this.$plugins.getPayment(this.$store.getters.lab).then((paymentComponent) => {
-          this.payment_type = paymentComponent
-        }
-        )
         console.log('draft', this.draft)
+        this.updatePaymentForm()
       }
       // this.type_id = !this.id && this.$route.query.type ? this.$route.query.type : null
       if (!this.id && this.type_id) {
@@ -483,6 +480,11 @@ export default {
     },
     removeCached () {
       window.localStorage.removeItem('submission')
+    },
+    updatePaymentForm () {
+      this.$plugins.getPayment(this.$store.getters.lab).then((paymentComponent) => {
+        this.payment_type = paymentComponent
+      })
     },
     submit () {
       var self = this
@@ -657,6 +659,7 @@ export default {
           Vue.set(self, 'errors', {contacts: [], payment: {}, warnings: response.data.warnings})
           // Vue.set(self, 'warnings', response.data.warnings || {})
           Vue.set(self.submission, 'type', response.data.type.id)
+          self.updatePaymentForm()
         })
     },
     addContact () {

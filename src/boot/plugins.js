@@ -76,6 +76,10 @@ class PluginManager {
     })
   }
   getPayment (lab) {
+    // @todo: get payment type from submission when available or lab if not
+    if (!lab) {
+      return Payment
+    }
     return this.initLab(lab.lab_id, lab.plugins).then(() => {
       return this.plugins[lab.payment_type_id] ? this.plugins[lab.payment_type_id].payment : Payment
     })
@@ -84,7 +88,7 @@ class PluginManager {
     return this.labs[labId].plugins[pluginId]
   }
 }
-console.log('plugins', this)
+// console.log('plugins', this)
 var pluginManager = new PluginManager([])
 
 Vue.prototype.$plugins = pluginManager
