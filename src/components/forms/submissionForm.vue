@@ -482,9 +482,15 @@ export default {
       window.localStorage.removeItem('submission')
     },
     updatePaymentForm () {
-      this.$plugins.getPayment(this.$store.getters.lab).then((paymentComponent) => {
-        this.payment_type = paymentComponent
-      })
+      if (this.submission.id) {
+        this.$plugins.getSubmissionPayment(this.submission).then((paymentComponent) => {
+          this.payment_type = paymentComponent
+        })
+      } else {
+        this.$plugins.getLabPayment(this.$store.getters.lab).then((paymentComponent) => {
+          this.payment_type = paymentComponent
+        })
+      }
     },
     submit () {
       var self = this

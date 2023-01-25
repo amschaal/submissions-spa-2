@@ -75,13 +75,19 @@ class PluginManager {
       return this.labs[lab.lab_id].tabs
     })
   }
-  getPayment (lab) {
-    // @todo: get payment type from submission when available or lab if not
+  getLabPayment (lab) {
+    // when it is a new submission, use the payment type configured for the lab
     if (!lab) {
       return Payment
     }
     return this.initLab(lab.lab_id, lab.plugins).then(() => {
       return this.plugins[lab.payment_type_id] ? this.plugins[lab.payment_type_id].payment : Payment
+    })
+  }
+  getSubmissionPayment (submission) {
+    // get payment type from submission.payment in case payment type was different at the time of submission
+    return this.initLab(submission.lab.lab_id, submission.lab.plugins).then(() => {
+      return this.plugins[submission.payment.plugin_id] ? this.plugins[submission.payment.plugin_id].payment : Payment
     })
   }
   getLabConfig (labId, pluginId) {
