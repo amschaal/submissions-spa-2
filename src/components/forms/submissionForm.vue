@@ -116,7 +116,7 @@
               bottom-slots :error-message="errorMessage('email')"
               v-model="submission.email"
               type="email"
-              :disable="submission.id != undefined"
+              :disable="submission.id != undefined && !isStaff"
               stack-label label="* Email"
               />
           </div>
@@ -171,7 +171,9 @@
         <legend>Payment</legend>
         <!-- <UCDAccount v-model="submission.payment" :errors="errors.payment"/> -->
         <!-- <PPMS v-model="submission.payment" :errors="errors.payment"/> -->
-        <Account v-model="submission.payment" :errors="errors.payment || {}"/>
+        <component v-if="payment_type" v-bind:is="payment_type" v-model="submission.payment" :errors="errors.payment"></component>
+        <!-- <component v-bind:is="$plugins.componentName(tab.id)" :config="$plugins.getLabConfig(submission.lab.lab_id, tab.id)" :submission="submission"></component> -->
+        <!-- <Account v-model="submission.payment" :errors="errors.payment || {}"/> -->
         <!-- <div class="row">
           <div class="col-sm-12 col-md-6">
             <q-field
@@ -292,8 +294,8 @@ import './docs-input.styl'
 // import Agschema from '../../components/agschema.vue'
 import CustomFields from './customFields.vue'
 import selectLabModal from '../modals/selectLabModal.vue'
-import Account from '../payment/ucdAccount.vue'
-// import PPMS from '../../components/payment/ppms.vue'
+// import Account from '../payment/ucdAccount.vue'
+import PPMS from '../../components/payment/ppms.vue'
 // import Files from '../../components/files.vue'
 import Vue from 'vue'
 import _ from 'lodash'
@@ -317,7 +319,8 @@ export default {
       draft: null,
       messages: [],
       imported: null,
-      import_url: ''
+      import_url: '',
+      payment_type: null
       // create: false
     }
   },
@@ -417,6 +420,7 @@ export default {
           // }
         }
         console.log('draft', this.draft)
+        this.updatePaymentForm()
       }
       // this.type_id = !this.id && this.$route.query.type ? this.$route.query.type : null
       if (!this.id && this.type_id) {
@@ -476,6 +480,17 @@ export default {
     },
     removeCached () {
       window.localStorage.removeItem('submission')
+    },
+    updatePaymentForm () {
+      if (this.submission.id) {
+        this.$plugins.getSubmissionPayment(this.submission).then((paymentComponent) => {
+          this.payment_type = paymentComponent
+        })
+      } else {
+        this.$plugins.getLabPayment(this.$store.getters.lab).then((paymentComponent) => {
+          this.payment_type = paymentComponent
+        })
+      }
     },
     submit () {
       var self = this
@@ -650,6 +665,7 @@ export default {
           Vue.set(self, 'errors', {contacts: [], payment: {}, warnings: response.data.warnings})
           // Vue.set(self, 'warnings', response.data.warnings || {})
           Vue.set(self.submission, 'type', response.data.type.id)
+          self.updatePaymentForm()
         })
     },
     addContact () {
@@ -787,10 +803,10 @@ export default {
     // Agschema,
     // Agschema: () => import('../../components/agschema.vue'),
     CustomFields,
-    Account,
-    selectLabModal
+    // Account,
+    selectLabModal,
     // UCDAccount
-    // PPMS
+    PPMS
   }
 }
 </script>

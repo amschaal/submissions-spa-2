@@ -115,7 +115,7 @@ export default {
     },
     setPermissions (action) {
       var self = this
-      this.$axios.post(`/api/bioshare/submission_shares/${this.share.id}/${action}/`, this.permissions)
+      this.$axios.post(`/api/plugins/bioshare/submissions/${self.submission.id}/submission_shares/${this.share.id}/${action}/`, this.permissions)
         .then(function (response) {
           self.permissions = response.data
           self.$q.notify({message: `Permissions updated!`, type: 'positive'})
@@ -127,7 +127,7 @@ export default {
     },
     getPermissions () {
       var self = this
-      this.$axios.get(`/api/bioshare/submission_shares/${this.share.id}/permissions/`)
+      this.$axios.get(`/api/plugins/bioshare/submissions/${self.submission.id}/submission_shares/${this.share.id}/permissions/`)
         .then(function (response) {
           self.permissions = response.data
         })

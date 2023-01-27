@@ -125,6 +125,10 @@
           <permissions :base-url="`/api/labs/${lab.lab_id}`" v-if="lab && lab.lab_id"/>
         </q-tab-panel>
         <q-tab-panel name="plugins_tab" v-if="$perms.hasLabPerm('ADMIN')">
+          <div v-if="available_plugins.length > 0">
+            <q-checkbox v-model="plugin_selection" :val="plugin" :label="plugin" v-for="plugin in available_plugins" :key="plugin"/>
+            <q-btn label="Add selected" color="primary" @click="addPlugins"/>
+          </div>
           <q-tabs
               v-model="plugin_tab"
               dense
@@ -171,6 +175,8 @@ export default {
       user_options: [],
       tab: 'settings_tab',
       plugin_tab: null,
+      plugins: [],
+      plugin_selection: [],
       toolbar: [
         ['bold', 'italic', 'strike', 'underline'],
         ['token', 'link', 'custom_btn'],
@@ -205,6 +211,11 @@ export default {
       .then(function (response) {
         self.user_options = response.data.results.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
       })
+    this.$axios
+      .get('/api/plugins/')
+      .then(function (response) {
+        self.plugins = response.data
+      })
   },
   methods: {
     save () {
@@ -228,12 +239,33 @@ export default {
     removeStatus ({index, value}) {
       // alert('removing')
       // return true
+    },
+    addPlugins () {
+      this.$axios
+        .post(`/api/labs/${this.$store.getters.labId}/manage_plugins/add/`, {'plugins': this.plugin_selection})
+        .then((response) => {
+          this.plugin_selection.forEach((plugin) => {
+            if (!this.lab.plugins[plugin]) {
+              this.$set(this.lab.plugins, plugin, response.data.plugins[plugin])
+            }
+          }
+          )
+        })
     }
   },
   watch: {
     '$store.getters.lab': function () {
       this.lab = _.cloneDeep(this.$store.getters.lab)
     }
+  },
+  computed: {
+    'available_plugins': function () {
+      var self = this
+      return this.plugins.filter(function (v) {
+        return !self.lab.plugins[v]
+      })
+    }
+
   },
   components: {
     schemaForm,
