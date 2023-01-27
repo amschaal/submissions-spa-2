@@ -16,7 +16,6 @@
           <permissions :base-url="`/api/institutions/${institution.id}`" v-if="institution && institution.id"/>
         </q-tab-panel>
         <q-tab-panel name="plugins_tab">
-          Plugins: {{available_plugins}}{{plugins}}
           <div v-if="available_plugins.length > 0">
             <q-checkbox v-model="plugin_selection" :val="plugin" :label="plugin" v-for="plugin in available_plugins" :key="plugin"/>
             <q-btn label="Add selected" color="primary" @click="addPlugins"/>
@@ -28,12 +27,12 @@
               active-color="white"
               narrow-indicator
             >
-            <template v-for="(config, plugin) in institution.plugins">
+            <template v-for="(config, plugin) in plugin_settings">
               <q-tab :key="plugin" :name="plugin" :label="plugin"/>
             </template>
           </q-tabs>
           <q-tab-panels v-model="plugin_tab" animated>
-            <template v-for="(config, plugin) in institution.plugins">
+            <template v-for="(config, plugin) in plugin_settings">
               <q-tab-panel :key="plugin" :name="plugin">
                 <pluginSettings :updateUrl="'/api/institutions/'+institution.id+'/update_plugin/'" :plugin="plugin" :config="config"/>
               </q-tab-panel>
@@ -57,6 +56,7 @@ export default {
       tab: 'permissions_tab',
       plugin_tab: null,
       plugins: [],
+      plugin_settings: {},
       plugin_selection: []
     }
   },
@@ -66,6 +66,11 @@ export default {
       .then(response => {
         this.plugins = response.data
       })
+    this.$axios
+      .get(`/api/institutions/${this.institution.id}/plugin_settings/`)
+      .then(response => {
+        this.plugin_settings = response.data
+      })
   },
   methods: {
     addPlugins () {
@@ -73,8 +78,8 @@ export default {
         .post(`/api/institutions/${this.institution.id}/manage_plugins/add/`, {'plugins': this.plugin_selection})
         .then((response) => {
           this.plugin_selection.forEach((plugin) => {
-            if (!this.institution.plugins[plugin]) {
-              this.$set(this.institution.plugins, plugin, response.data.plugins[plugin])
+            if (!this.plugin_settings[plugin]) {
+              this.$set(this.plugin_settings, plugin, response.data.plugins[plugin])
             }
           }
           )
@@ -85,10 +90,7 @@ export default {
   },
   computed: {
     'available_plugins': function () {
-      return this.plugins
-      // return this.plugins.filter(function (v) {
-      //   return true // return !self.institution.plugins[v]
-      // })
+      return this.plugins.filter(v => !this.plugin_settings[v])
     }
 
   },
