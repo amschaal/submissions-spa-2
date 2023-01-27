@@ -3,10 +3,10 @@
     <q-card style="width:100%">
       <q-card-section>
         <span v-if="!type.id">Create</span> Submission Type <span class="inactive" v-if="type.id && !type.active"> (Inactive)</span>
-        <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id"/>
-        <q-btn @click="delete_type" color="negative" label="Delete" class="float-right" v-if="type.id"  :disable="type.submission_count !== 0" title="Only types with no associated permissions may be deleted."/>
+        <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id && can_modify"/>
+        <q-btn @click="delete_type" color="negative" label="Delete" class="float-right" v-if="type.id && can_modify"  :disable="type.submission_count !== 0" title="Only types with no associated permissions may be deleted."/>
         <router-link v-if="type.submission_count > 0 && type.id" :to="{'name': 'submissions', 'query': { 'search': type.name }}" class="float-right">{{type.submission_count}} Submissions</router-link>
-
+        <b v-if="!can_modify"> (Viewing with read only permissions)</b>
       </q-card-section>
       <!-- <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id"/> -->
       <q-separator />
@@ -177,7 +177,7 @@
       </q-card-section>
       <q-separator />
       <q-card-actions>
-        <q-btn @click="submit" label="Save" color="primary"></q-btn>
+        <q-btn @click="submit" label="Save" color="primary" v-if="can_modify"></q-btn>
       </q-card-actions>
 
     </q-card>
@@ -318,7 +318,7 @@ export default {
       self.watch_changes = true
     }, 5000)
     this.$axios
-      .get(`/api/users/?show=true&labs__lab_id=${this.$store.getters.labId}`)
+      .get(`/api/users/?show=true&lab=${this.$store.getters.labId}`)
       .then(function (response) {
         self.user_options = response.data.results.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
       })
@@ -511,6 +511,9 @@ export default {
     },
     type_key () {
       return this.id && this.id !== 'create' ? `submission_type_${this.id}` : 'submission_type'
+    },
+    can_modify () {
+      return this.$perms.hasLabPerm('MEMBER') || this.$perms.hasLabPerm('ADMIN')
     }
   },
   watch: {
@@ -519,7 +522,7 @@ export default {
     },
     'type': {
       handler (newVal, oldVal) {
-        if (!this.watch_changes) {
+        if (!this.watch_changes || !this.can_modify) {
           return
         }
         // if (window.JSON && window.JSON.stringify) { // && (!newVal.updated || Date.now() - newVal.updated < 5000)

@@ -553,7 +553,7 @@ export default {
           self.errors = {}
           self.warnings = {}
           self.gridOptions.api.redrawRows() // redrawCells({force: true})
-          self.$q.notify({message: 'Samples successfully validated.  Please save the submission.', type: 'positive'})
+          self.$q.notify({message: 'Successfully validated.  Please hit the SUBMIT button when ready to save your changes.', type: 'positive'})
           if (save) {
             self.save()
           }

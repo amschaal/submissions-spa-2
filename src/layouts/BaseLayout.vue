@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lff" v-if="$store.getters.institution">
+  <q-layout view="lHh Lpr lff" ><!--v-if="$store.getters.institution"-->
     <q-header reveal elevated>
       <q-toolbar
       >
@@ -50,7 +50,8 @@
         <!-- <q-route-tab :to="{ name: 'imports' }" v-if="$store.getters.isLoggedIn && $store.getters.labId" replace label="Imports" /> -->
         <!-- <q-route-tab class="restricted" :to="{ name: 'submission_types', params: { lab_id: $store.getters.labId} }" v-if="$store.getters.isStaff && $store.getters.labId" label="Submission Types"/> -->
         <!-- <q-route-tab class="restricted" :to="{ name: 'settings', params: { lab_id: $store.getters.labId} }" v-if="$store.getters.isStaff && $store.getters.labId" label="Settings"/> -->
-        <q-btn-dropdown auto-close stretch flat label="Core" class="restricted" icon="vpn_key" v-if="$store.getters.isStaff && $store.getters.labId">
+        <!-- <q-btn-dropdown auto-close stretch flat label="Core" class="restricted" icon="vpn_key" v-if="$store.getters.isStaff && $store.getters.labId"> -->
+          <q-btn-dropdown auto-close stretch flat label="Core" class="restricted" icon="vpn_key" v-if="$store.getters.labId && ($perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN') || $perms.hasLabPerm('ASSOCIATE'))">
           <q-list>
             <q-item clickable :to="{ name: 'submissions', params: { lab_id: $store.getters.labId} }">
               <q-item-section>Submissions</q-item-section>
@@ -58,7 +59,7 @@
             <q-item clickable :to="{ name: 'submission_types', params: { lab_id: $store.getters.labId} }">
               <q-item-section>Submission Types</q-item-section>
             </q-item>
-            <q-item clickable :to="{ name: 'settings', params: { lab_id: $store.getters.labId} }">
+            <q-item clickable :to="{ name: 'settings', params: { lab_id: $store.getters.labId} }" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')">
               <q-item-section>Settings</q-item-section>
             </q-item>
           </q-list>
@@ -83,7 +84,19 @@
  -->
 
     <q-page-container>
-      <router-view :key="$route.fullPath"/>
+      <div v-if="!$store.getters.institution">
+        <q-banner v-if="error" inline-actions class="text-white bg-red">
+          Unable to load institution data.  Please try reloading the page.
+        </q-banner>
+        <q-circular-progress
+          v-else
+          indeterminate
+          size="50px"
+          color="lime"
+          class="q-ma-md"
+        />
+      </div>
+      <router-view v-else :key="$route.fullPath"/>
     </q-page-container>
     <!-- <Auth ref="auth"/> -->
     <q-footer elevated>
@@ -104,11 +117,27 @@ export default {
   data () {
     return {
       leftDrawerOpen: this.$q.platform.is.desktop,
-      show_login: false
+      show_login: false,
+      error: false
     }
   },
   methods: {
     openURL
+  },
+  mounted: function () {
+    if (!this.$store.getters.institution) {
+      var self = this
+      setTimeout(function () {
+        if (!self.$store.getters.institution) {
+          self.error = true
+        }
+      }, 2000)
+    }
+  },
+  computed: {
+    institution () {
+      return this.$store.getters.institution
+    }
   },
   components: {
     // Auth

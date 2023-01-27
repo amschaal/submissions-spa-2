@@ -36,6 +36,9 @@ export const vocabularies = (state) => {
 export const lab = (state) => {
   return state.lab
 }
+export const labPermissions = (state) => {
+  return state.lab ? state.lab.user_permissions : []
+}
 export const labId = (state) => {
   return state.lab_id
 }
@@ -51,4 +54,7 @@ export const staff = (state) => {
 export const staffOptions = (state) => {
   // console.log('staffOptions', state.staff)
   return state.lab.users.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
+}
+export const plugins = (state) => {
+  return state.plugins
 }

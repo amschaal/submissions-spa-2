@@ -17,12 +17,16 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <q-btn size="sm" label="Modify" @click="opened = true"/>
+    <q-btn :size="buttonProps.size" :label="buttonProps.label" @click="open"/>
   </span>
 </template>
 <script>
 export default {
-  props: ['title', 'value'],
+  props: {
+    title: String,
+    value: Array,
+    buttonProps: { type: Object, default: function () { return { label: 'Modify', size: 'sm'} }}
+  },
   data () {
     return {
       opened: false,
@@ -33,6 +37,9 @@ export default {
     this.$on('selected', this.updateSelected)
   },
   methods: {
+    open () {
+      this.opened = true
+    },
     select () {
       // alert('selected')
       this.$emit('input', this.selected)

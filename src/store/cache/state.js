@@ -6,5 +6,6 @@ export default {
   labs: [],
   institution: null,
   staff: [],
-  vocabularies: []
+  vocabularies: [],
+  plugins: []
 }

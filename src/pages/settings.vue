@@ -2,15 +2,21 @@
   <q-page padding>
     <div v-if="lab">
       <h5>Settings for "{{lab.name}}"</h5>
+      <q-card class="p90">
       <q-tabs
-          v-model="tab"
-          class="text "
-        >
-        <q-tab name="settings_tab" label="General" />
-        <q-tab name="project_id_tab" label="Project IDs" />
+        v-model="tab"
+        dense
+        class="bg-primary text-grey shadow-2"
+        active-color="white"
+        narrow-indicator
+      >
+        <q-tab name="settings_tab" label="General" v-if="$perms.hasLabPerm('ADMIN')"/>
+        <q-tab name="project_id_tab" label="Project IDs" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')"/>
+        <q-tab name="permissions_tab" label="Permissions" v-if="$perms.hasLabPerm('ADMIN')"/>
+        <q-tab name="plugins_tab" label="Plugins" v-if="$perms.hasLabPerm('ADMIN')"/>
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
-        <q-tab-panel name="settings_tab">
+        <q-tab-panel name="settings_tab" v-if="$perms.hasLabPerm('ADMIN')">
           <!-- <draggable :list="statuses">
             <div v-for="status in statuses" :key="status" class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white">
               <div class="q-chip-main ellipsis">{{status}}</div>
@@ -18,14 +24,14 @@
               <button slot="header">Add</button>
           </draggable> -->
           <q-list bordered class="rounded-borders">
-            <q-expansion-item
+            <!-- <q-expansion-item
               expand-separator
               label="Users"
               caption="Edit users"
               group="settings"
             >
             <userField v-model="lab.users" query-params="is_staff=1"/>
-            </q-expansion-item>
+            </q-expansion-item> -->
             <q-expansion-item
               expand-separator
               label="Content"
@@ -110,11 +116,40 @@
             <q-btn @click="save" label="Save" color="primary"></q-btn>
           </q-card-actions>
         </q-tab-panel>
-        <q-tab-panel name="project_id_tab">
+        <q-tab-panel name="project_id_tab" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')">
           <projectIds :lab="lab"/>
         </q-tab-panel>
+        <q-tab-panel name="permissions_tab" v-if="$perms.hasLabPerm('ADMIN')">
+          <!-- {{institution}} -->
+          <!-- {{$perms.labPermissions()}} -->
+          <permissions :base-url="`/api/labs/${lab.lab_id}`" v-if="lab && lab.lab_id"/>
+        </q-tab-panel>
+        <q-tab-panel name="plugins_tab" v-if="$perms.hasLabPerm('ADMIN')">
+          <div v-if="available_plugins.length > 0">
+            <q-checkbox v-model="plugin_selection" :val="plugin" :label="plugin" v-for="plugin in available_plugins" :key="plugin"/>
+            <q-btn label="Add selected" color="primary" @click="addPlugins"/>
+          </div>
+          <q-tabs
+              v-model="plugin_tab"
+              dense
+              class="bg-primary text-grey shadow-2"
+              active-color="white"
+              narrow-indicator
+            >
+            <template v-for="(config, plugin) in lab.plugins">
+              <q-tab :key="plugin" :name="plugin" :label="plugin"/>
+            </template>
+          </q-tabs>
+          <q-tab-panels v-model="plugin_tab" animated>
+            <template v-for="(config, plugin) in lab.plugins">
+              <q-tab-panel :key="plugin" :name="plugin">
+                <pluginSettings :updateUrl="'/api/labs/'+lab.lab_id+'/update_plugin/'" :plugin="plugin" :config="config"/>
+              </q-tab-panel>
+            </template>
+          </q-tab-panels>
+        </q-tab-panel>
       </q-tab-panels>
-
+    </q-card>
     </div>
   </q-page>
 </template>
@@ -122,7 +157,9 @@
 <script>
 import schemaForm from '../components/forms/schemaForm.vue'
 import projectIds from '../components/projectIds.vue'
-import userField from '../components/forms/userField.vue'
+// import userField from '../components/forms/userField.vue'
+import permissions from '../components/permissions.vue'
+import pluginSettings from '../components/pluginSettings.vue'
 import _ from 'lodash'
 // import draggable from 'vuedraggable'
 export default {
@@ -137,6 +174,9 @@ export default {
       statuses: ['one', 'two', 'three'],
       user_options: [],
       tab: 'settings_tab',
+      plugin_tab: null,
+      plugins: [],
+      plugin_selection: [],
       toolbar: [
         ['bold', 'italic', 'strike', 'underline'],
         ['token', 'link', 'custom_btn'],
@@ -171,6 +211,11 @@ export default {
       .then(function (response) {
         self.user_options = response.data.results.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
       })
+    this.$axios
+      .get('/api/plugins/')
+      .then(function (response) {
+        self.plugins = response.data
+      })
   },
   methods: {
     save () {
@@ -194,6 +239,18 @@ export default {
     removeStatus ({index, value}) {
       // alert('removing')
       // return true
+    },
+    addPlugins () {
+      this.$axios
+        .post(`/api/labs/${this.$store.getters.labId}/manage_plugins/add/`, {'plugins': this.plugin_selection})
+        .then((response) => {
+          this.plugin_selection.forEach((plugin) => {
+            if (!this.lab.plugins[plugin]) {
+              this.$set(this.lab.plugins, plugin, response.data.plugins[plugin])
+            }
+          }
+          )
+        })
     }
   },
   watch: {
@@ -201,10 +258,21 @@ export default {
       this.lab = _.cloneDeep(this.$store.getters.lab)
     }
   },
+  computed: {
+    'available_plugins': function () {
+      var self = this
+      return this.plugins.filter(function (v) {
+        return !self.lab.plugins[v]
+      })
+    }
+
+  },
   components: {
     schemaForm,
     projectIds,
-    userField
+    // userField,
+    permissions,
+    pluginSettings
   }
 }
 </script>

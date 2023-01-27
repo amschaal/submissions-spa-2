@@ -40,7 +40,7 @@
         <div class="col-3">
           <q-input
             v-model="filters.filter"
-            debounce="500"
+            debounce="1500"
             placeholder="Search"
             rounded
             outlined
@@ -127,11 +127,11 @@ export default {
       },
       visibleColumns: ['locked', 'internal_id', 'lab', 'type', 'status', 'submitted', 'name', 'email', 'pi_name', 'table_count', 'samples_received']
     }
-    var filterNamespace = this.lab ? 'submission_filters' : 'my_submission_filters'
+    var filterNamespace = this.lab ? this.$store.getters.labId + '_filters' : 'my_submission_filters'
     return {
       filterNamespace: filterNamespace,
       defaultFilters: defaultFilters,
-      filters: this.$store.getters.getUserSettings[filterNamespace] ? _.merge(defaultFilters, this.$store.getters.getUserSettings[filterNamespace]) : defaultFilters,
+      filters: this.$store.getters.getUserSettings[filterNamespace] ? _.assign(defaultFilters, this.$store.getters.getUserSettings[filterNamespace]) : defaultFilters,
       loading: false,
       serverData: [],
       columns: [

@@ -10,16 +10,20 @@
       narrow-indicator
     >
       <q-tab name="submission"  default><span v-if="submission.id">Submission</span><span v-else>Create Submission</span></q-tab>
+      <!-- <q-tab name="files" label="Files"  v-if="submission.id && $perms.hasSubmissionPerms(submission, ['VIEW'], 'ALL')"/> -->
       <q-tab name="files" label="Files"  v-if="submission.id"/>
       <q-tab name="comments" label="comments"  v-if="submission.id"/>
-      <q-tab name="charges" label="charges"  v-if="submission.id"/>
+      <q-tab name="charges" label="charges"  v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')"/>
+      <template v-for="(tab, i) in plugin_tabs"><q-tab :key="i" :name="tab.id" :label="tab.label" v-if="submission.id && hasPluginPermission(submission, tab.id)"/></template>
     </q-tabs>
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="submission">
         <q-card-section>
+          <!-- <h6>Plugins here: {{$plugins}}</h6> -->
           <h3 v-if="submission.cancelled" class="text-red">Submission cancelled</h3>
-          <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id) || create" v-on:submission_updated="submissionUpdated"/>
-          <Submission :submission="submission" v-if="!modify && id"/>
+          <h3 v-if="modify && id && !canModify">You do not have permission to modify this submission.</h3>
+          <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id && canModify) || create" v-on:submission_updated="submissionUpdated"/>
+          <Submission :submission="submission" v-if="(!modify || !canModify) && id"/>
         </q-card-section>
       </q-tab-panel>
       <q-tab-panel name="files"  v-if="submission.id">
@@ -33,11 +37,22 @@
           <notes-tree :submission="submission"/>
         </q-card-section>
       </q-tab-panel>
-      <q-tab-panel name="charges" v-if="submission.id">
+      <q-tab-panel name="charges" v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')">
+        <!-- <q-tab-panel name="charges" v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN', 'STAFF'], 'ANY')"> -->
         <q-card-section>
           <charges :submission="submission"/>
         </q-card-section>
       </q-tab-panel>
+      <!-- There can be a race condition with plugins loading, should use computed property or something that will wait until plugins are fully set up-->
+      <template v-for="(tab, i) in plugin_tabs">
+        <q-tab-panel :key="i" :name="tab.id">
+          <q-card-section>
+            <div v-html="tab.content"/>
+            <!-- <h1 tab-test>{{tab.id}}</h1> -->
+            <component v-bind:is="$plugins.componentName(tab.id)" :config="$plugins.getLabConfig(submission.lab.lab_id, tab.id)" :submission="submission"></component>
+          </q-card-section>
+        </q-tab-panel>
+      </template>
     </q-tab-panels>
 
   </q-card>
@@ -65,7 +80,8 @@ export default {
       errors: {},
       submission_types: [],
       type_options: this.$store.getters.typeOptions,
-      tab: 'submission'
+      tab: 'submission',
+      plugin_tabs: []
       // type: {},
       // debug: false,
       // modify: false,
@@ -99,6 +115,11 @@ export default {
           // self.submission = response.data
           Vue.set(self, 'submission', response.data)
           self.setLab()
+          // self.plugin_tabs = self.$plugins.getTabs(self.submission.lab)
+          self.$plugins.getTabs(self.submission.lab).then(function (tabs) {
+            console.log('plugin_tabs', tabs, self.plugin_tabs)
+            self.$set(self, 'plugin_tabs', tabs)
+          })
         })
     }
   },
@@ -111,8 +132,22 @@ export default {
     },
     setLab () {
       if (!this.$store.getters.lab || this.$store.getters.lab.lab_id !== this.submission.lab.lab_id) {
-        this.$store.dispatch('setLabId', {axios: this.$axios, labId: this.submission.lab.lab_id})
+        this.$store.dispatch('setLabId', {axios: this.$axios, labId: this.submission.lab.lab_id, pluginManager: this.$plugins})
       }
+    },
+    hasPluginPermission (submission, tabId) {
+      var permissions = this.$plugins.getPermissions(tabId)
+      console.log('permissions', tabId, permissions)
+      if (!permissions) {
+        return true
+      }
+      if (permissions.ANY) {
+        return this.$perms.hasSubmissionPerms(this.submission, permissions.ANY, 'ANY')
+      }
+      if (permissions.ALL) {
+        return this.$perms.hasSubmissionPerms(this.submission, permissions.ALL, 'ALL')
+      }
+      return true
     }
   },
   watch: {
@@ -140,6 +175,13 @@ export default {
   computed: {
     error_message (field) {
       return this.errors[field]
+    },
+    isAdmin () {
+      return this.submission && this.submission.permissions && this.submission.permissions.indexOf('ADMIN') !== -1
+    },
+    canModify () {
+      return !this.submission.locked || this.isAdmin
+      // return this.submission.editable && !submission.cancelled
     }
     // type_options () {
     //   return this.submission_types.map(opt => ({label: opt.name, value: opt.id}))

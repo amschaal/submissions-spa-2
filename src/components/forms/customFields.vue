@@ -106,7 +106,7 @@
 
 <script>
 import widgetFactory from '../forms/widgets.js'
-import { QSelect, QOptionGroup } from 'quasar'
+import { QSelect, QOptionGroup, QCheckbox } from 'quasar'
 // import _ from 'lodash'
 
 export default {
@@ -201,6 +201,7 @@ export default {
   components: {
     QSelect,
     QOptionGroup,
+    QCheckbox,
     Agschema: () => import('../agschema.vue')
   },
   watch: {
@@ -213,5 +214,8 @@ export default {
 }
 .warning {
   color: orange;
+}
+p.caption {
+  font-weight: bold;
 }
 </style>

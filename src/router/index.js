@@ -28,9 +28,10 @@ export default function ({ store, ssrContext }) {
     if (authorize && authorize.isLoggedIn && to.path !== '/' && !store.getters.isLoggedIn) {
       store.dispatch('checkAuth', {axios: axiosInstance})
         .then(function (response) {
-          if (authorize && authorize.isStaff && !store.getters.isStaff) {
+          if (!store.getters.isLoggedIn || (authorize && authorize.isStaff && !store.getters.isStaff)) {
             return next({ path: '/' })
           }
+          // console.log('got auth', response)
           next()
         })
         .catch(function (error) {

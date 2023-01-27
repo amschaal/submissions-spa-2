@@ -12,7 +12,7 @@
     </q-input>
   -->
     <q-select
-        v-if="$store.getters.isStaff && services"
+        v-if="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY') && services"
         placeholder="Select a service to add"
         filter
         v-model="select"
@@ -22,7 +22,7 @@
       />
     <table class="q-table q-table-horizontal-separator">
       <thead><tr><th>Service</th><th>Quantity</th><th>Notes</th></tr></thead>
-      <tbody v-if="$store.getters.isStaff">
+      <tbody v-if="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')">
         <tr v-if="line_items.length == 0"><td colspan="3">No charges have been added.</td></tr>
         <tr v-for="item in line_items" :key="item.service.id">
           <td><q-btn round color="red" icon="delete" size="sm" @click="deleteItem(item)"/><q-btn round color="green" icon="save" size="sm" @click="saveItem(item)"/> {{item.service.code}} - {{item.service.name}}</td>
@@ -57,7 +57,7 @@ export default {
   mounted: function () {
     var self = this
     this.$axios
-      .get(`/api/billing/services/?ordering=code,name&page=1&page_size=1000`)// ${pagination.descending}&filter=${filter}
+      .get(`/api/billing/services/?lab=${self.$store.getters.lab.id}&ordering=code,name&page=1&page_size=1000`)// ${pagination.descending}&filter=${filter}
       .then(({ data }) => {
         self.services = data.results
       })
@@ -111,7 +111,7 @@ export default {
     search (terms, done) {
       console.log('search', terms)
       this.$axios
-        .get(`/api/billing/services/?search=${terms}&ordering=code,name&page=1&page_size=15`)// ${pagination.descending}&filter=${filter}
+        .get(`/api/billing/services/?lab=${this.$store.getters.lab.id}&search=${terms}&ordering=code,name&page=1&page_size=15`)// ${pagination.descending}&filter=${filter}
         .then(({ data }) => {
           console.log(data.results)
           done(data.results)

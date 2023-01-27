@@ -2,34 +2,50 @@
   <q-page padding class="docs-input row justify-center row">
     <q-card v-if="user" class="col-md-6 col-sm-12">
       <q-card-section>
-        <h4>Profile</h4>
-        <div class="row">
-          <q-input label="First Name" v-model="user.first_name" class="col6" disable/>
-          <q-input label="Last Name" v-model="user.last_name" class="col6" disable/>
-        </div>
-        <h5>Email</h5>
-        <h6>Set primary email</h6>
-        <div v-for="email in user.emails" :key="email">
-          <q-radio v-model="primary_email" :val="email" :label="email" @input="setPrimaryEmail"/>
-        </div>
-        <div>
-          <q-input bottom-slots v-model="claim_email" placeholder="Enter email" :dense="dense" v-if="!claim_in_progress">
-          <template v-slot:hint>
-            Add another email to your profile.
-          </template>
-          <template v-slot:after>
-            <q-btn flat label="Request" @click="requestEmail"/>
-          </template>
-        </q-input>
-        <q-input bottom-slots v-model="token" placeholder="Enter confirmation token" :dense="dense" v-else>
-        <template v-slot:hint>
-          Please enter the confirmation token that was sent to your email here.  If you do not receive an email in a couple minutes, you may try again.
-        </template>
-        <template v-slot:after>
-          <q-btn flat label="Confirm" @click="confirmEmail"/>
-        </template>
-      </q-input>
-        </div>
+        <q-tabs
+            v-model="tab"
+            class="text "
+          >
+          <q-tab name="profile" label="Profile" />
+          <q-tab name="emails" label="Emails" />
+          <q-tab name="api" label="API Access" />
+        </q-tabs>
+        <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="profile">
+            <h4>Profile</h4>
+            <div class="row">
+              <q-input label="First Name" v-model="user.first_name" class="col6" disable/>
+              <q-input label="Last Name" v-model="user.last_name" class="col6" disable/>
+            </div>
+          </q-tab-panel>
+          <q-tab-panel name="emails">
+            <h6>Set primary email</h6>
+            <div v-for="email in user.emails" :key="email">
+              <q-radio v-model="primary_email" :val="email" :label="email" @input="setPrimaryEmail"/>
+            </div>
+            <div>
+              <q-input bottom-slots v-model="claim_email" placeholder="Enter email" dense v-if="!claim_in_progress">
+              <template v-slot:hint>
+                Add another email to your profile.
+              </template>
+              <template v-slot:after>
+                <q-btn flat label="Request" @click="requestEmail"/>
+              </template>
+            </q-input>
+            <q-input bottom-slots v-model="token" placeholder="Enter confirmation token" dense v-else>
+            <template v-slot:hint>
+              Please enter the confirmation token that was sent to your email here.  If you do not receive an email in a couple minutes, you may try again.
+            </template>
+            <template v-slot:after>
+              <q-btn flat label="Confirm" @click="confirmEmail"/>
+            </template>
+          </q-input>
+            </div>
+          </q-tab-panel>
+          <q-tab-panel name="api">
+            <api/>
+          </q-tab-panel>
+        </q-tab-panels>
       </q-card-section>
   </q-card>
   </q-page>
@@ -42,15 +58,19 @@
 </style>
 
 <script>
+import api from '../components/api.vue'
 export default {
   name: 'Profile',
+  components: {
+    api
+  },
   data () {
     return {
       user: null,
       primary_email: null,
       claim_email: null,
       claim_in_progress: false,
-      token: null
+      tab: 'profile'
     }
   },
   methods: {

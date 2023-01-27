@@ -7,7 +7,7 @@
             </q-banner>
           </div>
           <div class="field col-12 q-mt-xs q-mb-xs">
-            <SamplesReceived v-if="submission.id" v-model="submission" :admin="$store.getters.isStaff"/>
+            <SamplesReceived v-if="submission.id" v-model="submission" :admin="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')"/>
           </div>
           <div class="field col-12 q-mt-xs q-mb-xs" v-if="hasWarnings">
           <q-banner dense class="text-white bg-warning" rounded>
@@ -99,7 +99,7 @@
             {{submission.comments}}
           </div>
         </div>
-        <p class="caption" v-if="submission.contacts && submission.contacts.length">Additional Contacts</p>
+        <p class="caption" v-if="submission.contacts && submission.contacts.length">Additional Contacts:</p>
         <div class="row" v-for="(c, index) in submission.contacts" :key="index">
           <div class="field col-sm-12 col-md-12 col-lg-4">
             <p class="caption">First name</p>
@@ -310,5 +310,8 @@ export default {
   }
   pre#confirmation {
     white-space: pre-wrap;
+  }
+  .caption {
+    font-weight: bold;
   }
 </style>
