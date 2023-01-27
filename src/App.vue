@@ -41,7 +41,7 @@ export default {
     // this.$store.dispatch('fetchLabs', {axios: this.$axios}).then(labs => {
     //   this.$plugins.initLabs(this.$store.getters.labs)
     // })
-    this.$store.dispatch('fetchAll', {axios: this.$axios})
+    this.$store.dispatch('fetchAll', {axios: this.$axios, plugins: this.$plugins})
     console.log('$store', this.$store)
 
     // window.onbeforeunload = function () {
@@ -65,7 +65,7 @@ export default {
       console.log('institution watcher', institution)
     },
     'labs': function (labs) {
-      this.$plugins.initLabs(labs)
+      // this.$plugins.initLabs(labs)
     }
     // '$route.params.lab_id': {
     //   handler: function (labId) {

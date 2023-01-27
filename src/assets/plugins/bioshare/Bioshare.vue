@@ -67,7 +67,7 @@ export default {
     getShares () {
       var self = this
       this.$axios
-        .get(`/api/bioshare/submission_shares/?submission=${self.submission.id}`)
+        .get(`/api/plugins/bioshare/submissions/${self.submission.id}/submission_shares/?submission=${self.submission.id}`)
         .then(function (response) {
           self.shares = response.data.results
           for (var i in self.shares) {
@@ -90,7 +90,7 @@ export default {
     },
     createShare () {
       var self = this
-      this.$axios.post('/api/bioshare/submission_shares/', {submission: this.submission.id, name: this.shareName, notes: this.shareDescription})
+      this.$axios.post(`/api/plugins/bioshare/submissions/${self.submission.id}/submission_shares/`, {submission: this.submission.id, name: this.shareName, notes: this.shareDescription})
         .then(function (response) {
           self.shares.push(response.data)
           self.createDialog = false
