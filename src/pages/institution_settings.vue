@@ -34,7 +34,7 @@
           <q-tab-panels v-model="plugin_tab" animated>
             <template v-for="(config, plugin) in plugin_settings">
               <q-tab-panel :key="plugin" :name="plugin">
-                <pluginSettings :updateUrl="'/api/institutions/'+institution.id+'/update_plugin/'" :plugin="plugin" :config="config"/>
+                <pluginSettings :updateUrl="'/api/institutions/'+institution.id+'/update_plugin/'" :formUrl="('/api/institutions/'+institution.id+'/plugin_form/'+plugin+'/')" :plugin="plugin" :config="config"/>
               </q-tab-panel>
             </template>
           </q-tab-panels>
