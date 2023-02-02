@@ -212,16 +212,18 @@ export default {
       .then(function (response) {
         self.user_options = response.data.results.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
       })
-    this.$axios
-      .get('/api/plugins/')
-      .then(function (response) {
-        self.plugins = response.data
-      })
-    this.$axios
-      .get(`/api/labs/${this.$store.getters.labId}/plugin_settings/`)
-      .then(response => {
-        this.plugin_settings = response.data
-      })
+    if (this.$perms.hasLabPerm('ADMIN')) {
+      this.$axios
+        .get('/api/plugins/')
+        .then(function (response) {
+          self.plugins = response.data
+        })
+      this.$axios
+        .get(`/api/labs/${this.$store.getters.labId}/plugin_settings/`)
+        .then(response => {
+          this.plugin_settings = response.data
+        })
+    }
   },
   methods: {
     save () {
