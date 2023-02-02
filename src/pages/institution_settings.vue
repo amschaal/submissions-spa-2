@@ -8,12 +8,32 @@
           class="text "
         >
         <q-tab name="permissions_tab" label="Permissions" />
+        <q-tab name="labs_tab" label="Labs" />
         <q-tab name="plugins_tab" label="Plugins"/>
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="permissions_tab">
           <!-- {{institution}} -->
           <permissions :base-url="`/api/institutions/${institution.id}`" v-if="institution && institution.id"/>
+        </q-tab-panel>
+        <q-tab-panel name="labs_tab">
+          <q-table
+            title="Labs"
+            :data="labs"
+            row-key="lab_id"
+            :dense="true"
+            :filter="filter"
+            selection="single"
+            :selected.sync="selected"
+          >
+            <template v-slot:top-left>
+              <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
         </q-tab-panel>
         <q-tab-panel name="plugins_tab">
           <div v-if="available_plugins.length > 0">
@@ -57,7 +77,10 @@ export default {
       plugin_tab: null,
       plugins: [],
       plugin_settings: {},
-      plugin_selection: []
+      plugin_selection: [],
+      labs: [],
+      filter: '',
+      selected: []
     }
   },
   mounted () {
@@ -70,6 +93,11 @@ export default {
       .get(`/api/institutions/${this.institution.id}/plugin_settings/`)
       .then(response => {
         this.plugin_settings = response.data
+      })
+    this.$axios
+      .get('/api/labs/?include_disabled=true')
+      .then(response => {
+        this.labs = response.data.results
       })
   },
   methods: {
