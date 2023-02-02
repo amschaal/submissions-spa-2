@@ -25,6 +25,7 @@
             :filter="filter"
             selection="single"
             :selected.sync="selected"
+            v-if="!lab"
           >
             <template v-slot:top-left>
               <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
@@ -33,7 +34,22 @@
                 </template>
               </q-input>
             </template>
+            <template v-slot:body-cell-name="props">
+              <q-td :props="props">
+                <div>
+                  <q-btn color="primary" label="Edit" size="sm" @click="editLab(props.row.lab_id)"/>{{props.value}}
+                </div>
+                <div>
+                  {{ props.row.lab_id }}
+                </div>
+              </q-td>
+            </template>
           </q-table>
+          <div v-if="lab">
+            {{lab_id}}
+            {{lab}}
+            <q-btn label="cancel" color="red" @click="lab=null"/>
+          </div>
         </q-tab-panel>
         <q-tab-panel name="plugins_tab">
           <div v-if="available_plugins.length > 0">
@@ -80,7 +96,10 @@ export default {
       plugin_selection: [],
       labs: [],
       filter: '',
-      selected: []
+      selected: [],
+      lab_id: null,
+      lab: null,
+      edit_lab: false
     }
   },
   mounted () {
@@ -111,6 +130,14 @@ export default {
             }
           }
           )
+        })
+    },
+    editLab (labId) {
+      this.$axios
+        .get(`/api/labs/${labId}/`)
+        .then(response => {
+          this.lab = response.data
+          this.edit_lab = true
         })
     }
   },
