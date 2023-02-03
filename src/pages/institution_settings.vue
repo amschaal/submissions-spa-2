@@ -19,12 +19,11 @@
         <q-tab-panel name="labs_tab">
           <q-table
             title="Labs"
+            :columns="lab_columns"
             :data="labs"
             row-key="lab_id"
             :dense="true"
             :filter="filter"
-            selection="single"
-            :selected.sync="selected"
             v-if="!lab"
           >
             <template v-slot:top-left>
@@ -34,21 +33,20 @@
                 </template>
               </q-input>
             </template>
-            <template v-slot:body-cell-name="props">
+            <template v-slot:body-cell-action="props">
               <q-td :props="props">
-                <div>
-                  <q-btn color="primary" label="Edit" size="sm" @click="editLab(props.row.lab_id)"/>{{props.value}}
-                </div>
-                <div>
-                  {{ props.row.lab_id }}
-                </div>
+                <q-btn color="primary" label="Edit" size="sm" @click="editLab(props.row.lab_id)"/>
               </q-td>
             </template>
           </q-table>
           <div v-if="lab">
-            {{lab_id}}
-            {{lab}}
+            <q-input label="Name" v-model="lab.name"/>
+            <q-input label="Lab ID" v-model="lab.lab_id"/>
+            <q-toggle label="Disabled" v-model="lab.disabled"/>
+            <br/>
+            <q-btn label="save" color="primary" @click="saveLab"/>
             <q-btn label="cancel" color="red" @click="lab=null"/>
+            {{lab}}
           </div>
         </q-tab-panel>
         <q-tab-panel name="plugins_tab">
@@ -96,10 +94,10 @@ export default {
       plugin_selection: [],
       labs: [],
       filter: '',
-      selected: [],
       lab_id: null,
       lab: null,
-      edit_lab: false
+      edit_lab: false,
+      lab_columns: [{name: 'name', field: 'name', label: 'Name'}, {name: 'lab_id', field: 'lab_id', label: 'Lab ID'}, {name: 'action', field: 'lab_id', label: 'Action'}]
     }
   },
   mounted () {
@@ -138,6 +136,13 @@ export default {
         .then(response => {
           this.lab = response.data
           this.edit_lab = true
+        })
+    },
+    saveLab () {
+      this.$axios
+        .put(`/api/labs/${this.lab.lab_id}/`, this.lab)
+        .then(response => {
+          this.lab = response.data
         })
     }
   },
