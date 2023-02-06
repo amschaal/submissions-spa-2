@@ -36,13 +36,13 @@
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
                 <q-btn color="primary" label="Edit" size="sm" @click="editLab(props.row.lab_id)"/>
+                <q-toggle label="Enabled" :false-value="true" :true-value="false" v-model="props.row.disabled" @input="toggleDisabled(props.row)"/>
               </q-td>
             </template>
           </q-table>
           <div v-if="lab">
             <q-input label="Name" v-model="lab.name"/>
             <q-input label="Lab ID" v-model="lab.lab_id"/>
-            <q-toggle label="Disabled" v-model="lab.disabled"/>
             <br/>
             <q-btn label="save" color="primary" @click="saveLab"/>
             <q-btn label="cancel" color="red" @click="lab=null"/>
@@ -136,6 +136,18 @@ export default {
         .then(response => {
           this.lab = response.data
           this.edit_lab = true
+        })
+    },
+    toggleDisabled (lab) {
+      this.$axios
+        .post(`/api/labs/${lab.lab_id}/toggle_disabled/`)
+        .then(response => {
+          lab.disabled = response.data.disabled
+          this.$q.notify({message: 'Lab ' + lab.name + ' has been ' + (lab.disabled ? 'disabled' : 'enabled'), type: 'positive'})
+        }).catch(error => {
+          this.$q.notify({message: 'Error ' + (lab.disabled ? 'disabling' : 'enabling') + ' lab ' + lab.name, type: 'negative'})
+          lab.disabled = !lab.disabled
+          console.log('error', error)
         })
     },
     saveLab () {
