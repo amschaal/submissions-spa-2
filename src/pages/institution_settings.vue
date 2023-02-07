@@ -35,8 +35,15 @@
             </template>
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
+                <q-btn color="primary" size="sm" :to="{ name: 'lab', params: { lab_id: props.row.lab_id} }" label="Home"/>
+                <q-btn color="primary" size="sm" :to="{ name: 'settings', params: { lab_id: props.row.lab_id} }" label="Settings"/>
                 <q-btn color="primary" label="Edit" size="sm" @click="editLab(props.row.lab_id)"/>
-                <q-toggle label="Enabled" :false-value="true" :true-value="false" v-model="props.row.disabled" @input="toggleDisabled(props.row)"/>
+                <!-- <q-toggle label="Enabled" :false-value="true" :true-value="false" v-model="props.row.disabled" @input="toggleDisabled(props.row)"/> -->
+              </q-td>
+            </template>
+            <template v-slot:body-cell-disabled="props">
+              <q-td :props="props">
+                <q-toggle :false-value="true" :true-value="false" v-model="props.row.disabled" @input="toggleDisabled(props.row)"/>
               </q-td>
             </template>
           </q-table>
@@ -45,8 +52,7 @@
             <q-input label="Lab ID" v-model="lab.lab_id"/>
             <br/>
             <q-btn label="save" color="primary" @click="saveLab"/>
-            <q-btn label="cancel" color="red" @click="lab=null"/>
-            {{lab}}
+            <q-btn label="cancel" color="red" @click="returnToLabList"/>
           </div>
         </q-tab-panel>
         <q-tab-panel name="plugins_tab">
@@ -97,7 +103,7 @@ export default {
       lab_id: null,
       lab: null,
       edit_lab: false,
-      lab_columns: [{name: 'name', field: 'name', label: 'Name'}, {name: 'lab_id', field: 'lab_id', label: 'Lab ID'}, {name: 'action', field: 'lab_id', label: 'Action'}]
+      lab_columns: [{name: 'name', field: 'name', label: 'Name'}, {name: 'lab_id', field: 'lab_id', label: 'Lab ID'}, {name: 'action', field: 'lab_id', label: 'Action'}, {name: 'disabled', field: 'disabled', label: 'Enabled'}]
     }
   },
   mounted () {
@@ -111,13 +117,16 @@ export default {
       .then(response => {
         this.plugin_settings = response.data
       })
-    this.$axios
-      .get('/api/labs/?include_disabled=true')
-      .then(response => {
-        this.labs = response.data.results
-      })
+    this.loadLabs()
   },
   methods: {
+    loadLabs () {
+      this.$axios
+        .get('/api/labs/?include_disabled=true')
+        .then(response => {
+          this.labs = response.data.results
+        })
+    },
     addPlugins () {
       this.$axios
         .post(`/api/institutions/${this.institution.id}/manage_plugins/add/`, {'plugins': this.plugin_selection})
@@ -131,6 +140,7 @@ export default {
         })
     },
     editLab (labId) {
+      this.lab_id = labId
       this.$axios
         .get(`/api/labs/${labId}/`)
         .then(response => {
@@ -152,10 +162,20 @@ export default {
     },
     saveLab () {
       this.$axios
-        .put(`/api/labs/${this.lab.lab_id}/`, this.lab)
+        .put(`/api/labs/${this.lab_id}/`, this.lab)
         .then(response => {
           this.lab = response.data
+          this.$q.notify({message: 'Lab ' + this.lab.name + ' has been updated', type: 'positive'})
+          this.returnToLabList()
+          this.loadLabs()
+        }).catch(error => {
+          this.$q.notify({message: 'Error updating lab ' + this.lab.name, type: 'negative'})
+          console.log('error', error)
         })
+    },
+    returnToLabList () {
+      this.lab_id = null
+      this.lab = null
     }
   },
   watch: {
