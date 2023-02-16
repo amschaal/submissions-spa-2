@@ -17,41 +17,45 @@
           <permissions :base-url="`/api/institutions/${institution.id}`" v-if="institution && institution.id"/>
         </q-tab-panel>
         <q-tab-panel name="labs_tab">
-          <q-table
-            title="Labs"
-            :columns="lab_columns"
-            :data="labs"
-            row-key="lab_id"
-            :dense="true"
-            :filter="filter"
-            v-if="!lab"
-          >
-            <template v-slot:top-left>
-              <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
-                <template v-slot:append>
-                  <q-icon name="search" />
-                </template>
-              </q-input>
-            </template>
-            <template v-slot:body-cell-action="props">
-              <q-td :props="props">
-                <q-btn color="primary" size="sm" :to="{ name: 'lab', params: { lab_id: props.row.lab_id} }" label="Home"/>
-                <q-btn color="primary" size="sm" :to="{ name: 'settings', params: { lab_id: props.row.lab_id} }" label="Settings"/>
-                <q-btn color="primary" label="Edit" size="sm" @click="editLab(props.row.lab_id)"/>
-                <!-- <q-toggle label="Enabled" :false-value="true" :true-value="false" v-model="props.row.disabled" @input="toggleDisabled(props.row)"/> -->
-              </q-td>
-            </template>
-            <template v-slot:body-cell-disabled="props">
-              <q-td :props="props">
-                <q-toggle :false-value="true" :true-value="false" v-model="props.row.disabled" @input="toggleDisabled(props.row)"/>
-              </q-td>
-            </template>
-          </q-table>
-          <div v-if="lab">
+          <div v-if="!lab">
+            <q-btn label="Create lab" color="primary" @click="lab={}"/>
+            <q-table
+              title="Labs"
+              :columns="lab_columns"
+              :data="labs"
+              row-key="lab_id"
+              :dense="true"
+              :filter="filter"
+            >
+              <template v-slot:top-left>
+                <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+                  <template v-slot:append>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </template>
+              <template v-slot:body-cell-action="props">
+                <q-td :props="props">
+                  <q-btn color="primary" size="sm" :to="{ name: 'lab', params: { lab_id: props.row.lab_id} }" label="Home"/>
+                  <q-btn color="primary" size="sm" :to="{ name: 'settings', params: { lab_id: props.row.lab_id} }" label="Settings"/>
+                  <q-btn color="primary" label="Edit" size="sm" @click="editLab(props.row.lab_id)"/>
+                  <!-- <q-toggle label="Enabled" :false-value="true" :true-value="false" v-model="props.row.disabled" @input="toggleDisabled(props.row)"/> -->
+                </q-td>
+              </template>
+              <template v-slot:body-cell-disabled="props">
+                <q-td :props="props">
+                  <q-toggle :false-value="true" :true-value="false" v-model="props.row.disabled" @input="toggleDisabled(props.row)"/>
+                </q-td>
+              </template>
+            </q-table>
+          </div>
+          <div v-else>
             <q-input label="Name" v-model="lab.name"/>
             <q-input label="Lab ID" v-model="lab.lab_id"/>
+            <q-input label="Email" v-model="lab.email"/>
             <br/>
-            <q-btn label="save" color="primary" @click="saveLab"/>
+            <q-btn label="save" color="primary" @click="saveLab" v-if="lab.id"/>
+            <q-btn label="create" color="primary" @click="createLab" v-else/>
             <q-btn label="cancel" color="red" @click="returnToLabList"/>
           </div>
         </q-tab-panel>
@@ -170,6 +174,19 @@ export default {
           this.loadLabs()
         }).catch(error => {
           this.$q.notify({message: 'Error updating lab ' + this.lab.name, type: 'negative'})
+          console.log('error', error)
+        })
+    },
+    createLab () {
+      this.$axios
+        .post(`/api/labs/`, this.lab)
+        .then(response => {
+          this.lab = response.data
+          this.$q.notify({message: 'Lab ' + this.lab.name + ' has been created', type: 'positive'})
+          this.returnToLabList()
+          this.loadLabs()
+        }).catch(error => {
+          this.$q.notify({message: 'Error creating lab ' + this.lab.name, type: 'negative'})
           console.log('error', error)
         })
     },
