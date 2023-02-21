@@ -1,17 +1,28 @@
 <template>
   <q-page padding>
     <div v-if="institution">
-      {{institution}}
       <h5>Permissions for "{{institution.name}}"</h5>
       <q-tabs
           v-model="tab"
           class="text "
         >
+        <q-tab name="settings_tab" label="Settings" />
         <q-tab name="permissions_tab" label="Permissions" />
         <q-tab name="labs_tab" label="Labs" />
         <q-tab name="plugins_tab" label="Plugins"/>
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="settings_tab">
+          <q-field
+            label="Home Page"
+            stack-label
+          >
+            <q-editor v-model="institution.home_page"
+            :toolbar="toolbar"
+            />
+          </q-field>
+          <q-btn @click="save" color="primary" label="save"/>
+        </q-tab-panel>
         <q-tab-panel name="permissions_tab">
           <!-- {{institution}} -->
           <permissions :base-url="`/api/institutions/${institution.id}`" v-if="institution && institution.id"/>
@@ -92,12 +103,14 @@
 <script>
 import permissions from '../components/permissions.vue'
 import pluginSettings from '../components/pluginSettings.vue'
+import _ from 'lodash'
+
 export default {
   name: 'institution_settings',
   data () {
     return {
-      institution: this.$store.getters.institution,
-      tab: 'permissions_tab',
+      institution: _.cloneDeep(this.$store.getters.institution),
+      tab: 'settings_tab',
       plugin_tab: null,
       plugins: [],
       plugin_settings: {},
@@ -107,7 +120,32 @@ export default {
       lab_id: null,
       lab: null,
       edit_lab: false,
-      lab_columns: [{name: 'name', field: 'name', label: 'Name'}, {name: 'lab_id', field: 'lab_id', label: 'Lab ID'}, {name: 'action', field: 'lab_id', label: 'Action'}, {name: 'disabled', field: 'disabled', label: 'Enabled'}]
+      lab_columns: [{name: 'name', field: 'name', label: 'Name'}, {name: 'lab_id', field: 'lab_id', label: 'Lab ID'}, {name: 'action', field: 'lab_id', label: 'Action'}, {name: 'disabled', field: 'disabled', label: 'Enabled'}],
+      toolbar: [
+        ['bold', 'italic', 'strike', 'underline'],
+        ['token', 'link', 'custom_btn'],
+        ['print', 'fullscreen'],
+        [
+          {
+            label: 'Formatting', // this.$q.i18n.editor.formatting,
+            icon: 'Formatting', // this.$q.icon.editor.formatting,
+            list: 'no-icons',
+            options: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code']
+          },
+          'removeFormat'
+        ],
+        ['quote', 'unordered', 'ordered'],
+        [
+          {
+            label: 'Align', // this.$q.i18n.editor.align,
+            icon: 'Align', // this.$q.icon.editor.align,
+            fixedLabel: true,
+            list: 'only-icons',
+            options: ['left', 'center', 'right', 'justify']
+          }
+        ],
+        ['undo', 'redo']
+      ]
     }
   },
   mounted () {
@@ -124,6 +162,20 @@ export default {
     this.loadLabs()
   },
   methods: {
+    save () {
+      if (this.institution.id) {
+        this.$axios
+          .put(`/api/institutions/${this.institution.id}/`, this.institution)
+          .then(({ data }) => {
+            this.$store.commit('institution', data)
+            this.$q.notify({message: `Settings saved for ${data.name}`, type: 'positive'})
+          })
+          .catch(error => {
+            this.$q.notify({message: `Error: unable to save settings`, type: 'negative'})
+            console.log('error', error)
+          })
+      }
+    },
     loadLabs () {
       this.$axios
         .get('/api/labs/?include_disabled=true')
