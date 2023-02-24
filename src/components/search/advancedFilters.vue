@@ -12,12 +12,14 @@
                         <div class="self-center full-width no-outline">{{ v.variable }}: {{ v.title }}</div>
                     </template>
                 </q-field>
-                <q-select v-model="v.filter" :options="v.filters" option-value="filter" option-label="label" class="self-center self-stretch filter" label="Filter" outlined/>
-                <q-input v-model="v.value" label="value" class="col" outlined/>
+                <q-select ref="filters" v-model="v.filter" :options="v.filters" option-value="filter" option-label="label" class="self-center self-stretch filter validate" label="Filter" outlined :rules="[ val => !!val || 'Please select a filter' ]"/>
+                <q-input ref="filters" v-model="v.value" label="value" class="col" outlined :rules="[ val => !!val || 'Please enter a value' ]"/>
+                <q-btn color="red" size="" icon="delete" @click="removeVariable(v)"/>
             </div>
-            <q-btn color="primary" label="Update" @click="update"/>
+            <div>
+                <q-btn color="primary" label="Update" @click="update"/>
+            </div>
         </div>
-        {{ qs }}
     </fieldset>
 </template>
 
@@ -51,7 +53,9 @@ export default {
   },
   methods: {
     update () {
-      console.log('type', this.type)
+      if (this.$refs.filters.map(c => c.validate()).indexOf(false) !== -1) {
+        return
+      }
       this.qs = this.type && this.type.id === 'ALL' ? '' : '&type=' + this.type.id
       console.log(this.variables)
       this.variables.forEach(v => (this.qs += '&' + v.filter.filter + '=' + v.value))
@@ -63,6 +67,9 @@ export default {
       variable.filter = null
       this.variables.push(variable)
       this.variable = null
+    },
+    removeVariable (v) {
+      this.variables.splice(this.variables.indexOf(v), 1)
     },
     clearVariables () {
       this.variables = []
