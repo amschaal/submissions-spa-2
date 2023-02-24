@@ -1,20 +1,24 @@
 <template>
-    <div>
-        Advanced Filters: {{ $store.getters.labId }}
-        <q-select v-model="type" :options="lab_filters" option-value="id" option-label="name" label="Submission Type" />
+    <fieldset class="advanced-filters">
+        <legend>Advanced Filters</legend>
+        <q-select v-model="type" :options="lab_filters" option-value="id" option-label="name" label="Submission Type" outlined @input="clearVariables"/>
         <!-- {{ type_filters }} -->
-        <q-select v-if="type" v-model="variable" :options="variable_options" option-value="variable" option-label="variable" label="Choose Field" @input="addVariable"/>
+        <span class="col filter"><q-select v-if="type" v-model="variable" :options="variable_options" option-value="variable" option-label="variable" label="Choose Field" @input="addVariable" outlined/></span>
         <!-- {{ variable_options }} -->
         <div v-if="variables">
             <div v-for="v in variables" :key="v.variable" class="row">
-                <span>{{ v.variable }}: {{ v.title }}</span>
-                <q-select v-model="v.filter" :options="v.filters" option-value="filter" option-label="label" class="col" label="Filter"/>
-                <q-input v-model="v.value" label="value" class="col"/>
+                <q-field label="Field" stack-label outlined>
+                    <template v-slot:control>
+                        <div class="self-center full-width no-outline">{{ v.variable }}: {{ v.title }}</div>
+                    </template>
+                </q-field>
+                <q-select v-model="v.filter" :options="v.filters" option-value="filter" option-label="label" class="self-center self-stretch filter" label="Filter" outlined/>
+                <q-input v-model="v.value" label="value" class="col" outlined/>
             </div>
             <q-btn color="primary" label="Update" @click="update"/>
         </div>
         {{ qs }}
-    </div>
+    </fieldset>
 </template>
 
 <script>
@@ -59,6 +63,9 @@ export default {
       variable.filter = null
       this.variables.push(variable)
       this.variable = null
+    },
+    clearVariables () {
+      this.variables = []
     }
   },
   computed: {
@@ -72,4 +79,15 @@ export default {
 }
 </script>
 <style>
+.filter {
+    /* padding: 0px 10px; */
+    min-width: 150px;
+}
+.filter span {
+    width: 100%;
+    text-align: center;
+}
+fieldset.advanced-filters {
+    width: 100%;
+}
 </style>
