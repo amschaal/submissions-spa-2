@@ -11,7 +11,7 @@
       :loading="loading"
       @request="request"
       binary-state-sort
-      :rows-per-page-options="[10,25,0]"
+      :rows-per-page-options="[10,25,50]"
     >
       <template slot="top">
         <div class="row full-width">
@@ -76,6 +76,8 @@
 
         </div>
         </div>
+        <q-btn label="Advanced filters" color="primary" v-if="!advanced" @click="advanced=true"/>
+        <advancedFilters ref="advancedFilters" :lab="lab" @update="refresh" v-else/>
       </template>
       <template slot="body" slot-scope="props">
         <q-tr :props="props" v-bind:class="{'cancelled': props.row.cancelled, 'completed': props.row.status && props.row.status.toUpperCase() === 'COMPLETED'}">
@@ -105,11 +107,13 @@
 // import axios from 'axios'
 import _ from 'lodash'
 import selectLabModal from '../components/modals/selectLabModal.vue'
+import advancedFilters from '../components/search/advancedFilters.vue'
 export default {
   name: 'submissions',
   props: ['lab'],
   components: {
-    selectLabModal
+    selectLabModal,
+    advancedFilters
   },
   data () {
     var defaultFilters = {
@@ -132,6 +136,7 @@ export default {
       filterNamespace: filterNamespace,
       defaultFilters: defaultFilters,
       filters: this.$store.getters.getUserSettings[filterNamespace] ? _.assign(defaultFilters, this.$store.getters.getUserSettings[filterNamespace]) : defaultFilters,
+      advanced: false,
       loading: false,
       serverData: [],
       columns: [
@@ -156,6 +161,7 @@ export default {
   },
   methods: {
     request ({ pagination, filter }) {
+      // console.log('request', qs, )
       // we set QTable to "loading" state
       this.loading = true
 
@@ -166,6 +172,7 @@ export default {
       if (pagination.descending) {
         sortBy = '-' + sortBy
       }
+      var qs = this.$refs['advancedFilters'] ? this.$refs['advancedFilters'].qs : ''
       var lab = this.$store.getters.labId && this.lab ? '&lab=' + this.$store.getters.labId : ''
       var search = this.filters.filter !== '' ? `&search=${this.filters.filter}` : ''
       var cancelled = !this.filters.showCancelled ? '&cancelled__isnull=true' : ''
@@ -175,7 +182,7 @@ export default {
       var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       // var type = this.$route.query.type ? `&type__name__icontains=${this.$route.query.type}` : ''
       this.$axios
-        .get(`/api/submissions/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${lab}${search}${cancelled}${completed}${participating}${mySubmissions}`)// ${pagination.descending}&filter=${filter}
+        .get(`/api/submissions/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${lab}${search}${cancelled}${completed}${participating}${mySubmissions}${qs}`)// ${pagination.descending}&filter=${filter}
         .then(({ data }) => {
           console.log('data', data)
 
