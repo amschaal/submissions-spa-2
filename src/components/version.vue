@@ -16,7 +16,6 @@ export default Vue.extend({
       axios
         .get('/version.json')
         .then((response) => {
-          this.poll()
           if (!this.version) {
             this.version = response.data.version
             this.poll()
@@ -25,28 +24,25 @@ export default Vue.extend({
           } else {
             this.poll()
           }
-          console.log('version', response)
         })
         .catch(() => {
-          console.log('error getting version')
           this.poll()
         })
     },
     poll () {
-      setTimeout(this.checkVersion, 10000)
+      setTimeout(this.checkVersion, 600000) // poll every 10 minutes
     },
     outOfDate () {
       this.$q.notify({
-        message: 'Out of date, please refresh your page!!!',
+        message: 'There is a new version available, please refresh this page.',
         icon: 'cloud_download',
         closeBtn: 'Refresh',
         color: "negative",
-        timeout: 36000,
+        timeout: 0,
         onDismiss () {
           location.reload(true)
         }
       })
-      // alert('Out of date, please refresh your page')
     }
   },
   mounted () {
