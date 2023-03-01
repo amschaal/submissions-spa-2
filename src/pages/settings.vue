@@ -136,14 +136,14 @@
               active-color="white"
               narrow-indicator
             >
-            <template v-for="(config, plugin) in lab.plugins">
+            <template v-for="(config, plugin) in plugin_settings">
               <q-tab :key="plugin" :name="plugin" :label="plugin"/>
             </template>
           </q-tabs>
           <q-tab-panels v-model="plugin_tab" animated>
-            <template v-for="(config, plugin) in lab.plugins">
+            <template v-for="(config, plugin) in plugin_settings">
               <q-tab-panel :key="plugin" :name="plugin">
-                <pluginSettings :updateUrl="'/api/labs/'+lab.lab_id+'/update_plugin/'" :plugin="plugin" :config="config"/>
+                <pluginSettings :updateUrl="'/api/labs/'+lab.lab_id+'/update_plugin/'" :formUrl="'/api/labs/'+lab.lab_id+'/plugin_form/'+plugin+'/'" :plugin="plugin" :config="config"/>
               </q-tab-panel>
             </template>
           </q-tab-panels>
@@ -176,6 +176,7 @@ export default {
       tab: 'settings_tab',
       plugin_tab: null,
       plugins: [],
+      plugin_settings: {},
       plugin_selection: [],
       toolbar: [
         ['bold', 'italic', 'strike', 'underline'],
@@ -211,11 +212,18 @@ export default {
       .then(function (response) {
         self.user_options = response.data.results.map(opt => ({label: `${opt.first_name} ${opt.last_name}`, value: opt.id}))
       })
-    this.$axios
-      .get('/api/plugins/')
-      .then(function (response) {
-        self.plugins = response.data
-      })
+    if (this.$perms.hasLabPerm('ADMIN')) {
+      this.$axios
+        .get('/api/plugins/')
+        .then(function (response) {
+          self.plugins = response.data
+        })
+      this.$axios
+        .get(`/api/labs/${this.$store.getters.labId}/plugin_settings/`)
+        .then(response => {
+          this.plugin_settings = response.data
+        })
+    }
   },
   methods: {
     save () {
@@ -245,8 +253,8 @@ export default {
         .post(`/api/labs/${this.$store.getters.labId}/manage_plugins/add/`, {'plugins': this.plugin_selection})
         .then((response) => {
           this.plugin_selection.forEach((plugin) => {
-            if (!this.lab.plugins[plugin]) {
-              this.$set(this.lab.plugins, plugin, response.data.plugins[plugin])
+            if (!this.plugin_settings[plugin]) {
+              this.$set(this.plugin_settings, plugin, response.data.plugins[plugin])
             }
           }
           )
@@ -260,12 +268,8 @@ export default {
   },
   computed: {
     'available_plugins': function () {
-      var self = this
-      return this.plugins.filter(function (v) {
-        return !self.lab.plugins[v]
-      })
+      return this.plugins.filter(v => !this.plugin_settings[v])
     }
-
   },
   components: {
     schemaForm,
