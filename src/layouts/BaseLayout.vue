@@ -97,6 +97,7 @@
         />
       </div>
       <router-view v-else :key="$route.fullPath"/>
+      <version/>
     </q-page-container>
     <!-- <Auth ref="auth"/> -->
     <q-footer elevated>
@@ -110,6 +111,7 @@
 <script>
 import { openURL } from 'quasar'
 import selectLabModal from '../components/modals/selectLabModal.vue'
+import version from '../components/version.vue'
 // import Auth from '../components/auth.vue'
 
 export default {
@@ -141,7 +143,8 @@ export default {
   },
   components: {
     // Auth
-    selectLabModal
+    selectLabModal,
+    version
   }
 }
 </script>

@@ -18,7 +18,7 @@
 import CustomFields from './forms/customFields.vue'
 
 export default {
-  props: ['updateUrl', 'plugin', 'config'],
+  props: ['updateUrl', 'formUrl', 'plugin', 'config'],
   components: {
     CustomFields
   },
@@ -30,7 +30,7 @@ export default {
   },
   mounted () {
     var self = this
-    this.$axios.get(`/api/plugins/${this.plugin}/`)
+    this.$axios.get(this.formUrl)
       .then(
         function (response) {
           self.form = response.data.form
