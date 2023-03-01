@@ -70,7 +70,8 @@ module.exports = function (ctx) {
         process.stderr.write("I will goto the STDERR: beforeBuild")
         require('child_process').exec('git rev-parse --short HEAD', function(err, stdout) {
           console.log('Last commit hash on this branch is:', stdout);
-          fs.writeFileSync('./public/version.json', JSON.stringify({version: stdout.trim()}), 'utf-8')
+          version = require('./package').version
+          fs.writeFileSync('./public/version.json', JSON.stringify({version: version, commit: stdout.trim()}), 'utf-8')
         })
       },
       // rtl: false, // https://quasar.dev/options/rtl-support
