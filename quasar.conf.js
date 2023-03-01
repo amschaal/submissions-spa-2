@@ -66,11 +66,11 @@ module.exports = function (ctx) {
       vueRouterMode: 'history', // available values: 'hash', 'history'
       // beforeDev: ({ quasarConf }) => {
       // },
-      afterBuild: ({ quasarConf }) => {
-        process.stderr.write("I will goto the STDERR: afterBuild")
+      beforeBuild: ({ quasarConf }) => {
+        process.stderr.write("I will goto the STDERR: beforeBuild")
         require('child_process').exec('git rev-parse --short HEAD', function(err, stdout) {
           console.log('Last commit hash on this branch is:', stdout);
-          fs.writeFileSync('./dist/spa/app.json', JSON.stringify({version: stdout.trim()}), 'utf-8')
+          fs.writeFileSync('./public/version.json', JSON.stringify({version: stdout.trim()}), 'utf-8')
         })
       },
       // rtl: false, // https://quasar.dev/options/rtl-support
