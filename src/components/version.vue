@@ -14,7 +14,19 @@ export default Vue.extend({
   methods: {
     checkVersion () {
       axios
-        .get('/version.json')
+        .get('/version.json',
+          {
+            // query URL without using browser cache
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache',
+              'Expires': '0'
+            },
+            params: {
+              t: new Date().getTime()
+            }
+          }
+        )
         .then((response) => {
           if (!this.version) {
             this.version = response.data.version
