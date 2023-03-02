@@ -40,7 +40,22 @@
                     </template>
                 </q-field>
                 <q-select dense ref="filters" v-model="v.filter" :options="v.filters" option-value="filter" option-label="label" class="self-center self-stretch filter validate" label="Filter" outlined :rules="[ val => !!val || 'Please select a filter' ]"/>
-                <q-input dense ref="filters" v-model="v.value" label="value" class="col" outlined :rules="[ val => !!val || 'Please enter a value' ]">
+                <q-select
+                    v-if="v.enum"
+                    outlined
+                    v-model="v.value"
+                    :options="v.enum"
+                    label="Select Value"
+                    class="col"
+                    dense
+                >
+                    <template v-slot:after>
+                        <q-btn color="red" size="sm" icon="delete" @click="removeVariable(v)" round>
+                            <q-tooltip content-class="tooltip">Remove filter.  You must click update for changes to take effect.</q-tooltip>
+                        </q-btn>
+                    </template>
+                </q-select>
+                <q-input v-else dense ref="filters" v-model="v.value" label="Value" class="col" outlined :rules="[ val => !!val || 'Please enter a value' ]">
                     <template v-slot:after>
                         <q-btn color="red" size="sm" icon="delete" @click="removeVariable(v)" round>
                             <q-tooltip content-class="tooltip">Remove filter.  You must click update for changes to take effect.</q-tooltip>
