@@ -100,7 +100,6 @@
         </q-tr>
       </template>
     </q-table>
-    <q-btn label="Export" @click="exportSubmissions"/>
     <q-btn-dropdown color="primary" label="Export as">
       <q-list>
         <q-item clickable v-close-popup @click="exportSubmissions('xlsx')">
@@ -203,8 +202,10 @@ export default {
       return `ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${lab}${search}${cancelled}${completed}${participating}${mySubmissions}${qs}`
     },
     exportSubmissions (format) {
+      var pagination = _.clone(this.filters.serverPagination)
+      pagination.rowsPerPage = 10000
       var qs = this.getSearchQuery({
-        pagination: this.filters.serverPagination,
+        pagination: pagination,
         filter: this.filters.filter
       })
       if (format === 'json') {
