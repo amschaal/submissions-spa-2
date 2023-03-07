@@ -101,6 +101,7 @@
       </template>
     </q-table>
     <q-btn-dropdown color="primary" label="Export as">
+      <q-tooltip class="bg-accent">Export the current search results in one of the supported formats.  For complete submission data, including data from custom tables, use JSON.</q-tooltip>
       <q-list>
         <q-item clickable v-close-popup @click="exportSubmissions('xlsx')">
           <q-item-section>
