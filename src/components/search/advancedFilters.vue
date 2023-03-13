@@ -8,7 +8,7 @@
                 </q-tooltip>
             </q-icon>
         </legend>
-        <q-select dense v-model="type" :options="lab_filters" option-value="id" option-label="name" label="Submission Type" outlined @input="clearVariables">
+        <q-select dense v-model="type" :options="lab_filters.type" option-value="id" option-label="name" label="Submission Type" outlined @input="clearVariables">
             <template v-slot:after>
                 <q-icon name="help" color="primary">
                     <q-tooltip content-class="tooltip">
@@ -18,8 +18,9 @@
             </template>
         </q-select>
         <!-- {{ type_filters }} -->
+        <!-- {{ filteredVariables }} -->
         <span class="col filter">
-            <q-select dense v-if="type" v-model="variable" @filter="filterFn" use-input input-debounce="0" :options="filteredVariables" option-value="variable" :option-label="opt => `${opt.variable}: ${opt.title}`" label="Add custom field filter" @input="addVariable" borderless style="width: 250px" behavior="dialog">
+            <q-select dense v-model="variable" @filter="filterFn" use-input input-debounce="0" :options="filteredVariables" option-value="variable" :option-label="opt => opt.variable ? `${opt.variable}: ${opt.title}` : opt.title" label="Add custom field filter" @input="addVariable" borderless style="width: 250px" behavior="dialog">
                 <template v-slot:after>
                     <q-icon name="help" color="primary">
                         <q-tooltip content-class="tooltip">
@@ -36,7 +37,8 @@
             <div v-for="v in variables" :key="v.variable" class="row">
                 <q-field dense label="Field" stack-label outlined>
                     <template v-slot:control>
-                        <div class="self-center full-width no-outline">{{ v.variable }}: {{ v.title }}</div>
+                        <div class="self-center full-width no-outline" v-if="v.variable">{{ v.variable }}: {{ v.title }}</div>
+                        <div class="self-center full-width no-outline" v-else>{{ v.title }}</div>
                     </template>
                 </q-field>
                 <q-select dense ref="filters" v-model="v.filter" :options="v.filters" option-value="filter" option-label="label" class="self-center self-stretch filter validate" label="Filter" outlined :rules="[ val => !!val || 'Please select a filter' ]"/>
@@ -80,7 +82,7 @@ export default {
     return {
       variables: [],
       filters: [],
-      lab_filters: [],
+      lab_filters: {},
       variable: null,
       filterMap: {},
       type: null,
@@ -93,7 +95,7 @@ export default {
       .get(`/api/labs/${this.$store.getters.labId}/filters/`)
       .then(({ data }) => {
         this.lab_filters = data
-        this.lab_filters.forEach(f => (this.filterMap[f.id] = f))
+        this.lab_filters.type.forEach(f => (this.filterMap[f.id] = f))
       })
       .catch(error => {
         console.log(error)
@@ -104,7 +106,7 @@ export default {
       if (this.$refs.filters && this.$refs.filters.map(c => c.validate()).indexOf(false) !== -1) {
         return
       }
-      this.qs = this.type && this.type.id === 'ALL' ? '' : '&type=' + this.type.id
+      this.qs = !this.type || (this.type && this.type.id === 'ALL') ? '' : '&type=' + this.type.id
       console.log(this.variables)
       this.variables.forEach(v => (this.qs += '&' + v.filter.filter + '=' + v.value))
       console.log('qs', this.qs)
@@ -120,7 +122,7 @@ export default {
       this.variables.splice(this.variables.indexOf(v), 1)
     },
     clearVariables () {
-      this.variables = []
+      this.variables = this.variables.filter(v => !v.variable)
     },
     filterFn (val, update) {
       if (val === '') {
@@ -144,7 +146,7 @@ export default {
       return this.type ? this.filterMap[this.type.id].filters : []
     },
     variable_options () {
-      return Object.values(this.type_filters)
+      return Object.values(this.type_filters).concat(Object.values(this.lab_filters.general || {}))
     }
   }
 }
