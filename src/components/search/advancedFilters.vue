@@ -114,7 +114,7 @@ export default {
     },
     addVariable () {
       var variable = _.cloneDeep(this.variable)
-      variable.filter = null
+      variable.filter = variable.filters.length === 1 ? this.variable.filters[0] : null
       this.variables.push(variable)
       this.variable = null
     },
