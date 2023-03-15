@@ -50,6 +50,8 @@
                     label="Select Value"
                     class="col"
                     dense
+                    emit-value
+                    map-options
                 >
                     <template v-slot:after>
                         <q-btn color="red" size="sm" icon="delete" @click="removeVariable(v)" round>
