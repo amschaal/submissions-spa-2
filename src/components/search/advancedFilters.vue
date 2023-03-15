@@ -57,6 +57,19 @@
                         </q-btn>
                     </template>
                 </q-select>
+                <q-input v-else-if="v.type=='date'" ref="filters" outlined dense v-model="v.value" :rules="[ val => !!val && /^(\d{4})-(\d{2})-(\d{2})$/.test(val) || 'Please enter a valid date of format YYYY-MM-DD' ]">
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                        <q-date v-model="v.value" mask="YYYY-MM-DD">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Close" color="primary" flat />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
                 <q-input v-else dense ref="filters" v-model="v.value" label="Value" class="col" outlined :rules="[ val => !!val || 'Please enter a value' ]">
                     <template v-slot:after>
                         <q-btn color="red" size="sm" icon="delete" @click="removeVariable(v)" round>

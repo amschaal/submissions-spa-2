@@ -247,6 +247,7 @@ export default {
           console.log(error)
           // we tell QTable to exit the "loading" state
           this.loading = false
+          this.$q.notify({message: 'There was an error retrieving submissions.  Please ensure your search terms are valid.', type: 'negative'})
         })
     },
     refresh () {
