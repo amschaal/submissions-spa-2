@@ -12,14 +12,17 @@
             <template v-slot:after>
                 <q-icon name="help" color="primary">
                     <q-tooltip content-class="tooltip">
-                        Select a submission type to show only submissions of that type.  Once chosen, you may add additional filters specific to that submission type.
+                        <p>Select a submission type to show only submissions of that type.  Once chosen, you may add additional filters specific to that submission type.</p>
+                        <p>In addition to the generally available filters, you may search using any custom fields that are defined for the selected submission type.  After selecting any fields to filter on, choose the type of filter, and a value to search on.</p>
+                        <p>If "ALL" is chosen for the submission type, a list of custom submission variables configured in the lab's settings page will be provided to search on.  Please note that these fields are not guaranteed to exist across submission types, and is dependent on how consistent the lab was with custom variable/field names across types.</p>
+                        <p>Please be aware that while some variables may have flexible search filters (like case insensitive containment, etc), variables that are used in tables can only be searched on using an exact match.</p>
                     </q-tooltip>
                 </q-icon>
             </template>
         </q-select>
         <!-- {{ type_filters }} -->
         <!-- {{ filteredVariables }} -->
-        <span class="col filter">
+        <!-- <span class="col filter">
             <q-select dense v-model="variable" @filter="filterFn" use-input input-debounce="0" :options="filteredVariables" option-value="variable" :option-label="opt => opt.variable ? `${opt.variable}: ${opt.title}` : opt.title" label="Add custom field filter" @input="addVariable" borderless style="width: 250px" behavior="dialog">
                 <template v-slot:after>
                     <q-icon name="help" color="primary">
@@ -31,17 +34,17 @@
                     </q-icon>
                 </template>
             </q-select>
-        </span>
+        </span> -->
         <!-- {{ variable_options }} -->
-        <div v-if="variables">
+        <div v-if="variables" class="filters">
             <div v-for="v in variables" :key="v.variable" class="row">
-                <q-field dense label="Field" stack-label outlined>
+                <q-field dense label="Field" stack-label outlined class="col">
                     <template v-slot:control>
                         <div class="self-center full-width no-outline" v-if="v.variable">{{ v.variable }}: {{ v.title }}</div>
                         <div class="self-center full-width no-outline" v-else>{{ v.title }}</div>
                     </template>
                 </q-field>
-                <q-select dense ref="filters" v-model="v.filter" :options="v.filters" option-value="filter" option-label="label" class="self-center self-stretch filter validate" label="Filter" outlined :rules="[ val => !!val || 'Please select a filter' ]"/>
+                <q-select dense ref="filters" v-model="v.filter" :options="v.filters" option-value="filter" option-label="label" class="self-center self-stretch filter validate col" label="Filter" outlined :rules="[ val => !!val || 'Please select a filter' ]"/>
                 <q-select
                     v-if="v.enum"
                     outlined
@@ -52,14 +55,15 @@
                     dense
                     emit-value
                     map-options
+                    :rules="[ val => !!val || 'Please enter a value' ]"
                 >
                     <template v-slot:after>
-                        <q-btn color="red" size="sm" icon="delete" @click="removeVariable(v)" round>
+                        <q-btn color="red" size="sm" icon="delete" @click="removeVariable(v)" round class="remove-button">
                             <q-tooltip content-class="tooltip">Remove filter.  You must click update for changes to take effect.</q-tooltip>
                         </q-btn>
                     </template>
                 </q-select>
-                <q-input v-else-if="v.type=='date'" ref="filters" outlined dense v-model="v.value" :rules="[ val => !!val && /^(\d{4})-(\d{2})-(\d{2})$/.test(val) || 'Please enter a valid date of format YYYY-MM-DD' ]">
+                <q-input v-else-if="v.type=='date'" ref="filters" class="col" outlined dense v-model="v.value" :rules="[ val => !!val && /^(\d{4})-(\d{2})-(\d{2})$/.test(val) || 'Please enter a valid date of format YYYY-MM-DD' ]">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
@@ -71,19 +75,77 @@
                       </q-popup-proxy>
                     </q-icon>
                   </template>
+                  <template v-slot:after>
+                        <q-btn color="red" size="sm" icon="delete" @click="removeVariable(v)" round class="remove-button">
+                            <q-tooltip content-class="tooltip">Remove filter.  You must click update for changes to take effect.</q-tooltip>
+                        </q-btn>
+                    </template>
                 </q-input>
                 <q-input v-else dense ref="filters" v-model="v.value" label="Value" class="col" outlined :rules="[ val => !!val || 'Please enter a value' ]">
                     <template v-slot:after>
-                        <q-btn color="red" size="sm" icon="delete" @click="removeVariable(v)" round>
+                        <q-btn color="red" size="sm" icon="delete" @click="removeVariable(v)" round class="remove-button">
                             <q-tooltip content-class="tooltip">Remove filter.  You must click update for changes to take effect.</q-tooltip>
                         </q-btn>
                     </template>
                 </q-input>
             </div>
-            <div>
-                <q-btn color="primary" label="Update" @click="update"/>
-            </div>
         </div>
+        <div>
+          <q-btn label="Add filter" color="primary" @click="search_filters = true" /> <q-btn color="primary" label="Update" @click="update"/>
+        </div>
+        <q-dialog v-model="search_filters">
+          <q-card style="width: 900px; max-width: 100vw;">
+            <q-card-section class="row items-center q-pb-none">
+              <div class="text-h6">Add search filters</div>
+              <q-space />
+              <q-btn icon="close" flat round dense v-close-popup />
+            </q-card-section>
+
+            <q-card-section>
+              <b v-if="type && type.id && this.filterMap[type.id].name">
+                Showing search filters available for selected submission type "{{ this.filterMap[type.id].name }}"
+              </b>
+              <q-table
+                title="Filters"
+                :data="variable_options"
+                :columns="search_filter_columns"
+                row-key="variable"
+                :filter="search_filter"
+                virtual-scroll
+                style="height: 600px"
+                :rows-per-page-options="[0]"
+                :pagination.sync="pagination"
+              >
+              <template v-slot:top-right>
+                <q-input borderless dense debounce="300" v-model="search_filter" placeholder="Search">
+                  <template v-slot:append>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </template>
+              <template v-slot:body-cell-title="props">
+                <q-td :props="props">
+                    <span v-if="props.row.variable">{{ props.row.variable }}: {{ props.row.title }}</span>
+                    <span v-else>{{ props.row.title }}</span>
+                </q-td>
+              </template>
+              <template v-slot:body-cell-filters="props">
+                <q-td :props="props">
+                    <q-badge v-for="f in props.value" :key="f.filter" color="grey" :label="f.label" />
+                </q-td>
+              </template>
+              <template v-slot:body-cell-variable="props">
+                <q-td :props="props">
+                    <q-btn label="Add" size="sm" color="primary" @click="addVariable(props.row)"/>
+                </q-td>
+              </template>
+              </q-table>
+            </q-card-section>
+            <q-card-actions align="right">
+              <q-btn flat label="Done" color="primary" v-close-popup />
+            </q-card-actions>
+          </q-card>
+      </q-dialog>
     </fieldset>
 </template>
 
@@ -102,7 +164,17 @@ export default {
       filterMap: {},
       type: null,
       qs: '',
-      filteredVariables: []
+      filteredVariables: [],
+      search_filters: false,
+      search_filter_columns: [
+        { name: 'title', label: 'Title', field: 'title', sortable: true},
+        { name: 'filters', label: 'Filters', field: 'filters' },
+        { name: 'variable', label: 'Action', field: 'variable' }
+      ],
+      search_filter: '',
+      pagination: {
+        rowsPerPage: 0
+      }
     }
   },
   mounted () {
@@ -111,6 +183,7 @@ export default {
       .then(({ data }) => {
         this.lab_filters = data
         this.lab_filters.type.forEach(f => (this.filterMap[f.id] = f))
+        this.type = this.filterMap['ALL']
       })
       .catch(error => {
         console.log(error)
@@ -127,11 +200,13 @@ export default {
       console.log('qs', this.qs)
       this.$emit('update')
     },
-    addVariable () {
-      var variable = _.cloneDeep(this.variable)
-      variable.filter = variable.filters.length === 1 ? this.variable.filters[0] : null
+    addVariable (v) {
+      console.log(v)
+      var variable = _.cloneDeep(v || this.variable)
+      variable.filter = variable.filters.length === 1 ? variable.filters[0] : null
       this.variables.push(variable)
       this.variable = null
+      this.$q.notify({ type: 'positive', message: 'Filter added.'})
     },
     removeVariable (v) {
       this.variables.splice(this.variables.indexOf(v), 1)
@@ -180,5 +255,14 @@ fieldset.advanced-filters {
 }
 .tooltip {
     font-size: 16px;
+}
+.filters {
+  margin: 15px 0px 15px 0px;
+}
+.filters .row .col {
+  height: 40px;
+}
+.filters .remove-button {
+  width: 40px;
 }
 </style>
