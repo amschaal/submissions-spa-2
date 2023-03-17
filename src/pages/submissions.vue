@@ -100,6 +100,31 @@
         </q-tr>
       </template>
     </q-table>
+    <q-btn-dropdown color="primary" label="Export as">
+      <q-tooltip class="bg-accent">Export the current search results in one of the supported formats.  For complete submission data, including data from custom tables, use JSON.</q-tooltip>
+      <q-list>
+        <q-item clickable v-close-popup @click="exportSubmissions('xlsx')">
+          <q-item-section>
+            <q-item-label>XLSX</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable v-close-popup @click="exportSubmissions('tsv')">
+          <q-item-section>
+            <q-item-label>TSV</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable v-close-popup @click="exportSubmissions('csv')">
+          <q-item-section>
+            <q-item-label>CSV</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable v-close-popup @click="exportSubmissions('json')">
+          <q-item-section>
+            <q-item-label>JSON</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-btn-dropdown>
   </q-page>
 </template>
 
@@ -160,18 +185,13 @@ export default {
     }
   },
   methods: {
-    request ({ pagination, filter }) {
-      // console.log('request', qs, )
-      // we set QTable to "loading" state
-      this.loading = true
-
-      // we do the server data fetch, based on pagination and filter received
-      // (using Axios here, but can be anything; parameters vary based on backend implementation)
+    getSearchQuery ({ pagination, filter}) {
       console.log(pagination, filter)
       var sortBy = pagination.sortBy
       if (pagination.descending) {
         sortBy = '-' + sortBy
       }
+      // var type = this.$route.query.type ? `&type__name__icontains=${this.$route.query.type}` : ''
       var qs = this.$refs['advancedFilters'] ? this.$refs['advancedFilters'].qs : ''
       var lab = this.$store.getters.labId && this.lab ? '&lab=' + this.$store.getters.labId : ''
       var search = this.filters.filter !== '' ? `&search=${this.filters.filter}` : ''
@@ -180,9 +200,30 @@ export default {
       var participating = this.filters.participating && this.lab ? '&participating' : ''
       var mySubmissions = this.filters.mySubmissions || !this.lab ? '&my_submissions' : ''
       var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
-      // var type = this.$route.query.type ? `&type__name__icontains=${this.$route.query.type}` : ''
+      return `ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${lab}${search}${cancelled}${completed}${participating}${mySubmissions}${qs}`
+    },
+    exportSubmissions (format) {
+      var pagination = _.clone(this.filters.serverPagination)
+      pagination.rowsPerPage = 10000
+      var qs = this.getSearchQuery({
+        pagination: pagination,
+        filter: this.filters.filter
+      })
+      if (format === 'json') {
+        window.open(`/server/api/submissions/?${qs}&format=json`)
+      } else {
+        window.open(`/server/api/submissions/export/?${qs}&export_format=${format}`)
+      }
+    },
+    request ({ pagination, filter }) {
+      // console.log('request', qs, )
+      // we set QTable to "loading" state
+      this.loading = true
+      // we do the server data fetch, based on pagination and filter received
+      // (using Axios here, but can be anything; parameters vary based on backend implementation)
+      var qs = this.getSearchQuery({ pagination, filter})
       this.$axios
-        .get(`/api/submissions/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${lab}${search}${cancelled}${completed}${participating}${mySubmissions}${qs}`)// ${pagination.descending}&filter=${filter}
+        .get(`/api/submissions/?${qs}`)// ${pagination.descending}&filter=${filter}
         .then(({ data }) => {
           console.log('data', data)
 
@@ -206,6 +247,7 @@ export default {
           console.log(error)
           // we tell QTable to exit the "loading" state
           this.loading = false
+          this.$q.notify({message: 'There was an error retrieving submissions.  Please ensure your search terms are valid.', type: 'negative'})
         })
     },
     refresh () {
