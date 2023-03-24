@@ -102,7 +102,20 @@
           <q-td key="pi_email" :props="props">{{ props.row.pi_email }}</q-td>
           <q-td key="table_count" :props="props"><span v-for="(count, v, index) in props.row.table_count" :key="v">{{count}} {{v}}<span v-if="index != Object.keys(props.row.table_count).length - 1">, </span></span></q-td>
           <q-td key="samples_received" :props="props"><q-icon size="18px" name="check_circle" v-if="props.row.samples_received" color="green"><q-tooltip>Received on {{props.row.samples_received|formatDate}} by {{props.row.received_by_name}}</q-tooltip></q-icon></q-td>
-          <q-td :key="'submission_data.'+v" v-for="v in $store.getters.lab.submission_variables.order" :props="props"><span v-if="Array.isArray(props.row.submission_data[v])">{{ props.row.submission_data[v].length }}</span><span v-else>{{ props.row.submission_data[v] }}</span></q-td>
+          <q-td :key="'submission_data.'+v" v-for="v in $store.getters.lab.submission_variables.order" :props="props">
+            <span v-if="Array.isArray(props.row.submission_data[v])">
+              <a class="open-table" @click="openTable(`${props.row.id}_table_${v}`)">{{ props.row.submission_data[v].length }} <q-icon name="fas fa-table" /></a>
+              <Agschema
+                  v-model="props.row.submission_data[v]"
+                  :schema="props.row.submission_schema.properties[v].schema"
+                  :editable="false"
+                  :allow-examples="false"
+                  :allow-force-save="false"
+                  :ref="`${props.row.id}_table_${v}`"
+                  />
+            </span>
+            <span v-else>{{ props.row.submission_data[v] }}</span>
+          </q-td>
         </q-tr>
       </template>
     </q-table>
@@ -144,7 +157,8 @@ export default {
   props: ['lab'],
   components: {
     selectLabModal,
-    advancedFilters
+    advancedFilters,
+    Agschema: () => import('../components/agschema.vue')
   },
   data () {
     var defaultFilters = {
@@ -272,6 +286,10 @@ export default {
     loadDefaults () {
       this.$set(this, 'filters', _.cloneDeep(this.defaultFilters))
       this.refresh()
+    },
+    openTable (v) {
+      // console.log('refs', this.$refs, v, this.$refs[v])
+      this.$refs[v][0].openSamplesheet()
     }
   },
   mounted () {
@@ -307,5 +325,8 @@ tr.completed td, tr.completed td a {
   overflow: inherit !important;
 }
 */
-
+.open-table {
+  cursor: pointer;
+  color: blue;
+}
 </style>
