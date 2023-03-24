@@ -29,7 +29,13 @@
               option-value="name"
               options-cover
               style="min-width: 150px"
-            />
+            >
+            <template v-slot:after>
+              <q-checkbox v-model="showCustomColumns" label="Custom Columns" dense style="font-size: 14px;">
+                <q-tooltip>Allow selecting custom fields for display</q-tooltip>
+              </q-checkbox>
+            </template>
+            </q-select>
             <q-checkbox v-model="filters.showCancelled" label="Show cancelled" @input="refresh"/>
             <q-checkbox v-model="filters.showCompleted" label="Show completed" @input="refresh"><q-tooltip>Include submissions with a status of "completed"</q-tooltip></q-checkbox>
             <q-checkbox v-if="this.lab" v-model="filters.participating" label="Participating" @input="refresh"><q-tooltip>Only show submissions in which I am a participant</q-tooltip></q-checkbox>
@@ -96,7 +102,7 @@
           <q-td key="pi_email" :props="props">{{ props.row.pi_email }}</q-td>
           <q-td key="table_count" :props="props"><span v-for="(count, v, index) in props.row.table_count" :key="v">{{count}} {{v}}<span v-if="index != Object.keys(props.row.table_count).length - 1">, </span></span></q-td>
           <q-td key="samples_received" :props="props"><q-icon size="18px" name="check_circle" v-if="props.row.samples_received" color="green"><q-tooltip>Received on {{props.row.samples_received|formatDate}} by {{props.row.received_by_name}}</q-tooltip></q-icon></q-td>
-          <q-td :key="'submission_data.'+v" v-for="v in $store.getters.lab.submission_variables.order" :props="props">{{ props.row.submission_data[v] }}</q-td>
+          <q-td :key="'submission_data.'+v" v-for="v in $store.getters.lab.submission_variables.order" :props="props"><span v-if="Array.isArray(props.row.submission_data[v])">{{ props.row.submission_data[v].length }}</span><span v-else>{{ props.row.submission_data[v] }}</span></q-td>
         </q-tr>
       </template>
     </q-table>
@@ -181,7 +187,8 @@ export default {
         { name: 'table_count', label: 'Table rows', field: 'table_count' },
         { name: 'samples_received', label: 'Received', field: 'samples_received', sortable: false }
       ],
-      customColumns: []
+      customColumns: [],
+      showCustomColumns: false
     }
   },
   methods: {
@@ -283,7 +290,7 @@ export default {
   },
   computed: {
     all_columns () {
-      return this.columns.concat(this.customColumns)
+      return this.showCustomColumns ? this.columns.concat(this.customColumns) : this.columns
     }
   }
 }

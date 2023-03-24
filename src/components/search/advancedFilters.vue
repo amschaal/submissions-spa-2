@@ -128,7 +128,7 @@
                 :pagination.sync="pagination"
               >
               <template v-slot:top-right>
-                <q-input borderless dense debounce="300" v-model="search_filter" placeholder="Search">
+                <q-input borderless dense debounce="300" v-model="search_filter" placeholder="Search" ref="advanced-filter-search">
                   <template v-slot:append>
                     <q-icon name="search" />
                   </template>
@@ -244,6 +244,8 @@ export default {
     openSearchFilters () {
       this.resetSearchFilters()
       this.search_filters = true
+      console.log(this.$refs)
+      setTimeout(() => this.$refs['advanced-filter-search'].focus(), 100)
     },
     resetSearchFilters () {
       this.search_filter = ''
