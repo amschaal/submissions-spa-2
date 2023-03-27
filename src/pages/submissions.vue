@@ -114,7 +114,7 @@
                   :ref="`${props.row.id}_table_${v}`"
                   />
             </span>
-            <span v-else>{{ props.row.submission_data[v] }}</span>
+            <span v-else :class="getValueClass(props.row.submission_data[v])">{{ props.row.submission_data[v] }}</span>
           </q-td>
         </q-tr>
       </template>
@@ -290,6 +290,13 @@ export default {
     openTable (v) {
       // console.log('refs', this.$refs, v, this.$refs[v])
       this.$refs[v][0].openSamplesheet()
+    },
+    getValueClass (v) {
+      if (['Yes', 'yes', 'true', 'True', true].indexOf(v) !== -1) {
+        return 'text-positive'
+      } else if (['No', 'no', 'false', 'False', true].indexOf(v) !== -1) {
+        return 'text-negative'
+      }
     }
   },
   mounted () {
