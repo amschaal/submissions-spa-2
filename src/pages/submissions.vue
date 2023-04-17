@@ -180,7 +180,7 @@ export default {
     return {
       filterNamespace: filterNamespace,
       defaultFilters: defaultFilters,
-      filters: this.$store.getters.getUserSettings[filterNamespace] ? _.assign(defaultFilters, this.$store.getters.getUserSettings[filterNamespace]) : defaultFilters,
+      filters: this.$store.getters.getUserSettings[filterNamespace] ? _.assign(defaultFilters, _.clone(this.$store.getters.getUserSettings[filterNamespace])) : defaultFilters,
       advanced: false,
       loading: false,
       serverData: [],
@@ -306,7 +306,7 @@ export default {
       this.filters.filter = this.$route.query.search
     }
     if (this.lab) {
-      this.filters.visibleColumns.splice(this.defaultFilters.visibleColumns.indexOf('lab'), 1)
+      // this.filters.visibleColumns.splice(this.defaultFilters.visibleColumns.indexOf('lab'), 1) //Causes mutation error.  Idea was to keep lab column from showing up unnecessarily
       // console.log('lab submission variables', this.$store.getters.lab)
       this.customColumns = this.$store.getters.lab.submission_variables.order.map(v => { return { name: 'submission_data.' + v, label: v, field: 'submission_data.' + v, sortable: false } })
       // console.log('custom_columns', this.customColumns)
