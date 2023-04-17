@@ -3,7 +3,7 @@
     <q-table
       ref="table"
       :data="serverData"
-      :columns="all_columns"
+      :columns="allColumns"
       :visible-columns="filters.visibleColumns"
       :filter="filters.filter"
       row-key="id"
@@ -25,7 +25,7 @@
               :display-value="$q.lang.table.columns"
               emit-value
               map-options
-              :options="all_columns"
+              :options="allColumns"
               option-value="name"
               options-cover
               style="min-width: 150px"
@@ -201,7 +201,7 @@ export default {
         { name: 'table_count', label: 'Table rows', field: 'table_count' },
         { name: 'samples_received', label: 'Received', field: 'samples_received', sortable: false }
       ],
-      customColumns: [],
+      // customColumns: [],
       showCustomColumns: false
     }
   },
@@ -305,17 +305,17 @@ export default {
     if (this.$route.query.search) {
       this.filters.filter = this.$route.query.search
     }
-    if (this.lab) {
-      // this.filters.visibleColumns.splice(this.defaultFilters.visibleColumns.indexOf('lab'), 1) //Causes mutation error.  Idea was to keep lab column from showing up unnecessarily
-      // console.log('lab submission variables', this.$store.getters.lab)
-      this.customColumns = this.$store.getters.lab.submission_variables.order.map(v => { return { name: 'submission_data.' + v, label: v, field: 'submission_data.' + v, sortable: false } })
-      // console.log('custom_columns', this.customColumns)
-    }
+    // if (this.lab) {
+    //   this.filters.visibleColumns.splice(this.defaultFilters.visibleColumns.indexOf('lab'), 1) //Causes mutation error.  Idea was to keep lab column from showing up unnecessarily
+    // }
     this.refresh()
   },
   computed: {
-    all_columns () {
+    allColumns () {
       return this.showCustomColumns ? this.columns.concat(this.customColumns) : this.columns
+    },
+    customColumns () {
+      return this.$store.getters.lab && this.$store.getters.lab.submission_variables ? this.$store.getters.lab.submission_variables.order.map(v => { return { name: 'submission_data.' + v, label: v, field: 'submission_data.' + v, sortable: false } }) : []
     }
   }
 }
