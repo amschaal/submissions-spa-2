@@ -31,7 +31,7 @@
               style="min-width: 150px"
             >
             <template v-slot:after>
-              <q-checkbox v-model="showCustomColumns" label="Custom Columns" dense style="font-size: 14px;">
+              <q-checkbox v-model="showCustomColumns" label="Custom Columns" dense style="font-size: 14px;" v-if="lab">
                 <q-tooltip>Allow selecting custom fields for display</q-tooltip>
               </q-checkbox>
             </template>
@@ -102,7 +102,7 @@
           <q-td key="pi_email" :props="props">{{ props.row.pi_email }}</q-td>
           <q-td key="table_count" :props="props"><span v-for="(count, v, index) in props.row.table_count" :key="v">{{count}} {{v}}<span v-if="index != Object.keys(props.row.table_count).length - 1">, </span></span></q-td>
           <q-td key="samples_received" :props="props"><q-icon size="18px" name="check_circle" v-if="props.row.samples_received" color="green"><q-tooltip>Received on {{props.row.samples_received|formatDate}} by {{props.row.received_by_name}}</q-tooltip></q-icon></q-td>
-          <q-td :key="'submission_data.'+v" v-for="v in $store.getters.lab.submission_variables.order" :props="props">
+          <q-td :key="'submission_data.'+v" v-for="v in labVariables" :props="props">
             <span v-if="Array.isArray(props.row.submission_data[v])">
               <a class="open-table" @click="openTable(`${props.row.id}_table_${v}`)">{{ props.row.submission_data[v].length }} <q-icon name="fas fa-table" /></a>
               <Agschema
@@ -315,7 +315,11 @@ export default {
       return this.showCustomColumns ? this.columns.concat(this.customColumns) : this.columns
     },
     customColumns () {
-      return this.$store.getters.lab && this.$store.getters.lab.submission_variables ? this.$store.getters.lab.submission_variables.order.map(v => { return { name: 'submission_data.' + v, label: v, field: 'submission_data.' + v, sortable: false } }) : []
+      return !this.lab || !this.$store.getters.lab ? [] : this.$store.getters.lab.submission_variables.order.map(v => { return { name: 'submission_data.' + v, label: v, field: 'submission_data.' + v, sortable: false } })
+      // return this.$store.getters.lab && this.$store.getters.lab.submission_variables ? this.$store.getters.lab.submission_variables.order.map(v => { return { name: 'submission_data.' + v, label: v, field: 'submission_data.' + v, sortable: false } }) : []
+    },
+    labVariables () {
+      return !this.lab || !this.$store.getters.lab ? [] : this.$store.getters.lab.submission_variables.order
     }
   }
 }
