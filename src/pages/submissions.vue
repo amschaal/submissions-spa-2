@@ -319,7 +319,7 @@ export default {
       // return this.$store.getters.lab && this.$store.getters.lab.submission_variables ? this.$store.getters.lab.submission_variables.order.map(v => { return { name: 'submission_data.' + v, label: v, field: 'submission_data.' + v, sortable: false } }) : []
     },
     labVariables () {
-      return !this.lab || !this.$store.getters.lab ? [] : this.$store.getters.lab.submission_variables.order
+      return !this.lab || !this.$store.getters.lab || !this.$store.getters.lab.submission_variables ? [] : this.$store.getters.lab.submission_variables.order
     }
   }
 }
