@@ -17,7 +17,7 @@
                   <tr>
                     <th colspan="3">
                       <div class="row no-wrap items-center">
-                        <div class="text-h5 q-ml-md">Participant sharing (Full permissions)<q-btn label="Update Sharing" @click="shareWithParticipants" color="primary"/></div>
+                        <div class="text-h5 q-ml-md">Participant sharing (Full permissions)<q-btn label="Update Sharing" @click="shareWithParticipants" color="primary"/><q-checkbox label="send email" v-model="email_participants"/></div>
                       </div>
                     </th>
                   </tr>
@@ -40,7 +40,7 @@
                   <tr>
                     <th colspan="4">
                       <div class="row no-wrap items-center">
-                        <div class="text-h5 q-ml-md">Submitter/PI/Contact Sharing (Download only) <q-btn label="Update Sharing" @click="shareWithSubmitter" color="primary"/></div>
+                        <div class="text-h5 q-ml-md">Submitter/PI/Contact Sharing (Download only) <q-btn label="Update Sharing" @click="shareWithSubmitter" color="primary"/><q-checkbox label="send email" v-model="email_submitter"/></div>
                       </div>
                     </th>
                   </tr>
@@ -89,7 +89,9 @@ export default {
   data () {
     return {
       permissions: null,
-      open: false
+      open: false,
+      email_participants: false,
+      email_submitter: false
     }
   },
   methods: {
@@ -108,14 +110,14 @@ export default {
     //     })
     // },
     shareWithParticipants () {
-      this.setPermissions('share_with_participants')
+      this.setPermissions('share_with_participants', this.email_participants)
     },
     shareWithSubmitter () {
-      this.setPermissions('share')
+      this.setPermissions('share', this.email_submitter)
     },
-    setPermissions (action) {
+    setPermissions (action, email) {
       var self = this
-      this.$axios.post(`/api/plugins/bioshare/submissions/${self.submission.id}/submission_shares/${this.share.id}/${action}/`, this.permissions)
+      this.$axios.post(`/api/plugins/bioshare/submissions/${self.submission.id}/submission_shares/${this.share.id}/${action}/`, {email: email})
         .then(function (response) {
           self.permissions = response.data
           self.$q.notify({message: `Permissions updated!`, type: 'positive'})
