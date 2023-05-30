@@ -3,7 +3,14 @@
     <th class="text-left"><a target="_blank" :href="share.url">{{share.url}}</a></th>
     <th class="text-right">{{share.name}}</th>
     <th class="text-right">{{share.notes}}</th>
-    <th class="text-right">{{sharedWithEmails}}</th>
+    <th class="text-right">
+      <span v-for="(e, index) in sharedWithEmails">
+        <span v-if="index !== 0">, </span><span style="color:green">{{ e }}</span>
+      </span> 
+      <span v-for="(e, index) in missingEmails">
+        <span v-if="index !== 0 || index == 0 && sharedWithEmails.length != 0">, </span><span style="color:red">{{ e }}</span>
+      </span>
+    </th>
     <th class="text-right">
       <div v-if="permissions">
         <q-btn color="primary" @click="open = true" label="Manage permissions" />
@@ -153,7 +160,20 @@ export default {
   },
   computed: {
     sharedWithEmails: function () {
-      return this.permissions ? Object.keys(this.permissions.permissions.user_perms).join(', ') : ''
+      return this.permissions ? Object.keys(this.permissions.permissions.user_perms) : []
+    },
+    missingEmails: function () {
+      if (!this.permissions) {
+        return []
+      }
+      var shared_with = new Set(Object.keys(this.permissions.permissions.user_perms).map(email=>email.toLowerCase()))
+      return this.submissionEmails.filter(e=>!shared_with.has(e))
+    },
+    submissionEmails: function () {
+      var submission_emails = new Set(this.submission.contacts.map(c => c.email.toLowerCase()))
+      submission_emails.add(this.submission.email.toLowerCase())
+      submission_emails.add(this.submission.pi_email.toLowerCase())
+      return Array.from(submission_emails)
     }
   }
 }
