@@ -86,19 +86,20 @@
 
         </q-dialog>
       </div>
+      <q-btn color="negative" @click="removeShare(share)" label="Remove" />
     </th>
   </tr>
 </template>
 
 <script>
 export default {
-  props: ['submission', 'share', 'config'],
+  props: ['submission', 'share', 'config', 'removeShare'],
   data () {
     return {
       permissions: null,
       open: false,
-      email_participants: false,
-      email_submitter: false
+      email_participants: true,
+      email_submitter: true
     }
   },
   methods: {

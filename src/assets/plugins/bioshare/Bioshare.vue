@@ -13,7 +13,7 @@
          </tr>
        </thead>
        <tbody v-for="share in shares">
-         <Share :share="share" :submission="submission"/>
+         <Share :share="share" :submission="submission" :remove-share="removeShare"/>
        </tbody>
      </q-markup-table>
 
@@ -99,6 +99,18 @@ export default {
         .catch(function (error) {
           // console.log('ERROR', error)
           self.$q.notify({message: 'There was an error creating the share.', type: 'negative'})
+        })
+    },
+    removeShare ( share ) {
+      if (!confirm(`This will unlink the share ${share.name} from this submission.  To delete it, you should first delete it from Bioshare directly.  Do you want to unlink it from this submission?`))
+        return
+      this.$axios.delete(`/api/plugins/bioshare/submissions/${this.submission.id}/submission_shares/${share.id}/`)
+        .then( response => {
+          this.shares.splice(this.shares.indexOf(share),1)
+          this.$q.notify({message: `Share unlinked!`, type: 'positive'})
+        })
+        .catch( error => {
+          this.$q.notify({message: 'There was an error removing the share.', type: 'negative'})
         })
     }
   },
