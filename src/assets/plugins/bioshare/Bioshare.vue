@@ -30,14 +30,15 @@
           <div class="text-h6">Create a New Share</div>
         </q-card-section>
 
-        <q-card-section class="q-pt-none">
-          <q-input dense outlined hint="Share name" v-model="shareName" autofocus @keyup.enter="prompt = false" />
+        <q-card-section class="q-pt-none" id="create-form">
+          <q-input outlined hint="Share name" v-model="shareName" autofocus @keyup.enter="prompt = false" :error="'name' in errors" :error-message="'name' in errors ? errors['name'].join(', ') : ''"/>
           <q-input
             v-model="shareDescription"
             outlined
             type="textarea"
             hint="Description"
-            dense
+            :error="'notes' in errors"
+            :error-message="'notes' in errors ? errors['notes'].join(', ') : ''"
           />
         </q-card-section>
 
@@ -60,7 +61,8 @@ export default {
       permissions: null,
       createDialog: false,
       shareName: '',
-      shareDescription: ''
+      shareDescription: '',
+      errors: {}
     }
   },
   methods: {
@@ -97,7 +99,8 @@ export default {
           self.$q.notify({message: `Share created!`, type: 'positive'})
         })
         .catch(function (error) {
-          // console.log('ERROR', error)
+          // console.log('ERROR', error.response.data)
+          self.errors = error.response.data
           self.$q.notify({message: 'There was an error creating the share.', type: 'negative'})
         })
     },
@@ -122,3 +125,11 @@ export default {
   }
 }
 </script>
+
+<style>
+#create-form .q-field__bottom--animated {
+    transform: none;
+    position: relative;
+    margin: 0 auto;
+}
+</style>
