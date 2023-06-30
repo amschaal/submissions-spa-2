@@ -12,8 +12,8 @@
       </span>
     </th>
     <th class="text-right">
-      <div v-if="permissions">
-        <q-btn color="primary" @click="open = true" label="Manage permissions" />
+      <div v-if="permissions" class="inline">
+        <q-btn color="primary" size="sm" @click="open = true" label="Manage permissions"/>
         <q-dialog v-model="open" full-width>
           <q-layout view="Lhh lpR fff" container class="bg-white">
             <q-page-container>
@@ -86,7 +86,7 @@
 
         </q-dialog>
       </div>
-      <q-btn color="negative" @click="removeShare(share)" label="Remove" />
+      <q-btn color="negative" size="sm" @click="removeShare(share)" label="Remove" class="inline"/>
     </th>
   </tr>
 </template>
@@ -179,3 +179,7 @@ export default {
   }
 }
 </script>
+<style>
+.inline {
+  display: inline-block;
+}</style>

@@ -22,7 +22,8 @@
       <h4>No shares have been created yet.</h4>
     </div>
     <div v-if="$perms.hasLabPerm('ADMIN') || $perms.hasLabPerm('MEMBER')">
-      <q-btn label="Create Share"  @click="createShareDialog" color="primary"/>
+      <q-btn label="Create Share"  @click="createShareDialog" color="positive"/>
+      <q-btn label="Import Share"  @click="importShareDialog" color="primary"/>
     </div>
     <q-dialog v-model="createDialog" persistent >
       <q-card style="width: 700px; max-width: 80vw;">
@@ -48,6 +49,22 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="importDialog" persistent >
+      <q-card style="width: 700px; max-width: 80vw;">
+        <q-card-section>
+          <div class="text-h6">Import an existing Share</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none" id="create-form">
+          <q-input outlined hint="Enter Bioshare URL" v-model="import_url" autofocus/>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn label="Cancel" color="negative" v-close-popup />
+          <q-btn label="Import" color="primary" @click="importShare" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -60,9 +77,11 @@ export default {
       shares: [],
       permissions: null,
       createDialog: false,
+      importDialog: false,
       shareName: '',
       shareDescription: '',
-      errors: {}
+      errors: {},
+      import_url: null
     }
   },
   methods: {
@@ -90,6 +109,10 @@ export default {
       }
       this.createDialog = true
     },
+    importShareDialog () {
+      this.import_url = ''
+      this.importDialog = true
+    },
     createShare () {
       var self = this
       this.$axios.post(`/api/plugins/bioshare/submissions/${self.submission.id}/submission_shares/`, {submission: this.submission.id, name: this.shareName, notes: this.shareDescription})
@@ -102,6 +125,19 @@ export default {
           // console.log('ERROR', error.response.data)
           self.errors = error.response.data
           self.$q.notify({message: 'There was an error creating the share.', type: 'negative'})
+        })
+    },
+    importShare () {
+      var self = this
+      this.$axios.post(`/api/plugins/bioshare/submissions/${self.submission.id}/submission_shares/import_share/`, {url: this.import_url})
+        .then(function (response) {
+          self.shares.push(response.data)
+          self.importDialog = false
+          self.$q.notify({message: `Share ${response.data.name} imported!`, type: 'positive'})
+        })
+        .catch(function (error) {
+          // console.log('ERROR', error.response.data)
+          self.$q.notify({message: 'There was an error importing the share.', type: 'negative'})
         })
     },
     removeShare ( share ) {
