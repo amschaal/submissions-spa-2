@@ -56,7 +56,7 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none" id="create-form">
-          <q-input outlined hint="Enter Bioshare URL" v-model="import_url" autofocus/>
+          <q-input dense outlined hint="Enter Bioshare URL, e.g. https://bioshare-domain.com/bioshare/view/abcde0123456789/" v-model="import_url" autofocus/>
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
@@ -137,7 +137,8 @@ export default {
         })
         .catch(function (error) {
           // console.log('ERROR', error.response.data)
-          self.$q.notify({message: 'There was an error importing the share.', type: 'negative'})
+          var message = error.response.data && error.response.data.detail ? ' Error: '+ error.response.data.detail : ''
+          self.$q.notify({message: 'There was an error importing the share.' + message , type: 'negative'})
         })
     },
     removeShare ( share ) {
