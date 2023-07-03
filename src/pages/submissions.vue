@@ -3,7 +3,7 @@
     <q-table
       ref="table"
       :data="serverData"
-      :columns="columns"
+      :columns="allColumns"
       :visible-columns="filters.visibleColumns"
       :filter="filters.filter"
       row-key="id"
@@ -25,11 +25,17 @@
               :display-value="$q.lang.table.columns"
               emit-value
               map-options
-              :options="columns"
+              :options="allColumns"
               option-value="name"
               options-cover
               style="min-width: 150px"
-            />
+            >
+            <template v-slot:after>
+              <q-checkbox v-model="showCustomColumns" label="Custom Columns" dense style="font-size: 14px;" v-if="lab">
+                <q-tooltip>Allow selecting custom fields for display</q-tooltip>
+              </q-checkbox>
+            </template>
+            </q-select>
             <q-checkbox v-model="filters.showCancelled" label="Show cancelled" @input="refresh"/>
             <q-checkbox v-model="filters.showCompleted" label="Show completed" @input="refresh"><q-tooltip>Include submissions with a status of "completed"</q-tooltip></q-checkbox>
             <q-checkbox v-if="this.lab" v-model="filters.participating" label="Participating" @input="refresh"><q-tooltip>Only show submissions in which I am a participant</q-tooltip></q-checkbox>
@@ -96,7 +102,20 @@
           <q-td key="pi_email" :props="props">{{ props.row.pi_email }}</q-td>
           <q-td key="table_count" :props="props"><span v-for="(count, v, index) in props.row.table_count" :key="v">{{count}} {{v}}<span v-if="index != Object.keys(props.row.table_count).length - 1">, </span></span></q-td>
           <q-td key="samples_received" :props="props"><q-icon size="18px" name="check_circle" v-if="props.row.samples_received" color="green"><q-tooltip>Received on {{props.row.samples_received|formatDate}} by {{props.row.received_by_name}}</q-tooltip></q-icon></q-td>
-          <q-td key="biocore" :props="props"><q-icon size="18px" name="check_circle" v-if="props.row.biocore" color="green"/></q-td>
+          <q-td :key="'submission_data.'+v" v-for="v in labVariables" :props="props">
+            <span v-if="Array.isArray(props.row.submission_data[v])">
+              <a class="open-table" @click="openTable(`${props.row.id}_table_${v}`)">{{ props.row.submission_data[v].length }} <q-icon name="fas fa-table" /></a>
+              <Agschema
+                  v-model="props.row.submission_data[v]"
+                  :schema="props.row.submission_schema.properties[v].schema"
+                  :editable="false"
+                  :allow-examples="false"
+                  :allow-force-save="false"
+                  :ref="`${props.row.id}_table_${v}`"
+                  />
+            </span>
+            <span v-else :class="getValueClass(props.row.submission_data[v])">{{ props.row.submission_data[v] }}</span>
+          </q-td>
         </q-tr>
       </template>
     </q-table>
@@ -138,7 +157,8 @@ export default {
   props: ['lab'],
   components: {
     selectLabModal,
-    advancedFilters
+    advancedFilters,
+    Agschema: () => import('../components/agschema.vue')
   },
   data () {
     var defaultFilters = {
@@ -160,7 +180,7 @@ export default {
     return {
       filterNamespace: filterNamespace,
       defaultFilters: defaultFilters,
-      filters: this.$store.getters.getUserSettings[filterNamespace] ? _.assign(defaultFilters, this.$store.getters.getUserSettings[filterNamespace]) : defaultFilters,
+      filters: this.$store.getters.getUserSettings[filterNamespace] ? _.assign(defaultFilters, _.clone(this.$store.getters.getUserSettings[filterNamespace])) : defaultFilters,
       advanced: false,
       loading: false,
       serverData: [],
@@ -179,9 +199,10 @@ export default {
         { name: 'pi_name', label: 'PI', field: 'pi_name' },
         { name: 'pi_email', label: 'PI Email', field: 'pi_email', sortable: true },
         { name: 'table_count', label: 'Table rows', field: 'table_count' },
-        { name: 'samples_received', label: 'Received', field: 'samples_received', sortable: false },
-        { name: 'biocore', label: 'Biocore', field: 'biocore', sortable: true }
-      ]
+        { name: 'samples_received', label: 'Received', field: 'samples_received', sortable: false }
+      ],
+      // customColumns: [],
+      showCustomColumns: false
     }
   },
   methods: {
@@ -265,6 +286,17 @@ export default {
     loadDefaults () {
       this.$set(this, 'filters', _.cloneDeep(this.defaultFilters))
       this.refresh()
+    },
+    openTable (v) {
+      // console.log('refs', this.$refs, v, this.$refs[v])
+      this.$refs[v][0].openSamplesheet()
+    },
+    getValueClass (v) {
+      if (['Yes', 'yes', 'true', 'True', true].indexOf(v) !== -1) {
+        return 'text-positive'
+      } else if (['No', 'no', 'false', 'False', true].indexOf(v) !== -1) {
+        return 'text-negative'
+      }
     }
   },
   mounted () {
@@ -273,10 +305,22 @@ export default {
     if (this.$route.query.search) {
       this.filters.filter = this.$route.query.search
     }
-    if (this.lab) {
-      this.filters.visibleColumns.splice(this.defaultFilters.visibleColumns.indexOf('lab'), 1)
-    }
+    // if (this.lab) {
+    //   this.filters.visibleColumns.splice(this.defaultFilters.visibleColumns.indexOf('lab'), 1) //Causes mutation error.  Idea was to keep lab column from showing up unnecessarily
+    // }
     this.refresh()
+  },
+  computed: {
+    allColumns () {
+      return this.showCustomColumns ? this.columns.concat(this.customColumns) : this.columns
+    },
+    customColumns () {
+      return !this.lab || !this.$store.getters.lab ? [] : this.$store.getters.lab.submission_variables.order.map(v => { return { name: 'submission_data.' + v, label: v, field: 'submission_data.' + v, sortable: false } })
+      // return this.$store.getters.lab && this.$store.getters.lab.submission_variables ? this.$store.getters.lab.submission_variables.order.map(v => { return { name: 'submission_data.' + v, label: v, field: 'submission_data.' + v, sortable: false } }) : []
+    },
+    labVariables () {
+      return !this.lab || !this.$store.getters.lab || !this.$store.getters.lab.submission_variables ? [] : this.$store.getters.lab.submission_variables.order
+    }
   }
 }
 </script>
@@ -292,5 +336,8 @@ tr.completed td, tr.completed td a {
   overflow: inherit !important;
 }
 */
-
+.open-table {
+  cursor: pointer;
+  color: blue;
+}
 </style>

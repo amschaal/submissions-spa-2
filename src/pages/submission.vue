@@ -167,7 +167,7 @@ export default {
             self.setLab()
           })
       } else {
-        Vue.set(this, 'submission', {'sample_data': [], 'contacts': [], biocore: false, 'payment': {}})
+        Vue.set(this, 'submission', {'sample_data': [], 'contacts': [], 'payment': {}})
         // this.submission = {'sample_data': [], 'contacts': [], biocore: false}
       }
     }

@@ -13,7 +13,7 @@
          </tr>
        </thead>
        <tbody v-for="share in shares">
-         <Share :share="share" :submission="submission"/>
+         <Share :share="share" :submission="submission" :remove-share="removeShare"/>
        </tbody>
      </q-markup-table>
 
@@ -22,7 +22,8 @@
       <h4>No shares have been created yet.</h4>
     </div>
     <div v-if="$perms.hasLabPerm('ADMIN') || $perms.hasLabPerm('MEMBER')">
-      <q-btn label="Create Share"  @click="createShareDialog" color="primary"/>
+      <q-btn label="Create Share"  @click="createShareDialog" color="positive"/>
+      <q-btn label="Import Share"  @click="importShareDialog" color="primary"/>
     </div>
     <q-dialog v-model="createDialog" persistent >
       <q-card style="width: 700px; max-width: 80vw;">
@@ -30,20 +31,37 @@
           <div class="text-h6">Create a New Share</div>
         </q-card-section>
 
-        <q-card-section class="q-pt-none">
-          <q-input dense outlined hint="Share name" v-model="shareName" autofocus @keyup.enter="prompt = false" />
+        <q-card-section class="q-pt-none" id="create-form">
+          <q-input outlined hint="Share name" v-model="shareName" autofocus @keyup.enter="prompt = false" :error="'name' in errors" :error-message="'name' in errors ? errors['name'].join(', ') : ''"/>
           <q-input
             v-model="shareDescription"
             outlined
             type="textarea"
             hint="Description"
-            dense
+            :error="'notes' in errors"
+            :error-message="'notes' in errors ? errors['notes'].join(', ') : ''"
           />
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
           <q-btn label="Cancel" color="negative" v-close-popup />
           <q-btn label="Create Share" color="primary" @click="createShare" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="importDialog" persistent >
+      <q-card style="width: 700px; max-width: 80vw;">
+        <q-card-section>
+          <div class="text-h6">Import an existing Share</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none" id="create-form">
+          <q-input dense outlined hint="Enter Bioshare URL, e.g. https://bioshare-domain.com/bioshare/view/abcde0123456789/" v-model="import_url" autofocus/>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn label="Cancel" color="negative" v-close-popup />
+          <q-btn label="Import" color="primary" @click="importShare" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -59,8 +77,11 @@ export default {
       shares: [],
       permissions: null,
       createDialog: false,
+      importDialog: false,
       shareName: '',
-      shareDescription: ''
+      shareDescription: '',
+      errors: {},
+      import_url: null
     }
   },
   methods: {
@@ -88,6 +109,10 @@ export default {
       }
       this.createDialog = true
     },
+    importShareDialog () {
+      this.import_url = ''
+      this.importDialog = true
+    },
     createShare () {
       var self = this
       this.$axios.post(`/api/plugins/bioshare/submissions/${self.submission.id}/submission_shares/`, {submission: this.submission.id, name: this.shareName, notes: this.shareDescription})
@@ -97,8 +122,35 @@ export default {
           self.$q.notify({message: `Share created!`, type: 'positive'})
         })
         .catch(function (error) {
-          // console.log('ERROR', error)
+          // console.log('ERROR', error.response.data)
+          self.errors = error.response.data
           self.$q.notify({message: 'There was an error creating the share.', type: 'negative'})
+        })
+    },
+    importShare () {
+      var self = this
+      this.$axios.post(`/api/plugins/bioshare/submissions/${self.submission.id}/submission_shares/import_share/`, {url: this.import_url})
+        .then(function (response) {
+          self.shares.push(response.data)
+          self.importDialog = false
+          self.$q.notify({message: `Share ${response.data.name} imported!`, type: 'positive'})
+        })
+        .catch(function (error) {
+          // console.log('ERROR', error.response.data)
+          var message = error.response.data && error.response.data.detail ? ' Error: '+ error.response.data.detail : ''
+          self.$q.notify({message: 'There was an error importing the share.' + message , type: 'negative'})
+        })
+    },
+    removeShare ( share ) {
+      if (!confirm(`This will unlink the share ${share.name} from this submission.  To delete it, you should first delete it from Bioshare directly.  Do you want to unlink it from this submission?`))
+        return
+      this.$axios.delete(`/api/plugins/bioshare/submissions/${this.submission.id}/submission_shares/${share.id}/`)
+        .then( response => {
+          this.shares.splice(this.shares.indexOf(share),1)
+          this.$q.notify({message: `Share unlinked!`, type: 'positive'})
+        })
+        .catch( error => {
+          this.$q.notify({message: 'There was an error removing the share.', type: 'negative'})
         })
     }
   },
@@ -110,3 +162,11 @@ export default {
   }
 }
 </script>
+
+<style>
+#create-form .q-field__bottom--animated {
+    transform: none;
+    position: relative;
+    margin: 0 auto;
+}
+</style>

@@ -8,7 +8,7 @@
                 </q-tooltip>
             </q-icon>
         </legend>
-        <q-select dense v-model="type" :options="lab_filters.type" option-value="id" option-label="name" label="Submission Type" outlined @input="clearVariables">
+        <q-select dense v-model="type" :options="lab_filters.custom" option-value="id" option-label="name" label="Submission Type" outlined @input="clearVariables">
             <template v-slot:after>
                 <q-icon name="help" color="primary">
                     <q-tooltip content-class="tooltip">
@@ -91,7 +91,7 @@
             </div>
         </div>
         <div>
-          <q-btn label="Add filter" color="primary" @click="search_filters = true" /> <q-btn color="primary" label="Update" @click="update"/>
+          <q-btn label="Add filter" color="primary" @click="openSearchFilters" /> <q-btn color="primary" label="Update" @click="update"/>
         </div>
         <q-dialog v-model="search_filters">
           <q-card style="width: 900px; max-width: 100vw;">
@@ -102,9 +102,20 @@
             </q-card-section>
 
             <q-card-section>
-              <b v-if="type && type.id && this.filterMap[type.id].name">
+              <p>
+                <b v-if="type && type.id && this.filterMap[type.id].name">
                 Showing search filters available for selected submission type "{{ this.filterMap[type.id].name }}"
               </b>
+            </p>
+              <!-- {{ sources }} -->
+            <p>
+              Only show filters from source:
+              <q-checkbox v-for="source in sources" :key="source" v-model="filter_sources" :val="source" :label="source"/>
+            </p>
+            <p>
+              <q-btn label="reset filters" @click="resetSearchFilters" color="primary" size="sm"/>
+            </p>
+              <!-- {{ filter_sources }} -->
               <q-table
                 title="Filters"
                 :data="variable_options"
@@ -117,7 +128,7 @@
                 :pagination.sync="pagination"
               >
               <template v-slot:top-right>
-                <q-input borderless dense debounce="300" v-model="search_filter" placeholder="Search">
+                <q-input borderless dense debounce="300" v-model="search_filter" placeholder="Search" ref="advanced-filter-search">
                   <template v-slot:append>
                     <q-icon name="search" />
                   </template>
@@ -162,11 +173,14 @@ export default {
       lab_filters: {},
       variable: null,
       filterMap: {},
+      sources: [],
+      filter_sources: [],
       type: null,
       qs: '',
       filteredVariables: [],
       search_filters: false,
       search_filter_columns: [
+        { name: 'source', label: 'Source', field: 'source', sortable: true},
         { name: 'title', label: 'Title', field: 'title', sortable: true},
         { name: 'filters', label: 'Filters', field: 'filters' },
         { name: 'variable', label: 'Action', field: 'variable' }
@@ -182,7 +196,20 @@ export default {
       .get(`/api/labs/${this.$store.getters.labId}/filters/`)
       .then(({ data }) => {
         this.lab_filters = data
-        this.lab_filters.type.forEach(f => (this.filterMap[f.id] = f))
+        this.sources = this.filter_sources = Object.keys(data)
+        this.lab_filters.custom.forEach(t => {
+          Object.keys(t.filters).forEach(k => {
+            t.filters[k].source = 'custom'
+          })
+        })
+        Object.keys(this.lab_filters).forEach(k => {
+          if (k !== 'custom') {
+            Object.keys(this.lab_filters[k]).forEach(v => {
+              this.lab_filters[k][v].source = k
+            })
+          }
+        })
+        this.lab_filters.custom.forEach(f => (this.filterMap[f.id] = f))
         this.type = this.filterMap['ALL']
       })
       .catch(error => {
@@ -195,13 +222,13 @@ export default {
         return
       }
       this.qs = !this.type || (this.type && this.type.id === 'ALL') ? '' : '&type=' + this.type.id
-      console.log(this.variables)
+      // console.log(this.variables)
       this.variables.forEach(v => (this.qs += '&' + v.filter.filter + '=' + v.value))
-      console.log('qs', this.qs)
+      // console.log('qs', this.qs)
       this.$emit('update')
     },
     addVariable (v) {
-      console.log(v)
+      // console.log(v)
       var variable = _.cloneDeep(v || this.variable)
       variable.filter = variable.filters.length === 1 ? variable.filters[0] : null
       this.variables.push(variable)
@@ -213,6 +240,16 @@ export default {
     },
     clearVariables () {
       this.variables = this.variables.filter(v => !v.variable)
+    },
+    openSearchFilters () {
+      this.resetSearchFilters()
+      this.search_filters = true
+      console.log(this.$refs)
+      setTimeout(() => this.$refs['advanced-filter-search'].focus(), 100)
+    },
+    resetSearchFilters () {
+      this.search_filter = ''
+      this.filter_sources = this.sources
     },
     filterFn (val, update) {
       if (val === '') {
@@ -236,7 +273,14 @@ export default {
       return this.type ? this.filterMap[this.type.id].filters : []
     },
     variable_options () {
-      return Object.values(this.type_filters).concat(Object.values(this.lab_filters.general || {}))
+      var filters = Object.values(this.type_filters)
+      // .concat(Object.values(this.lab_filters.general || {}))
+      Object.keys(this.lab_filters).forEach(k => {
+        if (k !== 'custom') {
+          filters = filters.concat(Object.values(this.lab_filters[k]))
+        }
+      })
+      return filters.filter(f => this.filter_sources.indexOf(f.source) !== -1)
     }
   }
 }

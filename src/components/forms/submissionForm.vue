@@ -241,7 +241,6 @@
             class="q-mt-xl q-pt-xl"
           />
       </fieldset>
-      <q-checkbox v-model="submission.biocore" label="I want the Bioinformatics Core to analyze my data" />
         <q-card-actions>
           <q-btn @click="submit" color="positive" label="Submit"></q-btn>
           <q-btn @click="saveDraft" v-if="!id" label="Save Draft"></q-btn>
@@ -305,7 +304,7 @@ export default {
   props: ['id', 'submission_types', 'create'],
   data () {
     return {
-      submission: {'submission_data': {}, 'contacts': [], biocore: false, 'payment': {}},
+      submission: {'submission_data': {}, 'contacts': [], 'payment': {}},
       errors: {contacts: [], payment: {}, warnings: {}},
       warnings: {},
       // submission_types: [{ foo: 'bar' }],
