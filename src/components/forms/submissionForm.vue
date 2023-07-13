@@ -23,6 +23,7 @@
           </q-input>
       </fieldset>
         <fieldset>
+          <q-checkbox v-model="inactive" label="Show inactive submission types" v-if="$store.getters.isStaff && !id"/>
           <legend>Please select the submission type</legend>
           <q-select
             outlined
@@ -34,8 +35,21 @@
             stack-label
             v-model="submission.type"
             :options="type_options"
-            :disable="submission.id != undefined"
-          />
+            :disable="submission.id != undefined">
+            <template v-slot:option="scope">
+              <q-item
+                v-bind="scope.itemProps"
+                v-on="scope.itemEvents"
+              >
+                <q-item-section>
+                  <q-item-label>
+                    <span v-if="scope.opt.active">{{scope.opt.label}}</span>
+                    <span v-else style="color:red">{{scope.opt.label}} (inactive)</span>
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
       </fieldset>
         <fieldset>
         <legend>PI</legend>
@@ -319,7 +333,8 @@ export default {
       messages: [],
       imported: null,
       import_url: '',
-      payment_type: null
+      payment_type: null,
+      inactive: false
       // create: false
     }
   },
@@ -785,7 +800,11 @@ export default {
     //   return _.size(this.submission.sample_data) > 0 ? 'Samples contain errors.' : 'Please click on the Samples button and enter at least 1 sample.'
     // },
     type_options () {
-      return this.$store.getters.typeOptions
+      if (this.id || this.inactive) {
+        return this.$store.getters.typeOptions
+      } else {
+        return this.$store.getters.typeOptions.filter(t => t.active === true)
+      }
     },
     isAdmin () {
       return this.submission.permissions && this.submission.permissions.indexOf('ADMIN') !== -1
