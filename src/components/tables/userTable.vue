@@ -38,8 +38,8 @@ export default {
           page: 1,
           rowsNumber: 0, // specifying this determines pagination is server-side
           rowsPerPage: 10,
-          descending: true,
-          sortBy: 'first_name'
+          descending: false,
+          sortBy: 'last_name'
         },
         visibleColumns: ['first_name', 'last_name', 'email']
       },
