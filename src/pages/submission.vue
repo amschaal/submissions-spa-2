@@ -16,7 +16,7 @@
       <q-tab name="charges" label="charges"  v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')"/>
       <template v-for="(tab, i) in plugin_tabs"><q-tab :key="i" :name="tab.id" :label="tab.label" v-if="submission.id && hasPluginPermission(submission, tab.id)"/></template>
     </q-tabs>
-    <q-tab-panels v-model="tab" animated>
+    <q-tab-panels v-model="tab" animated :keep-alive="true">
       <q-tab-panel name="submission">
         <q-card-section>
           <!-- <h6>Plugins here: {{$plugins}}</h6> -->
