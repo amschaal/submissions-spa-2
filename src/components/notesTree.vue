@@ -64,6 +64,7 @@ export default {
         submission: this.submission.id,
         // created_by:{{request.user.id}},
         send_email: true,
+        email_participants: true,
         public: true,
         edit: true,
         parent: null
