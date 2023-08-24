@@ -16,7 +16,7 @@
         </q-card-section>
         <q-card-actions v-if="note.edit">
           <div class="float-left controls" v-if="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')">
-            <q-checkbox v-model="note.public" label="Private" :true-value="false" :false-value="true"/> <q-checkbox v-model="note.send_email" label="Email submitter" v-if="note.public && !note.id" title="Select if you want to email the submitter."/>
+            <q-checkbox v-model="note.public" label="Private" :true-value="false" :false-value="true"/> <q-checkbox v-model="note.send_email" label="Email submitter" v-if="note.public && !note.id" title="Select if you want to email the submitter."/> <q-checkbox v-model="note.email_participants" label="Email participants" v-if="!note.id" title="Select if you want to email core participants."/>
           </div>
           <div class="float-right controls"><q-btn @click="save(note)" label="Save" color="primary"/></div>
         </q-card-actions>
@@ -119,6 +119,7 @@ export default {
         type: 'NOTE',
         submission: parent.submission,
         send_email: true,
+        email_participants: true,
         public: true,
         edit: true,
         parent: parent.id

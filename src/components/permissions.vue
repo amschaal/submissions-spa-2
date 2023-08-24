@@ -33,7 +33,9 @@
         </q-input>
       </template>
       <template v-slot:top-right>
-        <userField v-model="new_users" query-params="is_staff=1" @input="addUsers" :button-props="{ label: 'Add User', size: 'md'}"/>
+        <userField v-model="new_users" query-params="staff_or_email=1" @input="addUsers" :button-props="{ label: 'Add User', size: 'md'}"
+          help="Search through a list of existing staff members to add them to your core.  For new accounts, enter the full email address in order to return the user.  Check the box next to the user and click 'OK'.  Check the desired permissions next to the user and click on 'SAVE'."
+          />
         <q-btn label="Save" @click="setPermissions" color="primary"/>
       </template>
     </q-table>

@@ -136,8 +136,13 @@
               </template>
               <template v-slot:body-cell-title="props">
                 <q-td :props="props">
-                    <span v-if="props.row.variable">{{ props.row.variable }}: {{ props.row.title }}</span>
-                    <span v-else>{{ props.row.title }}</span>
+                      <span v-if="props.row.variable">{{ props.row.variable }}: </span>
+                      {{ props.row.title }}
+                      <q-icon name="help" color="primary" v-if="props.row.description">
+                          <q-tooltip content-class="tooltip">
+                              <p>{{ props.row.description }}</p>
+                          </q-tooltip>
+                      </q-icon>
                 </q-td>
               </template>
               <template v-slot:body-cell-filters="props">

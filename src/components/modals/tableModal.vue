@@ -5,7 +5,14 @@
     >
       <q-card style="width: 700px; max-width: 80vw;">
         <q-card-section>
-          <div class="text-h6">{{title}}</div>
+          <div class="text-h6">{{title}}
+              <q-btn color="primary" v-if="help">
+              Help
+              <q-tooltip content-class="bg-primary" content-style="font-size: 16px" :offset="[10, 10]">
+                {{help}}
+              </q-tooltip>
+            </q-btn>
+          </div>
         </q-card-section>
 
         <q-card-section class="q-pt-none" v-on:selected="updateSelected">
@@ -25,7 +32,8 @@ export default {
   props: {
     title: String,
     value: Array,
-    buttonProps: { type: Object, default: function () { return { label: 'Modify', size: 'sm'} }}
+    buttonProps: { type: Object, default: function () { return { label: 'Modify', size: 'sm'} }},
+    help: String
   },
   data () {
     return {

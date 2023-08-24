@@ -3,7 +3,7 @@
     <th class="text-left"><a target="_blank" :href="share.url">{{share.url}}</a></th>
     <th class="text-right">{{share.name}}</th>
     <th class="text-right">{{share.notes}}</th>
-    <th class="text-right">
+    <th class="text-right" v-if="is_staff">
       <span v-for="(e, index) in sharedWithEmails">
         <span v-if="index !== 0">, </span><span style="color:green">{{ e }}</span>
       </span> 
@@ -11,7 +11,7 @@
         <span v-if="index !== 0 || index == 0 && sharedWithEmails.length != 0">, </span><span style="color:red">{{ e }}</span>
       </span>
     </th>
-    <th class="text-right">
+    <th class="text-right" v-if="is_staff">
       <div v-if="permissions" class="inline">
         <q-btn color="primary" size="sm" @click="open = true" label="Manage permissions"/>
         <q-dialog v-model="open" full-width>
@@ -86,7 +86,7 @@
 
         </q-dialog>
       </div>
-      <q-btn color="negative" size="sm" @click="removeShare(share)" label="Remove" class="inline"/>
+      <q-btn color="negative" size="sm" @click="removeShare(share)" label="Remove" class="inline" v-if="is_staff"/>
     </th>
   </tr>
 </template>
@@ -157,7 +157,9 @@ export default {
     }
   },
   mounted () {
-    this.getPermissions()
+    if (this.is_staff) {
+      this.getPermissions()
+    }
   },
   computed: {
     sharedWithEmails: function () {
@@ -175,6 +177,9 @@ export default {
       submission_emails.add(this.submission.email.toLowerCase())
       submission_emails.add(this.submission.pi_email.toLowerCase())
       return Array.from(submission_emails)
+    },
+    is_staff: function () {
+      return this.$perms.hasLabPerm('ADMIN') || this.$perms.hasLabPerm('MEMBER')
     }
   }
 }

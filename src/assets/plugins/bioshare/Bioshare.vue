@@ -1,5 +1,7 @@
 <template>
-  <div>{{config}}
+  <div>
+    <!-- {{config}} -->
+    <div class="text-h4">Shares</div>
     <div v-if="shares.length > 0">
       <!-- {{shares}} -->
       <q-markup-table>
@@ -8,8 +10,8 @@
            <th class="text-left">URL</th>
            <th class="text-right">Name</th>
            <th class="text-right">Description</th>
-           <th class="text-right">Shared with</th>
-           <th class="text-right">Action</th>
+           <th class="text-right" v-if="is_staff">Shared with</th>
+           <th class="text-right" v-if="is_staff">Action</th>
          </tr>
        </thead>
        <tbody v-for="share in shares">
@@ -91,8 +93,10 @@ export default {
         .get(`/api/plugins/bioshare/submissions/${self.submission.id}/submission_shares/?submission=${self.submission.id}`)
         .then(function (response) {
           self.shares = response.data.results
-          for (var i in self.shares) {
-            self.getPermissions(self.shares[i])
+          if (self.is_staff) {
+            for (var i in self.shares) {
+              self.getPermissions(self.shares[i])
+            }
           }
           // self.getPermissions(share)
         })
@@ -156,6 +160,14 @@ export default {
   },
   mounted () {
     this.getShares()
+  },
+  onActivated () {
+    alert('mounted')
+  },
+  computed: {
+    'is_staff': function () {
+      return this.submission.permissions.indexOf('STAFF') != -1
+    }
   },
   components: {
     Share
