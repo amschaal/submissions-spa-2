@@ -25,3 +25,16 @@ export const isStaff = (state, getters, rootState, rootGetters) => {
   return false
   // return state.user && state.user.labs && state.user.labs.length > 0
 }
+export const isSuperuser = (state, getters, rootState, rootGetters) => {
+  console.log('isSuperuser', state, rootGetters.labId)
+  if (!state.user) {
+    return false
+  } else if (state.user.is_superuser) {
+    return true
+  }
+  return false
+}
+// To replace with checks using permissions.  Superuser will work for now.
+export const isInstitutionAdmin = (state, getters, rootState, rootGetters) => {
+  return isSuperuser(state, getters, rootState, rootGetters)
+}

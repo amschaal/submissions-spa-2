@@ -48,7 +48,7 @@ const routes = [
     children: [
       { path: '', name: 'index', component: () => import('pages/index') },
       { path: 'profile', name: 'profile', component: () => import('pages/profile'), meta: { authorize: {isLoggedIn: true} } },
-      { path: 'settings', name: 'institution_settings', component: () => import('pages/institution_settings.vue'), meta: { authorize: {isLoggedIn: true, isStaff: true} } }
+      { path: 'settings', name: 'institution_settings', component: () => import('pages/institution_settings.vue'), meta: { authorize: {isLoggedIn: true, isStaff: true, isSuperuser: true} } }
     ]
   },
   {

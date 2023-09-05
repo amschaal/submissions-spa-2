@@ -31,6 +31,9 @@ export default function ({ store, ssrContext }) {
           if (!store.getters.isLoggedIn || (authorize && authorize.isStaff && !store.getters.isStaff)) {
             return next({ path: '/' })
           }
+          if (authorize && authorize.isSuperuser && !store.getters.isSuperuser) {
+            return next({ path: '/' })
+          }
           // console.log('got auth', response)
           next()
         })
