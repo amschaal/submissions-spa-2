@@ -1,7 +1,7 @@
 <template>
     <div class="date">
       <!-- <q-datetime :ref="'input'" v-model="value" type="date" @input="close"/> -->
-      <q-input v-model="date" :rules="['date']" ref="input">
+      <q-input v-model="date" :rules="[ v => !v || /^\d{4}-\d{2}-\d{2}$/.test(v) || 'Date should be in format YYYY-MM-DD' ]" ref="input">
         <template v-slot:append>
           <q-icon name="event" class="cursor-pointer">
             <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
