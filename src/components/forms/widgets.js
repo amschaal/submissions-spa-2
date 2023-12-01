@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import {Widget, WidgetFactory} from './Widget.js'
 import DateComponent from '../editors/DateComponent.vue'
+import TextAreaComponent from '../editors/TextAreaComponent.vue'
 
 class TextWidget extends Widget {
   static type = 'string'
@@ -8,6 +9,14 @@ class TextWidget extends Widget {
   static component = 'q-input'
   static name = 'Text input'
   static default = true
+}
+
+class TextAreaWidget extends Widget {
+  // @TODO: wrap this in another component as in the guide https://quasar-framework.org/components/autocomplete.html
+  static type = 'string'
+  static id = 'textarea'
+  static component = TextAreaComponent
+  static name = 'Text Area'
 }
 
 class WYSIWYGWidget extends Widget {
@@ -161,6 +170,6 @@ class MultiSelectWidget extends SelectWidget {
 //   }
 // }
 
-var widgetFactory = new WidgetFactory([TextWidget, WYSIWYGWidget, ChipsWidget, SelectWidget, MultiSelectWidget, CheckboxWidget, RadioWidget, MultiCheckboxWidget, DateWidget], SelectWidget, MultiSelectWidget)
+var widgetFactory = new WidgetFactory([TextWidget, TextAreaWidget, WYSIWYGWidget, ChipsWidget, SelectWidget, MultiSelectWidget, CheckboxWidget, RadioWidget, MultiCheckboxWidget, DateWidget], SelectWidget, MultiSelectWidget)
 // export {MultiSelectWidget}
 export default widgetFactory

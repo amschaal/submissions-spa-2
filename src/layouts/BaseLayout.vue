@@ -64,6 +64,13 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
+        <q-btn-dropdown auto-close stretch flat label="Institution" class="restricted" icon="vpn_key" v-if="$store.getters.isInstitutionAdmin">
+          <q-list>
+            <q-item clickable :to="{ name: 'institution_settings', params: {} }">
+              <q-item-section>Settings</q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
       </q-tabs>
       <!-- <q-tabs v-model="tab" id="testing">
           <q-tab name="submissions" label="Submissions" />

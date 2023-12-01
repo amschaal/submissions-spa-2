@@ -135,6 +135,8 @@
               <OptionsModal :WidgetClass="getWidget(data.widget.type)" v-model="data.widget.options" :schema="widget_schema(data.widget.type)" :parent-schema="schema" :variable="variable" :ref="'widget_options'"/>
             </span>
           </q-field>
+          <!-- <h5>Search</h5>
+          <q-checkbox dense label="Searchable" v-model="data.searchable"/> -->
           <h5>Printing options</h5>
             <q-input dense label="Field label" v-model="data.printing.label" placeholder="Optionally add a shortened label." v-if="data.type !== 'table'"/>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
@@ -264,11 +266,12 @@ export default {
     },
     addChoice () {
       if (this.option) {
+        var option = this.option.trim()
         if (!this.data.enum) {
           this.data.enum = []
         }
-        if (this.data.enum.indexOf(this.option) === -1) {
-          this.data.enum.push(this.option)
+        if (this.data.enum.indexOf(option) === -1) {
+          this.data.enum.push(option)
           this.option = ''
         }
       }
