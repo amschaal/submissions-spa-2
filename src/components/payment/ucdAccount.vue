@@ -18,7 +18,7 @@
         emit-value map-options
         v-model="value.payment_type"
         :options="[
-          {label: 'UCD KFS Account', value: 'DaFIS'},
+          {label: 'UCD Account', value: 'DaFIS'},
           {label: 'UC Chart String', value: 'UC Chart String'},
           {label: 'Credit Card (Non UC only)', value: 'Credit Card'},
           {label: 'Purchase Order', value: 'Purchase Order'}
@@ -74,7 +74,7 @@ export default {
       console.log('type_help', paymentType)
       switch (paymentType) {
         case 'DaFIS':
-          return 'Enter payment info in the form CHART-ACCOUNT, e.g. 3-MYACCNT'
+          return 'Enter the Aggie Enterprise account to be used for this order in the payment info field'
         case 'Credit Card':
           return 'Details required after invoicing (leave payment info blank)'
         default:
