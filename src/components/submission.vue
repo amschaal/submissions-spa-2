@@ -26,7 +26,7 @@
                 <q-btn v-if="canModify" label="Modify" class="float-right q-ml-xs" @click="$router.push({name: 'modify_submission', params: {id: submission.id}})"/>
                 <q-btn label="Print" class="float-right q-ml-xs" @click="$router.push({name: 'print_submission', params: {id: submission.id}})"/>
                 <Lock v-if="submission.id && isAdmin" :submission="submission" class="float-right q-ml-xs"/>
-                <Cancel v-if="submission.id && canCancel" :submission="submission" class="float-right q-ml-xs"/>
+                <Cancel v-if="submission.id" :submission="submission" class="float-right q-ml-xs"/>
               </div>
             </div>
           </div>
