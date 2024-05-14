@@ -58,10 +58,10 @@ export const logout = (context, {axios}) => {
     })
 }
 
-export const updateSettings = (context, {key, value, axios, self, dispatch}) => {
+export const updateSettings = (context, {path, value, axios, self, dispatch}) => {
   return new Promise((resolve, reject) => {
     axios.post('/api/users/update_settings/', {
-      key: key,
+      path: path,
       value: value
       // headers: auth.getAuthHeader(),
     })

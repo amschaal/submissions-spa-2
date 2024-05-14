@@ -219,6 +219,7 @@ export default {
           }
         })
         this.lab_filters.custom.forEach(f => (this.filterMap[f.id] = f))
+        this.update()
         // this.type = this.filterMap['ALL']
       })
       .catch(error => {
