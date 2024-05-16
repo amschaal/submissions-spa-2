@@ -10,7 +10,7 @@
         </legend>
         <!-- params: {{ params }}
         type: {{ type }}<br>
-        variables: {{ variables }} -->
+        variables: {{ variables }}-->
 
         <q-select dense v-model="type" :options="lab_filters.custom" option-value="id" option-label="name" emit-value map-options label="Submission Type" outlined @input="clearVariables">
             <template v-slot:after>
@@ -227,7 +227,12 @@ export default {
       })
   },
   methods: {
-    update () {
+    update (params) {
+      if (params && params.variables && params.type) {
+        // console.log('update', params.variables)
+        this.$set(this, 'variables', params.variables || [])
+        this.type = params.type
+      }
       if (this.$refs.filters && this.$refs.filters.map(c => c.validate()).indexOf(false) !== -1) {
         return
       }

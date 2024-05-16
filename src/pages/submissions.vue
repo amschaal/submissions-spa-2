@@ -1,5 +1,7 @@
 <template>
   <q-page class="docs-input justify-center">
+    <saveSearch v-model="saveSearch" :namespace="this.filterNamespace" :filters="filters" :advanced-filters="advancedFilters"/>
+    <loadSearch v-model="openLoadSearch" :namespace="this.filterNamespace" @loadSearch="onLoadSearch"/>
     <q-table
       ref="table"
       :data="serverData"
@@ -59,19 +61,33 @@
               <q-btn round dense flat icon="settings">
                 <q-menu>
                   <q-list separator class="scroll" style="min-width: 100px">
-                    <q-item
+                    <!-- <q-item
                       v-close-popup
                       clickable
                       @click.native="saveSettings"
                     >
                       <q-item-section>Save search settings</q-item-section>
-                    </q-item>
+                    </q-item> -->
                     <q-item
                       v-close-popup
                       clickable
                       @click.native="loadDefaults"
                     >
                       <q-item-section>Load defaults</q-item-section>
+                    </q-item>
+                    <q-item
+                      v-close-popup
+                      clickable
+                      @click="saveSearch=true"
+                    >
+                      <q-item-section>Save search settings</q-item-section>
+                    </q-item>
+                    <q-item
+                      v-close-popup
+                      clickable
+                      @click="openLoadSearch=true"
+                    >
+                      <q-item-section>Load search settings</q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>
@@ -153,12 +169,16 @@
 import _ from 'lodash'
 import selectLabModal from '../components/modals/selectLabModal.vue'
 import advancedFilters from '../components/search/advancedFilters.vue'
+import saveSearch from '../components/search/saveSearch.vue'
+import loadSearch from '../components/search/loadSearch.vue'
 export default {
   name: 'submissions',
   props: ['lab'],
   components: {
     selectLabModal,
     advancedFilters,
+    saveSearch,
+    loadSearch,
     Agschema: () => import('../components/agschema.vue')
   },
   data () {
@@ -206,7 +226,9 @@ export default {
         { name: 'samples_received', label: 'Received', field: 'samples_received', sortable: false }
       ],
       // customColumns: [],
-      showCustomColumns: false
+      showCustomColumns: false,
+      saveSearch: false,
+      openLoadSearch: false
     }
   },
   methods: {
@@ -306,8 +328,14 @@ export default {
     },
     loadDefaults () {
       this.$set(this, 'filters', _.cloneDeep(this.defaultFilters.filters))
-      this.$set(this, 'advanceFilters', {})
+      this.$set(this, 'advancedFilters', {})
       this.refresh()
+    },
+    onLoadSearch (search) {
+      this.$set(this, 'filters', _.cloneDeep(search.filters))
+      this.$refs['advancedFilters'].update(search.advancedFilters)
+      // this.$set(this, 'advancedFilters', _.cloneDeep(search.advancedFilters))
+      // this.refresh()
     },
     openTable (v) {
       // console.log('refs', this.$refs, v, this.$refs[v])
