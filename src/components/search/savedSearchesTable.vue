@@ -1,11 +1,19 @@
 <template>
-  <div class="q-pa-md">Test
+  <div class="q-pa-md">
     <q-table
       title="Saved Searches"
       :data="searches"
       :columns="columns"
       row-key="name"
+      :filter="filter"
     >
+      <template v-slot:top-right>
+        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </template>
       <template v-slot:body-cell-action="props">
         <q-td :props="props">
           <slot name="action" v-bind="{props}"></slot>
@@ -20,6 +28,7 @@ export default {
   props: ['namespace'],
   data () {
     return {
+      filter: null,
       columns: [
         { name: 'name', align: 'center', label: 'Name', field: 'name', sortable: true },
         { name: 'description', align: 'center', label: 'Description', field: 'description', sortable: false },

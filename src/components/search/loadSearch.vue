@@ -1,9 +1,10 @@
 <template>
-<q-dialog v-model="show" persistent>
-    <q-card>
-      <q-bar>
+<q-dialog v-model="show">
+    <q-card style="width: 1000px; max-width: 80vw;">
+      <q-bar color="primary">
+        <div>Load a saved search</div>
         <q-space />
-        <q-btn dense flat icon="close" @click="close">
+        <q-btn dense flat icon="close" v-close-popup>
           <q-tooltip>Close</q-tooltip>
         </q-btn>
       </q-bar>
@@ -17,7 +18,7 @@
       </q-card-section>
 
       <q-card-actions align="right">
-          <q-btn flat label="OK" color="primary" v-close-popup />
+          <q-btn flat label="Cancel" color="negative" v-close-popup />
         </q-card-actions>
     </q-card>
   </q-dialog>
@@ -34,9 +35,6 @@ export default {
     }
   },
   methods: {
-    close () {
-      this.$emit('update')
-    },
     load (row) {
       this.$emit('loadSearch', row)
       this.show = false
