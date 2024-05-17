@@ -16,6 +16,7 @@ export default {
           function (response) {
             self.$q.notify({message: 'Submission cancelled.', type: 'positive'})
             self.submission.cancelled = true
+            window.location.reload()
           })
         .catch(
           function () {
@@ -30,6 +31,7 @@ export default {
           function (response) {
             self.$q.notify({message: 'Submission "uncancelled".', type: 'positive'})
             self.submission.cancelled = null
+            window.location.reload()
           })
         .catch(
           function () {

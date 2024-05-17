@@ -8,7 +8,11 @@
                 </q-tooltip>
             </q-icon>
         </legend>
-        <q-select dense v-model="type" :options="lab_filters.custom" option-value="id" option-label="name" label="Submission Type" outlined @input="clearVariables">
+        <!-- params: {{ params }}
+        type: {{ type }}<br>
+        variables: {{ variables }}-->
+
+        <q-select dense v-model="type" :options="lab_filters.custom" option-value="id" option-label="name" emit-value map-options label="Submission Type" outlined @input="clearVariables">
             <template v-slot:after>
                 <q-icon name="help" color="primary">
                     <q-tooltip content-class="tooltip">
@@ -91,7 +95,7 @@
             </div>
         </div>
         <div>
-          <q-btn label="Add filter" color="primary" @click="openSearchFilters" /> <q-btn color="primary" label="Update" @click="update"/>
+          <q-btn label="Add filter" color="primary" @click="openSearchFilters" /> <q-btn color="primary" label="Update" @click="update()"/>
         </div>
         <q-dialog v-model="search_filters">
           <q-card style="width: 900px; max-width: 100vw;">
@@ -103,8 +107,8 @@
 
             <q-card-section>
               <p>
-                <b v-if="type && type.id && this.filterMap[type.id].name">
-                Showing search filters available for selected submission type "{{ this.filterMap[type.id].name }}"
+                <b v-if="type && this.filterMap[type] && this.filterMap[type].name">
+                Showing search filters available for selected submission type "{{ this.filterMap[type].name }}"
               </b>
             </p>
               <!-- {{ sources }} -->
@@ -170,17 +174,17 @@
 import _ from 'lodash'
 
 export default {
-  props: [],
+  props: ['params'],
   data () {
     return {
-      variables: [],
+      variables: this.params && this.params.variables ? this.params.variables : [],
       filters: [],
       lab_filters: {},
       variable: null,
       filterMap: {},
       sources: [],
       filter_sources: [],
-      type: null,
+      type: this.params && this.params.type ? this.params.type : 'ALL',
       qs: '',
       filteredVariables: [],
       search_filters: false,
@@ -215,22 +219,27 @@ export default {
           }
         })
         this.lab_filters.custom.forEach(f => (this.filterMap[f.id] = f))
-        this.type = this.filterMap['ALL']
+        this.update()
+        // this.type = this.filterMap['ALL']
       })
       .catch(error => {
         console.log(error)
       })
   },
   methods: {
-    update () {
+    update (params) {
+      if (params) {
+        this.$set(this, 'variables', params.variables ? _.cloneDeep(params.variables) : [])
+        this.type = params.type || 'ALL'
+      }
       if (this.$refs.filters && this.$refs.filters.map(c => c.validate()).indexOf(false) !== -1) {
         return
       }
-      this.qs = !this.type || (this.type && this.type.id === 'ALL') ? '' : '&type=' + this.type.id
+      this.qs = !this.type || (this.type === 'ALL') ? '' : '&type=' + this.type
       // console.log(this.variables)
       this.variables.forEach(v => (this.qs += '&' + v.filter.filter + '=' + v.value))
       // console.log('qs', this.qs)
-      this.$emit('update')
+      this.$emit('update', { type: this.type, variables: this.variables })
     },
     addVariable (v) {
       // console.log(v)
@@ -249,7 +258,6 @@ export default {
     openSearchFilters () {
       this.resetSearchFilters()
       this.search_filters = true
-      console.log(this.$refs)
       setTimeout(() => this.$refs['advanced-filter-search'].focus(), 100)
     },
     resetSearchFilters () {
@@ -275,7 +283,7 @@ export default {
   },
   computed: {
     type_filters () {
-      return this.type ? this.filterMap[this.type.id].filters : []
+      return this.type && this.filterMap[this.type] ? this.filterMap[this.type].filters : []
     },
     variable_options () {
       var filters = Object.values(this.type_filters)

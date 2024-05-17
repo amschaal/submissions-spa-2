@@ -1,5 +1,9 @@
 <template>
   <q-page class="docs-input justify-center">
+    <saveSearch v-model="saveSearch" :namespace="this.filterNamespace" :filters="filters" :advanced-filters="advancedFilters"/>
+    <loadSearch v-model="openLoadSearch" :namespace="this.filterNamespace" @loadSearch="loadSettings"/>
+    <!-- advancedFilters: {{ advancedFilters }} -->
+    <!-- defaultFilters: {{ defaultFilters.advancedFilters }} -->
     <q-table
       ref="table"
       :data="serverData"
@@ -59,19 +63,33 @@
               <q-btn round dense flat icon="settings">
                 <q-menu>
                   <q-list separator class="scroll" style="min-width: 100px">
-                    <q-item
+                    <!-- <q-item
                       v-close-popup
                       clickable
                       @click.native="saveSettings"
                     >
                       <q-item-section>Save search settings</q-item-section>
+                    </q-item> -->
+                    <q-item
+                      v-close-popup
+                      clickable
+                      @click="loadDefaults"
+                    >
+                      <q-item-section>Reset search criteria</q-item-section>
                     </q-item>
                     <q-item
                       v-close-popup
                       clickable
-                      @click.native="loadDefaults"
+                      @click="saveSearch=true"
                     >
-                      <q-item-section>Load defaults</q-item-section>
+                      <q-item-section>Save current search</q-item-section>
+                    </q-item>
+                    <q-item
+                      v-close-popup
+                      clickable
+                      @click="openLoadSearch=true"
+                    >
+                      <q-item-section>Load saved search</q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>
@@ -82,8 +100,9 @@
 
         </div>
         </div>
+        <!-- {{ advancedParams }} -->
         <q-btn label="Advanced filters" color="primary" v-if="!advanced" @click="advanced=true"/>
-        <advancedFilters ref="advancedFilters" :lab="lab" @update="refresh" v-else/>
+        <advancedFilters ref="advancedFilters" :lab="lab" @update="updateAdvancedFilters" :params="advancedFilters" v-show="advanced"/>
       </template>
       <template slot="body" slot-scope="props">
         <q-tr :props="props" v-bind:class="{'cancelled': props.row.cancelled, 'completed': props.row.status && props.row.status.toUpperCase() === 'COMPLETED'}">
@@ -152,36 +171,27 @@
 import _ from 'lodash'
 import selectLabModal from '../components/modals/selectLabModal.vue'
 import advancedFilters from '../components/search/advancedFilters.vue'
+import saveSearch from '../components/search/saveSearch.vue'
+import loadSearch from '../components/search/loadSearch.vue'
 export default {
   name: 'submissions',
   props: ['lab'],
   components: {
     selectLabModal,
     advancedFilters,
+    saveSearch,
+    loadSearch,
     Agschema: () => import('../components/agschema.vue')
   },
   data () {
-    var defaultFilters = {
-      filter: '',
-      showCancelled: false,
-      showCompleted: false,
-      participating: false,
-      mySubmissions: !this.lab,
-      serverPagination: {
-        page: 1,
-        rowsNumber: 0, // specifying this determines pagination is server-side
-        rowsPerPage: 10,
-        descending: true,
-        sortBy: 'submitted'
-      },
-      visibleColumns: ['locked', 'internal_id', 'lab', 'type', 'status', 'submitted', 'name', 'email', 'pi_name', 'table_count', 'samples_received']
-    }
     var filterNamespace = this.lab ? this.$store.getters.labId + '_filters' : 'my_submission_filters'
+    var defaultFilters = this.getDefaultFilters()
     return {
       filterNamespace: filterNamespace,
-      defaultFilters: defaultFilters,
-      filters: this.$store.getters.getUserSettings[filterNamespace] ? _.assign(defaultFilters, _.clone(this.$store.getters.getUserSettings[filterNamespace])) : defaultFilters,
+      // defaultFilters: _.cloneDeep(defaultFilters),
+      filters: defaultFilters.filters,
       advanced: false,
+      advancedFilters: defaultFilters.advancedFilters,
       loading: false,
       serverData: [],
       columns: [
@@ -202,7 +212,9 @@ export default {
         { name: 'samples_received', label: 'Received', field: 'samples_received', sortable: false }
       ],
       // customColumns: [],
-      showCustomColumns: false
+      showCustomColumns: false,
+      saveSearch: false,
+      openLoadSearch: false
     }
   },
   methods: {
@@ -271,6 +283,10 @@ export default {
           this.$q.notify({message: 'There was an error retrieving submissions.  Please ensure your search terms are valid.', type: 'negative'})
         })
     },
+    updateAdvancedFilters (params) {
+      this.advancedFilters = _.cloneDeep(params)
+      this.refresh()
+    },
     refresh () {
       this.request({
         pagination: this.filters.serverPagination,
@@ -281,11 +297,28 @@ export default {
       return submission.warnings && _.size(submission.warnings) > 0
     },
     saveSettings () {
-      this.$store.dispatch('updateSettings', {key: this.filterNamespace, value: this.filters, axios: this.$axios, self: this})
+      const settings = { filters: this.filters, advancedFilters: this.advancedFilters }
+      this.$store.dispatch('updateSettings', {path: this.filterNamespace, value: settings, axios: this.$axios, self: this})
+    },
+    loadSettings (settings) {
+      // const settings = this.$store.getters.getUserSettings[this.filterNamespace]
+      // this.filters = _.assign(this.defaultFilters, _.clone(settings.filters))
+      this.$set(this, 'filters', _.assign(this.getDefaultFilters().filters, _.clone(settings.filters)))
+      // this.$set(this, 'filters', _.cloneDeep(settings.filters))
+      if (settings.advancedFilters) {
+        // this.advancedFilters = _.cloneDeep(settings.advancedFilters)
+        this.$refs['advancedFilters'].update(_.assign({}, _.cloneDeep(settings.advancedFilters)))
+        this.advanced = true
+        // this.$refs['advancedFilters'].update()
+      }
+      // this.filters = this.$store.getters.getUserSettings[filterNamespace] ? _.assign(defaultFilters, _.clone(this.$store.getters.getUserSettings[filterNamespace].filters)) : defaultFilters.filters
     },
     loadDefaults () {
-      this.$set(this, 'filters', _.cloneDeep(this.defaultFilters))
-      this.refresh()
+      this.loadSettings(this.getDefaultFilters())
+      this.advanced = false
+      // this.$set(this, 'filters', _.cloneDeep(this.defaultFilters.filters))
+      // this.$set(this, 'advancedFilters', {})
+      // this.refresh()
     },
     openTable (v) {
       // console.log('refs', this.$refs, v, this.$refs[v])
@@ -296,6 +329,26 @@ export default {
         return 'text-positive'
       } else if (['No', 'no', 'false', 'False', true].indexOf(v) !== -1) {
         return 'text-negative'
+      }
+    },
+    getDefaultFilters () {
+      return {
+        filters: {
+          filter: '',
+          showCancelled: false,
+          showCompleted: false,
+          participating: false,
+          mySubmissions: !this.lab,
+          serverPagination: {
+            page: 1,
+            rowsNumber: 0, // specifying this determines pagination is server-side
+            rowsPerPage: 10,
+            descending: true,
+            sortBy: 'submitted'
+          },
+          visibleColumns: ['locked', 'internal_id', 'lab', 'type', 'status', 'submitted', 'name', 'email', 'pi_name', 'table_count', 'samples_received']
+        },
+        advancedFilters: {}
       }
     }
   },
@@ -308,7 +361,8 @@ export default {
     // if (this.lab) {
     //   this.filters.visibleColumns.splice(this.defaultFilters.visibleColumns.indexOf('lab'), 1) //Causes mutation error.  Idea was to keep lab column from showing up unnecessarily
     // }
-    this.refresh()
+    this.loadDefaults()
+    // this.refresh()
   },
   computed: {
     allColumns () {

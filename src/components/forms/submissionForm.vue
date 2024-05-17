@@ -1,6 +1,6 @@
 <template>
   <div>
-      <q-btn class="pull-right" color="primary" @click="show_help = true" label="Help" icon="fas fa-question-circle" v-if="type && type.submission_help"><q-tooltip ref="help_tooltip">Click for help with {{type.name}}</q-tooltip></q-btn>
+      <!-- <q-btn class="pull-right" color="primary" @click="show_help = true" label="Help" icon="fas fa-question-circle" v-if="type && type.submission_help"><q-tooltip>Click for help with {{type.name}}</q-tooltip></q-btn> -->
       <h5 v-if="$store.getters.lab">{{$store.getters.lab.name}} Submission Form <selectLabModal page="create_submission"/></h5>
       <div v-html="$store.getters.lab.submission_page" v-if="$store.getters.lab && $store.getters.lab.submission_page"></div>
       <q-checkbox v-model="debug" label="Debug" v-if="$store.getters.isStaff && false" />
@@ -259,7 +259,7 @@
           <q-btn @click="submit" color="positive" label="Submit"></q-btn>
           <q-btn @click="saveDraft" v-if="!id" label="Save Draft"></q-btn>
           <q-btn v-if="submission.id" label="Cancel" color="negative" class="float-right" @click="$router.push({name: 'submission', params: {id: submission.id}})"/>
-          <q-btn color="primary" @click="show_help = true" label="Help" icon="fas fa-question-circle" v-if="type && type.submission_help"><q-tooltip>Click for help with {{type.name}}</q-tooltip></q-btn>
+          <!-- <q-btn color="primary" @click="show_help = true" label="Help" icon="fas fa-question-circle" v-if="type && type.submission_help"><q-tooltip>Click for help with {{type.name}}</q-tooltip></q-btn> -->
         </q-card-actions>
         <q-dialog v-model="show_help">
           <q-card>
@@ -297,6 +297,9 @@
             </div>
           </q-modal-layout>
         </q-modal> -->
+        <q-page-sticky position="left" :offset="[18, 18]">
+          <q-btn class="pull-right" rounded color="primary" label="Help" icon="fas fa-question-circle" @click="show_help = true" v-if="type && type.submission_help"><q-tooltip ref="help_tooltip">Click for help with {{type.name}}</q-tooltip></q-btn>
+        </q-page-sticky>
       </div>
 </template>
 
