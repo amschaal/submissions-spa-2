@@ -95,7 +95,7 @@
             </div>
         </div>
         <div>
-          <q-btn label="Add filter" color="primary" @click="openSearchFilters" /> <q-btn color="primary" label="Update" @click="update"/>
+          <q-btn label="Add filter" color="primary" @click="openSearchFilters" /> <q-btn color="primary" label="Update" @click="update()"/>
         </div>
         <q-dialog v-model="search_filters">
           <q-card style="width: 900px; max-width: 100vw;">
@@ -228,10 +228,9 @@ export default {
   },
   methods: {
     update (params) {
-      if (params && params.variables && params.type) {
-        // console.log('update', params.variables)
-        this.$set(this, 'variables', params.variables || [])
-        this.type = params.type
+      if (params) {
+        this.$set(this, 'variables', params.variables ? _.cloneDeep(params.variables) : [])
+        this.type = params.type || 'ALL'
       }
       if (this.$refs.filters && this.$refs.filters.map(c => c.validate()).indexOf(false) !== -1) {
         return
@@ -259,7 +258,6 @@ export default {
     openSearchFilters () {
       this.resetSearchFilters()
       this.search_filters = true
-      console.log(this.$refs)
       setTimeout(() => this.$refs['advanced-filter-search'].focus(), 100)
     },
     resetSearchFilters () {
