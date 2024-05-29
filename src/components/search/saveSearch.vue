@@ -48,10 +48,11 @@ export default {
     // },
     save (row) {
       let settings = null
+      const updated = Date.now()
       if (row) {
-        settings = { name: row.name, description: row.description, filters: this.filters, advancedFilters: this.advancedFilters }
+        settings = { name: row.name, description: row.description, filters: this.filters, advancedFilters: this.advancedFilters, updated }
       } else {
-        settings = { name: this.name, description: this.description, filters: this.filters, advancedFilters: this.advancedFilters }
+        settings = { name: this.name, description: this.description, filters: this.filters, advancedFilters: this.advancedFilters, updated }
       }
       this.$store.dispatch('updateSettings', {path: `${this.namespace}.${settings.name}`, value: settings, axios: this.$axios, self: this})
       this.show = false
