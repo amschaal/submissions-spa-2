@@ -73,7 +73,7 @@
                     <q-item
                       v-close-popup
                       clickable
-                      @click="loadDefaults"
+                      @click="loadDefaults()"
                     >
                       <q-item-section>Reset search criteria</q-item-section>
                     </q-item>
@@ -184,10 +184,8 @@ export default {
     Agschema: () => import('../components/agschema.vue')
   },
   data () {
-    var filterNamespace = this.lab ? this.$store.getters.labId + '_filters' : 'my_submission_filters'
     var defaultFilters = this.getDefaultFilters()
     return {
-      filterNamespace: filterNamespace,
       // defaultFilters: _.cloneDeep(defaultFilters),
       filters: defaultFilters.filters,
       advanced: false,
@@ -311,15 +309,18 @@ export default {
         this.advanced = true
         // this.$refs['advancedFilters'].update()
       }
+      if (settings.name) {
+        this.$q.notify({message: `Loaded saved search settings '${settings.name}'.`, type: 'positive'})
+      }
       // this.filters = this.$store.getters.getUserSettings[filterNamespace] ? _.assign(defaultFilters, _.clone(this.$store.getters.getUserSettings[filterNamespace].filters)) : defaultFilters.filters
     },
-    loadDefaults () {
-      this.loadSettings(this.getDefaultFilters())
+    loadDefaults (useUserDefault) {
       this.advanced = false
-      // this.$set(this, 'filters', _.cloneDeep(this.defaultFilters.filters))
-      // this.$set(this, 'advancedFilters', {})
-      // this.refresh()
+      const settings = useUserDefault && this.settings && this.settings.default ? this.settings.default : this.getDefaultFilters()
+      // if (settings.advancedFilters && settings.advancedFilters.filters && settings.advancedFilters.length || settings.advancedFilters)
+      this.loadSettings(settings)
     },
+
     openTable (v) {
       // console.log('refs', this.$refs, v, this.$refs[v])
       this.$refs[v][0].openSamplesheet()
@@ -361,7 +362,7 @@ export default {
     // if (this.lab) {
     //   this.filters.visibleColumns.splice(this.defaultFilters.visibleColumns.indexOf('lab'), 1) //Causes mutation error.  Idea was to keep lab column from showing up unnecessarily
     // }
-    this.loadDefaults()
+    this.loadDefaults(true)
     // this.refresh()
   },
   computed: {
@@ -374,6 +375,12 @@ export default {
     },
     labVariables () {
       return !this.lab || !this.$store.getters.lab || !this.$store.getters.lab.submission_variables ? [] : this.$store.getters.lab.submission_variables.order
+    },
+    filterNamespace () {
+      return this.lab ? this.$store.getters.labId + '_filters' : 'my_submission_filters'
+    },
+    settings () {
+      return this.$store.getters.getUserSettings[this.filterNamespace]
     }
   }
 }

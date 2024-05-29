@@ -13,7 +13,7 @@
         <q-radio v-model="mode" val="new" label="New search"/><q-radio v-model="mode" val="existing" label="Save to existing search"/>
         <fieldset v-if="mode=='new'">
             <legend>Give this search a name and description.</legend>
-            <q-input v-model="name" label="Search Name"/>
+            <q-input v-model="name" label="Search Name" hint="This name must be unique, and will replace any search by the same name.  You may use the special name of 'default' if you want the search to be your default search view."/>
             <q-input v-model="description" label="Description"/>
         </fieldset>
         <savedSearchesTable :namespace="namespace" v-else>
