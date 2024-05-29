@@ -13,7 +13,7 @@
         <q-radio v-model="mode" val="new" label="New search"/><q-radio v-model="mode" val="existing" label="Save to existing search"/>
         <fieldset v-if="mode=='new'">
             <legend>Give this search a name and description.</legend>
-            <q-input v-model="name" label="Search Name"/>
+            <q-input v-model="name" label="Search Name" hint="This name must be unique, and will replace any search by the same name.  You may use the special name of 'default' if you want the search to be your default search view."/>
             <q-input v-model="description" label="Description"/>
         </fieldset>
         <savedSearchesTable :namespace="namespace" v-else>
@@ -48,10 +48,11 @@ export default {
     // },
     save (row) {
       let settings = null
+      const updated = Date.now()
       if (row) {
-        settings = { name: row.name, description: row.description, filters: this.filters, advancedFilters: this.advancedFilters }
+        settings = { name: row.name, description: row.description, filters: this.filters, advancedFilters: this.advancedFilters, updated }
       } else {
-        settings = { name: this.name, description: this.description, filters: this.filters, advancedFilters: this.advancedFilters }
+        settings = { name: this.name, description: this.description, filters: this.filters, advancedFilters: this.advancedFilters, updated }
       }
       this.$store.dispatch('updateSettings', {path: `${this.namespace}.${settings.name}`, value: settings, axios: this.$axios, self: this})
       this.show = false
