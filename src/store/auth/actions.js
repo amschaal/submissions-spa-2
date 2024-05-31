@@ -77,3 +77,21 @@ export const updateSettings = (context, {path, value, axios, self, dispatch}) =>
       })
   })
 }
+export const deleteSetting = (context, {path, axios, self, dispatch}) => {
+  return new Promise((resolve, reject) => {
+    axios.post('/api/users/delete_setting/', {
+      path: path
+      // headers: auth.getAuthHeader(),
+    })
+      .then(function (response) {
+        context.commit('userSettings', response.data.settings)
+        self.$q.notify({message: `Setting at path "${path}" deleted`, type: 'positive'})
+        resolve(response)
+      })
+      .catch(function (error) {
+        console.log('errors', error.message)
+        self.$q.notify({message: 'Unable to delete setting', type: 'negative'})
+        reject(error.message)
+      })
+  })
+}

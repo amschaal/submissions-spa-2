@@ -54,11 +54,11 @@ export default {
       } else {
         settings = { name: this.name, description: this.description, filters: this.filters, advancedFilters: this.advancedFilters, updated }
       }
-      this.$store.dispatch('updateSettings', {path: `${this.namespace}.${settings.name}`, value: settings, axios: this.$axios, self: this})
+      this.$store.dispatch('updateSettings', {path: `searches.${this.namespace}.${settings.name}`, value: settings, axios: this.$axios, self: this})
       this.show = false
     },
     deleteSearch (row) {
-      this.$store.dispatch('deleteSetting', {path: `${this.namespace}.${row.name}`, axios: this.$axios, self: this})
+      this.$store.dispatch('deleteSetting', {path: `searches.${this.namespace}.${row.name}`, axios: this.$axios, self: this})
     },
     reset () {
       this.name = this.description = ''
