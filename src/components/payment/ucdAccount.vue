@@ -38,6 +38,13 @@
         :disable="value.payment_type === 'Credit Card'"
         />
     </div>
+    <q-banner class="bg-grey-3 q-mt-lg" v-if="value.payment_type == 'DaFIS'">
+      <q-icon name="info" size="md" color="blue"/>
+      For Aggie Enterprise strings, you can use either the Chart of Accounts (CoA) or POET formats.  For CoA, the first 4 fields (Entity-Fund-Financial Department-Account) are required.
+      For more details on CoA format, please visit <a target="_blank" href="https://financeandbusiness.ucdavis.edu/finance/chart-of-accounts/redesign">https://financeandbusiness.ucdavis.edu/finance/chart-of-accounts/redesign</a>.
+      For POET format, the first 4 fields (<b>P</b>roject-Expenditure <b>O</b>rganization-<b>E</b>xpenditure Type-<b>T</b>ask) are required.
+      For more information see <a target="_blank" href="https://aggieenterprise.ucdavis.edu/poetaf">https://aggieenterprise.ucdavis.edu/poetaf</a>.  Please note that the order of the fields is important.
+    </q-banner>
   </div>
 </template>
 
