@@ -380,7 +380,7 @@ export default {
       return this.lab ? this.$store.getters.labId + '_filters' : 'my_submission_filters'
     },
     settings () {
-      return this.$store.getters.getUserSettings[this.filterNamespace]
+      return this.$store.getters.getUserSettings.searches ? this.$store.getters.getUserSettings.searches[this.filterNamespace] : {}
     }
   }
 }

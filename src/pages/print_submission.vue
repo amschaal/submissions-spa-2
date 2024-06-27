@@ -1,6 +1,7 @@
 <template>
   <div v-if="submission.type">
     <p class="heading">{{submission.type.name}} - {{submission.internal_id}}</p>
+    <p class="heading" v-if="submission.import_data">(Imported from {{submission.import_data.internal_id}}: {{submission.import_data.type.name}})</p>
     <table class="full bordered compact submission">
     <tbody>
       <!-- <tr><th>Submitted</th><td>{{getDate(submission.submitted)}}</td><th>ID</th><td>{{submission.internal_id}}</td><th>Type</th><td colspan="3">{{submission.type.name}}</td></tr> -->

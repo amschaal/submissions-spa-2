@@ -47,7 +47,7 @@ export default {
   },
   computed: {
     searches () {
-      const settings = this.$store.getters.getUserSettings[this.namespace]
+      const settings = this.$store.getters.getUserSettings.searches ? this.$store.getters.getUserSettings.searches[this.namespace] : {}
       return _.values(settings)
     }
   }
