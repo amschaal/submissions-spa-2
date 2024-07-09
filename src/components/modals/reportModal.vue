@@ -3,7 +3,7 @@
     <q-dialog
       v-model="opened"
     >
-      <q-card style="width: 700px; max-width: 80vw;">
+      <q-card style="width:80vw; max-width: 90vw;">
         <q-card-section>
           <div class="text-h6">Reports</div>
         </q-card-section>
@@ -29,7 +29,32 @@
             </template>
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
-                <q-btn flat label="Export" /> <q-btn color="primary" flat label="View" />
+                <q-btn class="btn btn-primary" label="View" />
+                <q-btn-dropdown color="primary" label="Download">
+                  <q-tooltip class="bg-accent">Export the current report in one of the supported formats.</q-tooltip>
+                  <q-list>
+                    <q-item clickable v-close-popup @click="download(props.row.id, 'xlsx')">
+                      <q-item-section>
+                        <q-item-label>XLSX</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup @click="download(props.row.id, 'tsv')">
+                      <q-item-section>
+                        <q-item-label>TSV</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup @click="download(props.row.id, 'csv')">
+                      <q-item-section>
+                        <q-item-label>CSV</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup @click="download(props.row.id, 'json')">
+                      <q-item-section>
+                        <q-item-label>JSON</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-btn-dropdown>
               </q-td>
             </template>
           </q-table>
@@ -78,6 +103,13 @@ export default {
     },
     cancel () {
       this.opened = false
+    },
+    download (id, format) {
+      if (format === 'json') {
+        window.open(`/server/api/submissions/report/?${this.qs}&report_id=${id}&format=${format}`)
+      } else {
+        window.open(`/server/api/submissions/report/?${this.qs}&report_id=${id}&export_format=${format}`)
+      }
     }
   }
 }
