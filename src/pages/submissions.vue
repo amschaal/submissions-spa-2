@@ -163,6 +163,8 @@
         </q-item>
       </q-list>
     </q-btn-dropdown>
+    <reportsModal ref="reports"/>
+    <q-btn label="Create Report" @click="createReport"/>
   </q-page>
 </template>
 
@@ -173,10 +175,12 @@ import selectLabModal from '../components/modals/selectLabModal.vue'
 import advancedFilters from '../components/search/advancedFilters.vue'
 import saveSearch from '../components/search/saveSearch.vue'
 import loadSearch from '../components/search/loadSearch.vue'
+import reportsModal from '../components/modals/reportsModal.vue'
 export default {
   name: 'submissions',
   props: ['lab'],
   components: {
+    reportsModal,
     selectLabModal,
     advancedFilters,
     saveSearch,
@@ -245,6 +249,16 @@ export default {
       } else {
         window.open(`/server/api/submissions/export/?${qs}&export_format=${format}`)
       }
+    },
+    createReport (format) {
+      var pagination = _.clone(this.filters.serverPagination)
+      pagination.rowsPerPage = 10000
+      var qs = this.getSearchQuery({
+        pagination: pagination,
+        filter: this.filters.filter
+      })
+      console.log('createReport', this.$refs, qs)
+      this.$refs.reports.open(qs)
     },
     request ({ pagination, filter }) {
       // console.log('request', qs, )
