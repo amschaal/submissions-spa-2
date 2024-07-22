@@ -256,7 +256,7 @@
           />
       </fieldset>
         <q-card-actions>
-          <q-btn @click="submit" color="positive" label="Submit"></q-btn>
+          <q-btn @click="submit" color="positive" :label="submitting ? 'Submitting' : 'Submit'" :disabled="submitting"></q-btn>
           <q-btn @click="saveDraft" v-if="!id" label="Save Draft"></q-btn>
           <q-btn v-if="submission.id" label="Cancel" color="negative" class="float-right" @click="$router.push({name: 'submission', params: {id: submission.id}})"/>
           <!-- <q-btn color="primary" @click="show_help = true" label="Help" icon="fas fa-question-circle" v-if="type && type.submission_help"><q-tooltip>Click for help with {{type.name}}</q-tooltip></q-btn> -->
@@ -337,7 +337,8 @@ export default {
       imported: null,
       import_url: '',
       payment_type: null,
-      inactive: false
+      inactive: false,
+      submitting: false
       // create: false
     }
   },
@@ -515,6 +516,7 @@ export default {
       var action = this.create ? 'post' : 'put'
       var url = !this.create ? `/api/submissions/${id}/` : '/api/submissions/'
       // var url = !this.create ? '/api/submissions/' + id + '/update/' : '/api/submit/'
+      this.submitting = true
       this.$axios[action]('' + url, this.submission)
         .then(function (response) {
           console.log('submit', response)
@@ -526,6 +528,7 @@ export default {
           // console.log(response)
           self.$q.notify({message: 'Submission successfully saved.', type: 'positive'})
           self.$emit('submission_updated', self.submission)
+          self.submitting = false
           // if (self.create) {
           if (self.draft_message) {
             self.draft_message()
@@ -536,6 +539,7 @@ export default {
         })
         .catch(function (error, stuff) {
           // raise different exception if due to invalid credentials
+          self.submitting = false
           console.log('ERROR', error.response)
           var message = error.response.data.detail || 'There were errors saving your submission.'
           self.$q.notify({message: message, type: 'negative'})
