@@ -12,6 +12,7 @@
         <q-card-section class="q-pt-none">
           <!-- qs: {{ qs }}
           {{ reports }} -->
+          {{ selected_report }}
           <q-table
             :data="reports"
             :columns="columns"
@@ -19,6 +20,8 @@
             row-key="id"
             binary-state-sort
             :rows-per-page-options="[10,25,0]"
+            selection="single"
+            :selected.sync="selected"
             v-if="reports"
           >
             <template v-slot:top-right>
@@ -28,42 +31,43 @@
                 </template>
               </q-input>
             </template>
-            <template v-slot:body-cell-action="props">
+            <!-- <template v-slot:body-cell-action="props">
               <q-td :props="props">
-                <q-btn class="btn btn-primary" label="View" @click="view(props.row.id)"/>
-                <q-btn-dropdown color="primary" label="Download">
-                  <q-tooltip class="bg-accent">Export the current report in one of the supported formats.</q-tooltip>
-                  <q-list>
-                    <q-item clickable v-close-popup @click="download(props.row.id, 'xlsx')">
-                      <q-item-section>
-                        <q-item-label>XLSX</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                    <q-item clickable v-close-popup @click="download(props.row.id, 'tsv')">
-                      <q-item-section>
-                        <q-item-label>TSV</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                    <q-item clickable v-close-popup @click="download(props.row.id, 'csv')">
-                      <q-item-section>
-                        <q-item-label>CSV</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                    <q-item clickable v-close-popup @click="download(props.row.id, 'json')">
-                      <q-item-section>
-                        <q-item-label>JSON</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-btn-dropdown>
               </q-td>
-            </template>
+            </template> -->
           </q-table>
           <h3 v-else>
             Loading reports...
           </h3>
         </q-card-section>
         <q-card-actions align="right" class="bg-white text-teal">
+            <q-select :options="selected_report.periods" v-if="selected_report && selected_report.periods" label="Choose Period" v-model="period"/>
+            <q-btn class="btn btn-primary" label="View" @click="view(selected_report.id)" v-if="selected_report"/>
+            <q-btn-dropdown color="primary" label="Download" v-if="selected_report">
+              <q-tooltip class="bg-accent">Export the current report in one of the supported formats.</q-tooltip>
+              <q-list>
+                <q-item clickable v-close-popup @click="download(selected_report.id, 'xlsx')">
+                  <q-item-section>
+                    <q-item-label>XLSX</q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup @click="download(selected_report.id, 'tsv')">
+                  <q-item-section>
+                    <q-item-label>TSV</q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup @click="download(selected_report.id, 'csv')">
+                  <q-item-section>
+                    <q-item-label>CSV</q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup @click="download(selected_report.id, 'json')">
+                  <q-item-section>
+                    <q-item-label>JSON</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
          <q-btn flat label="Cancel" @click="cancel" />
         </q-card-actions>
       </q-card>
@@ -93,7 +97,9 @@ export default {
         sortBy: 'name',
         descending: true,
         rowsPerPage: 10
-      }
+      },
+      selected: [],
+      period: null
     }
   },
   mounted () {
@@ -107,17 +113,24 @@ export default {
       this.opened = true
     },
     view (reportId) {
-      this.$refs.report.open(this.qs, reportId)
+      const period = this.selected_report.periods && this.period ? this.period : null
+      this.$refs.report.open(this.qs, reportId, period)
     },
     cancel () {
       this.opened = false
     },
     download (id, format) {
+      const period = this.selected_report.periods && this.period ? this.period : null
       if (format === 'json') {
-        window.open(`/server/api/submissions/report/?${this.qs}&report_id=${id}&export_format=${format}`)
+        window.open(`/server/api/submissions/report/?${this.qs}&report_id=${id}&export_format=${format}&period=${period}`)
       } else {
-        window.open(`/server/api/submissions/report/?${this.qs}&report_id=${id}&export_format=${format}`)
+        window.open(`/server/api/submissions/report/?${this.qs}&report_id=${id}&export_format=${format}&period=${period}`)
       }
+    }
+  },
+  computed: {
+    selected_report () {
+      return this.selected.length === 1 ? this.selected[0] : null
     }
   }
 }

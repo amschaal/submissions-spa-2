@@ -57,11 +57,11 @@ export default {
   mounted () {
   },
   methods: {
-    open (qs, reportId) {
+    open (qs, reportId, period) {
       this.qs = qs
       this.opened = true
       this.report = null
-      this.$axios.get(`/api/submissions/report/?${qs}&report_id=${reportId}&export_format=json`).then(response => {
+      this.$axios.get(`/api/submissions/report/?${qs}&report_id=${reportId}&export_format=json&period=${period}`).then(response => {
         this.report = response.data
       })
     },
