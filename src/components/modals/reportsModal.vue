@@ -41,9 +41,9 @@
           </h3>
         </q-card-section>
         <q-card-actions align="right" class="bg-white text-teal">
-            <q-select :options="selected_report.periods" v-if="selected_report && selected_report.periods" label="Choose Period" v-model="period"/>
-            <q-btn class="btn btn-primary" label="View" @click="view(selected_report.id)" v-if="selected_report"/>
-            <q-btn-dropdown color="primary" label="Download" v-if="selected_report">
+            <q-select style="min-width: 200px;" outlined dense :options="selected_report.periods" v-if="selected_report && selected_report.periods" label="Choose Period" v-model="period"/>
+            <q-btn class="btn btn-primary" label="View" @click="view(selected_report.id)" v-if="selected_report && (period || !selected_report.periods)"/>
+            <q-btn-dropdown color="primary" label="Download" v-if="selected_report && (period || !selected_report.periods)">
               <q-tooltip class="bg-accent">Export the current report in one of the supported formats.</q-tooltip>
               <q-list>
                 <q-item clickable v-close-popup @click="download(selected_report.id, 'xlsx')">
