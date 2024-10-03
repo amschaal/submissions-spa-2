@@ -113,6 +113,7 @@
 <script>
 import '../forms/docs-input.styl'
 // import axios from 'axios'
+import _ from 'lodash'
 import Fieldoptions from '../fieldoptions.vue'
 // import Formatoptions from '../components/formatoptions.vue'
 import Vue from 'vue'
@@ -208,11 +209,20 @@ export default {
     },
     addExistingVariable (v) {
       if (this.schema.properties[v]) {
-        this.$q.notify(`Variable "${v}" already exists`)
+        const message = 'Are you sure you want to reset the variable "' + v + '", pulling the configuration from the lab settings?  All sub options will be replaced as well.  If it is a table, that includes every column in that table.'
+        this.$q.dialog({
+          title: 'Confirm variable reset/replacement from settings',
+          message: message,
+          ok: 'Okay',
+          cancel: 'Cancel'
+        }).onOk(() => {
+          Vue.set(this.schema.properties, v, _.cloneDeep(this.options.variables.properties[v]))
+          this.$q.notify({message: `Variable "${v}" updated.`, type: 'positive'})
+        })
       } else {
-        Vue.set(this.schema.properties, v, this.options.variables.properties[v])
+        Vue.set(this.schema.properties, v, _.cloneDeep(this.options.variables.properties[v]))
         this.schema.order.push(v)
-        self.$q.notify({message: `Variable "${v}" added.`, type: 'positive'})
+        this.$q.notify({message: `Variable "${v}" added.`, type: 'positive'})
       }
     },
     move (variable, displacement, schema) {
