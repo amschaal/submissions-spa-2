@@ -16,6 +16,7 @@
     "ag-grid-vue": "^24.0.0",
     "axios": "^0.21.2",
     "core-js": "^3.0.0",
+    "jsondiffpatch": "^0.6.0",
     "moment": "^2.24.0",
     "quasar": "^1.14.1",
     "vue-i18n": "^8.0.0",

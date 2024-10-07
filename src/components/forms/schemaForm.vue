@@ -117,6 +117,7 @@ import _ from 'lodash'
 import Fieldoptions from '../fieldoptions.vue'
 // import Formatoptions from '../components/formatoptions.vue'
 import Vue from 'vue'
+import jsonDiffModal from '../modals/jsonDiffModal.vue'
 // import Agschema from '../agschema.vue'
 export default {
   name: 'schemaForm',
@@ -211,13 +212,20 @@ export default {
       if (this.schema.properties[v]) {
         const message = 'Are you sure you want to reset the variable "' + v + '", pulling the configuration from the lab settings?  All sub options will be replaced as well.  If it is a table, that includes every column in that table.'
         this.$q.dialog({
-          title: 'Confirm variable reset/replacement from settings',
-          message: message,
-          ok: 'Okay',
-          cancel: 'Cancel'
+          component: jsonDiffModal,
+          parent: this,
+          // props forwarded to component
+          // (everything except "component" and "parent" props above):
+          text: message,
+          left: this.schema.properties[v],
+          right: this.options.variables.properties[v]
         }).onOk(() => {
           Vue.set(this.schema.properties, v, _.cloneDeep(this.options.variables.properties[v]))
           this.$q.notify({message: `Variable "${v}" updated.`, type: 'positive'})
+        }).onCancel(() => {
+          console.log('Cancel')
+        }).onDismiss(() => {
+          console.log('Called on OK or Cancel')
         })
       } else {
         Vue.set(this.schema.properties, v, _.cloneDeep(this.options.variables.properties[v]))
