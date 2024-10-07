@@ -1,9 +1,16 @@
 <template>
-  <q-dialog ref="dialog" @hide="onDialogHide" :content-css="{minWidth: '30vw', minHeight: '30vh'}">
-    <q-card class="q-dialog-plugin" style="min-width: 800px; max-width: none;">
-      <h5 v-if="text">{{ text }}</h5>
-      Change details:
-      <jsonDiff v-if="left && right" :left="left" :right="right"/>
+  <q-dialog ref="dialog" @hide="onDialogHide">
+    <q-card class="q-dialog-plugin" style="min-width: 800px; max-width: 80vw;">
+      <q-card-section>
+        <div class="text-h6">{{ getTitle }}</div>
+      </q-card-section>
+      <q-card-section class="q-pt-none">
+        <h6 v-if="text">{{ text }}</h6>
+      </q-card-section>
+      <q-card-section class="q-pt-none">
+        Change details:
+        <jsonDiff v-if="left && right" :left="left" :right="right"/>
+      </q-card-section>
       <q-card-actions align="right">
         <q-btn color="primary" label="OK" @click="onOKClick" />
         <q-btn color="primary" label="Cancel" @click="onCancelClick" />
@@ -48,6 +55,11 @@ export default {
   },
   components: {
     jsonDiff
+  },
+  computed: {
+    getTitle () {
+      return this.title || 'JSON Diff Viewer'
+    }
   }
 }
 </script>
