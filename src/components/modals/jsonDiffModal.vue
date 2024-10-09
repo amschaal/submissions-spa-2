@@ -9,7 +9,7 @@
       </q-card-section>
       <q-card-section class="q-pt-none">
         Change details:
-        <jsonDiff v-if="left && right" :left="left" :right="right"/>
+        <jsonDiff v-if="left && right || left && diff" :left="left" :right="right" :diff="diff"/>
       </q-card-section>
       <q-card-actions align="right">
         <q-btn color="primary" label="OK" @click="onOKClick" />

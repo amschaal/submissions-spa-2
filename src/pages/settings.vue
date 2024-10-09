@@ -91,7 +91,12 @@
               group="settings"
             >
               <h5>*Submission level variables are variables that are used to create a single field in a form.  If you only want a single value, this is the type of variable to use.  Otherwise, look at using table level variables.</h5>
-              <schemaForm v-model="lab.submission_variables" :options="{variables: {}}" type="submission"/>
+              <schemaForm v-model="lab.submission_variables" :options="{variables: {}}" type="submission">
+                <template v-slot:variable-buttons-after="{variable}">
+                  <q-btn label="Diffs" @click="viewVariableDiffs(variable)"/>
+                <!-- {{ variable.variable }} -->
+              </template>
+              </schemaForm>
             </q-expansion-item>
             <q-expansion-item
               expand-separator
@@ -160,6 +165,7 @@ import projectIds from '../components/projectIds.vue'
 // import userField from '../components/forms/userField.vue'
 import permissions from '../components/permissions.vue'
 import pluginSettings from '../components/pluginSettings.vue'
+import variableDiffModal from '../components/modals/variableDiffModal.vue'
 import _ from 'lodash'
 // import draggable from 'vuedraggable'
 export default {
@@ -247,6 +253,20 @@ export default {
     removeStatus ({index, value}) {
       // alert('removing')
       // return true
+    },
+    viewVariableDiffs (variable, type) {
+      this.$q.dialog({
+        component: variableDiffModal,
+        parent: this,
+        // props forwarded to component
+        // (everything except "component" and "parent" props above):
+        submission_types: this.$store.getters.lab.submission_types,
+        variable: variable,
+        type: type
+      }).onOk(() => {
+      }).onCancel(() => {
+      }).onDismiss(() => {
+      })
     },
     addPlugins () {
       this.$axios
