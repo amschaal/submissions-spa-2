@@ -1,7 +1,7 @@
 <template>
   <div>
         <div v-if="schema" style="width:100%">
-          <div class="row"><div class="col-1"></div><div class="col-1" title="Should the field only be available to staff?">Internal</div><div class="col-1">Required</div><div class="col-2">Variable</div><div class="col-2">Name</div><div class="col-2">Type</div><div class="col-1">Column Width</div><div class="col-2"></div></div>
+          <div class="row"><div class="col-1"></div><div class="col-1" title="Should the field only be available to staff?">Internal</div><div class="col-1">Required</div><div class="col-2">Variable</div><div class="col-2">Name</div><div class="col-2">Type</div><div class="col-1" v-if="options.showWidth">Column Width</div><div class="col-2"></div></div>
           <div v-for="variable in fields_sorted" :key="variable.variable">
             <div class="row">
               <div class="col-1"><q-btn flat dense round icon="arrow_upward" color="primary" @click="move(variable.variable, -1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != 0"/> <q-btn flat dense round icon="arrow_downward" color="primary" @click="move(variable.variable, 1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != schema.order.length - 1"/></div>

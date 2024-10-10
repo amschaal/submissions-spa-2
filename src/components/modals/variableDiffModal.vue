@@ -1,6 +1,6 @@
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide">
-    <q-card class="q-dialog-plugin" style="min-width: 800px; max-width: 80vw;">
+    <q-card class="q-dialog-plugin" style="min-width: 1000px; max-width: 90vw;">
       <q-card-section>
         <div class="text-h6">Compare submission types against variable "{{ variable.variable }}"</div>
       </q-card-section>
@@ -26,8 +26,8 @@
         </q-markup-table>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn color="primary" label="OK" @click="onOKClick" />
-        <q-btn color="primary" label="Cancel" @click="onCancelClick" />
+        <!-- <q-btn color="primary" label="OK" @click="onOKClick" /> -->
+        <q-btn color="primary" label="Dismiss" @click="onCancelClick" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -54,6 +54,7 @@ export default {
         text: `Differences found between Settings->${this.variable.variable} and "${t.type.name}"->${t.path}.`,
         left: this.variable.schema,
         right: null,
+        dismissOnly: true,
         diff: t.diff
       }).onOk(() => {
       }).onCancel(() => {

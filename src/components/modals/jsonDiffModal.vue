@@ -1,6 +1,6 @@
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide">
-    <q-card class="q-dialog-plugin" style="min-width: 800px; max-width: 80vw;">
+    <q-card class="q-dialog-plugin" style="min-width: 1000px; max-width: 90vw;">
       <q-card-section>
         <div class="text-h6">{{ getTitle }}</div>
       </q-card-section>
@@ -12,8 +12,13 @@
         <jsonDiff v-if="left && right || left && diff" :left="left" :right="right" :diff="diff"/>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn color="primary" label="OK" @click="onOKClick" />
-        <q-btn color="primary" label="Cancel" @click="onCancelClick" />
+        <div v-if="dismissOnly">
+          <q-btn color="primary" label="Dismiss" @click="onCancelClick" />
+        </div>
+        <div v-else>
+          <q-btn color="primary" label="OK" @click="onOKClick" />
+          <q-btn color="primary" label="Cancel" @click="onCancelClick" />
+        </div>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -22,7 +27,7 @@
 <script>
 import jsonDiff from '../jsonDiff.vue'
 export default {
-  props: ['left', 'right', 'diff', 'text', 'title'],
+  props: ['left', 'right', 'diff', 'text', 'title', 'dismissOnly'],
 
   methods: {
     show () {
