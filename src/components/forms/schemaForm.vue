@@ -1,7 +1,7 @@
 <template>
   <div>
         <div v-if="schema" style="width:100%">
-          <div class="row"><div class="col-1"></div><div class="col-1" title="Should the field only be available to staff?">Internal</div><div class="col-1">Required</div><div class="col-2">Variable</div><div class="col-2">Name</div><div class="col-2">Type</div><div class="col-1">Column Width</div><div class="col-2"></div></div>
+          <div class="row"><div class="col-1"></div><div class="col-1" title="Should the field only be available to staff?">Internal</div><div class="col-1">Required</div><div class="col-2">Variable</div><div class="col-2">Name</div><div class="col-2">Type</div><div class="col-1" v-if="options.showWidth">Column Width</div><div class="col-2"></div></div>
           <div v-for="variable in fields_sorted" :key="variable.variable">
             <div class="row">
               <div class="col-1"><q-btn flat dense round icon="arrow_upward" color="primary" @click="move(variable.variable, -1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != 0"/> <q-btn flat dense round icon="arrow_downward" color="primary" @click="move(variable.variable, 1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != schema.order.length - 1"/></div>
@@ -41,6 +41,7 @@
                 <SchemaDialog v-if="variable.schema.type == 'table'" v-model="variable.schema.schema" :root-schema="rootSchema" :variable="variable"/>
                 <fieldoptions v-else style="display:inline-block" :schema="schema" v-model="schema.properties[variable.variable]" :variable="variable.variable" :type="type" :root-schema="rootSchema"/>
                 <q-btn label="Delete" color="negative" @click="deleteVariable(variable.variable, 'submission_schema')"></q-btn>
+                <slot name="variable-buttons-after" v-bind:variable="variable" v-bind:rootSchema="rootSchema"></slot>
               </div>
             </div>
           </div>
@@ -113,9 +114,11 @@
 <script>
 import '../forms/docs-input.styl'
 // import axios from 'axios'
+import _ from 'lodash'
 import Fieldoptions from '../fieldoptions.vue'
 // import Formatoptions from '../components/formatoptions.vue'
 import Vue from 'vue'
+import jsonDiffModal from '../modals/jsonDiffModal.vue'
 // import Agschema from '../agschema.vue'
 export default {
   name: 'schemaForm',
@@ -208,11 +211,27 @@ export default {
     },
     addExistingVariable (v) {
       if (this.schema.properties[v]) {
-        this.$q.notify(`Variable "${v}" already exists`)
+        const message = 'Are you sure you want to reset the variable "' + v + '", pulling the configuration from the lab settings?  All sub options will be replaced as well.  If it is a table, that includes every column in that table.'
+        this.$q.dialog({
+          component: jsonDiffModal,
+          parent: this,
+          // props forwarded to component
+          // (everything except "component" and "parent" props above):
+          text: message,
+          left: this.schema.properties[v],
+          right: this.options.variables.properties[v]
+        }).onOk(() => {
+          Vue.set(this.schema.properties, v, _.cloneDeep(this.options.variables.properties[v]))
+          this.$q.notify({message: `Variable "${v}" updated.`, type: 'positive'})
+        }).onCancel(() => {
+          console.log('Cancel')
+        }).onDismiss(() => {
+          console.log('Called on OK or Cancel')
+        })
       } else {
-        Vue.set(this.schema.properties, v, this.options.variables.properties[v])
+        Vue.set(this.schema.properties, v, _.cloneDeep(this.options.variables.properties[v]))
         this.schema.order.push(v)
-        self.$q.notify({message: `Variable "${v}" added.`, type: 'positive'})
+        this.$q.notify({message: `Variable "${v}" added.`, type: 'positive'})
       }
     },
     move (variable, displacement, schema) {

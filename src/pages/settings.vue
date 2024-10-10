@@ -91,7 +91,11 @@
               group="settings"
             >
               <h5>*Submission level variables are variables that are used to create a single field in a form.  If you only want a single value, this is the type of variable to use.  Otherwise, look at using table level variables.</h5>
-              <schemaForm v-model="lab.submission_variables" :options="{variables: {}}" type="submission"/>
+              <schemaForm v-model="lab.submission_variables" :options="{variables: {}}" type="submission">
+                <template v-slot:variable-buttons-after="{variable}">
+                  <q-btn label="Diffs" @click="viewVariableDiffs(variable)"/>
+                </template>
+              </schemaForm>
             </q-expansion-item>
             <q-expansion-item
               expand-separator
@@ -100,7 +104,11 @@
               group="settings"
             >
             <h5>* Table level variables are variables that are used to create columns in a table.  If a user is to create multiple entries for a variable, that variable should be configured for a table.</h5>
-            <schemaForm v-model="lab.table_variables" :options="{variables: {}}" type="table"/>
+            <schemaForm v-model="lab.table_variables" :options="{variables: {}}" type="table">
+              <template v-slot:variable-buttons-after="{variable}">
+                <q-btn label="Diffs" @click="viewVariableDiffs(variable, 'table')"/>
+              </template>
+            </schemaForm>
             </q-expansion-item>
           </q-list>
 
@@ -160,6 +168,7 @@ import projectIds from '../components/projectIds.vue'
 // import userField from '../components/forms/userField.vue'
 import permissions from '../components/permissions.vue'
 import pluginSettings from '../components/pluginSettings.vue'
+import variableDiffModal from '../components/modals/variableDiffModal.vue'
 import _ from 'lodash'
 // import draggable from 'vuedraggable'
 export default {
@@ -247,6 +256,20 @@ export default {
     removeStatus ({index, value}) {
       // alert('removing')
       // return true
+    },
+    viewVariableDiffs (variable, type) {
+      this.$q.dialog({
+        component: variableDiffModal,
+        parent: this,
+        // props forwarded to component
+        // (everything except "component" and "parent" props above):
+        submission_types: this.$store.getters.types,
+        variable: variable,
+        type: type
+      }).onOk(() => {
+      }).onCancel(() => {
+      }).onDismiss(() => {
+      })
     },
     addPlugins () {
       this.$axios

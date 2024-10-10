@@ -164,7 +164,7 @@
       </q-list>
     </q-btn-dropdown>
     <reportsModal ref="reports"/>
-    <q-btn label="Create Report" @click="createReport"/>
+    <q-btn v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')" label="Create Report" @click="createReport"/>
   </q-page>
 </template>
 
