@@ -94,8 +94,7 @@
               <schemaForm v-model="lab.submission_variables" :options="{variables: {}}" type="submission">
                 <template v-slot:variable-buttons-after="{variable}">
                   <q-btn label="Diffs" @click="viewVariableDiffs(variable)"/>
-                <!-- {{ variable.variable }} -->
-              </template>
+                </template>
               </schemaForm>
             </q-expansion-item>
             <q-expansion-item
@@ -105,7 +104,11 @@
               group="settings"
             >
             <h5>* Table level variables are variables that are used to create columns in a table.  If a user is to create multiple entries for a variable, that variable should be configured for a table.</h5>
-            <schemaForm v-model="lab.table_variables" :options="{variables: {}}" type="table"/>
+            <schemaForm v-model="lab.table_variables" :options="{variables: {}}" type="table">
+              <template v-slot:variable-buttons-after="{variable}">
+                <q-btn label="Diffs" @click="viewVariableDiffs(variable, 'table')"/>
+              </template>
+            </schemaForm>
             </q-expansion-item>
           </q-list>
 
@@ -260,7 +263,7 @@ export default {
         parent: this,
         // props forwarded to component
         // (everything except "component" and "parent" props above):
-        submission_types: this.$store.getters.lab.submission_types,
+        submission_types: this.$store.getters.types,
         variable: variable,
         type: type
       }).onOk(() => {
