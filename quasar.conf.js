@@ -1,6 +1,8 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 const fs = require('fs')
+// import ESLintPlugin from 'eslint-webpack-plugin'
+const ESLintPlugin = require('eslint-webpack-plugin')
 
 module.exports = function (ctx) {
   return {
@@ -40,7 +42,7 @@ module.exports = function (ctx) {
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
       iconSet: 'material-icons', // Quasar icon set
-      lang: 'en-us', // Quasar language pack
+      lang: 'en-US', // Quasar language pack
 
       // Possible values for "all":
       // * 'auto' - Auto-import needed Quasar components & directives
@@ -63,6 +65,11 @@ module.exports = function (ctx) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
+      chainWebpack (chain) {
+        chain
+          .plugin('eslint-webpack-plugin')
+          .use(ESLintPlugin, [{ extensions: ['js', 'vue'] }])
+      },
       vueRouterMode: 'history', // available values: 'hash', 'history'
       // beforeDev: ({ quasarConf }) => {
       // },
@@ -84,17 +91,19 @@ module.exports = function (ctx) {
       // extractCSS: false,
 
       // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
-      extendWebpack (cfg) {
-        cfg.module.rules.push({
-          enforce: 'pre',
-          test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
-          exclude: /node_modules/,
-          options: {
-            formatter: require('eslint').CLIEngine.getFormatter('stylish')
-          }
-        })
-      }
+      // extendWebpack (cfg) {
+      //   const eslint = new ESLint();
+      //   const formatter = eslint.loadFormatter('stylish');
+      //   cfg.module.rules.push({
+      //     enforce: 'pre',
+      //     test: /\.(js|vue)$/,
+      //     loader: 'eslint-loader',
+      //     exclude: /node_modules/,
+      //     options: {
+      //       formatter: formatter //require('eslint').CLIEngine.getFormatter('stylish')
+      //     }
+      //   })
+      // }
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
@@ -110,9 +119,14 @@ module.exports = function (ctx) {
             '^/server': ''
           }
         }
+        // ,'/static': {
+        //   target: 'http://simsapi:8000',
+        //   changeOrigin: true
+        // }
       },
       // open: true // opens browser window automatically
     },
+
 
     // animations: 'all', // --- includes all animations
     // https://quasar.dev/options/animations
