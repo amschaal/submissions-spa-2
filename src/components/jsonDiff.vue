@@ -10,7 +10,7 @@
 
 <script>
 import * as jsondiffpatch from 'jsondiffpatch'
-import * as htmlFormatter from 'jsondiffpatch/lib/formatters/html'
+import * as htmlFormatter from 'jsondiffpatch/formatters/html'
 const JD = jsondiffpatch.create({})
 export default {
   props: ['left', 'right', 'diff'],
@@ -46,8 +46,7 @@ export default {
   }
 }
 </script>
-
-<style src="jsondiffpatch/lib/formatters/styles/html.css"></style>
+<style src="jsondiffpatch/formatters/styles/html.css"></style>
 <style>
 .jsondiffpatch-unchanged {
   display: none;
