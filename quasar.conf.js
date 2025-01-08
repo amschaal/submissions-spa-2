@@ -1,9 +1,7 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 const fs = require('fs')
-// import ESLintPlugin from 'eslint-webpack-plugin'
 const ESLintPlugin = require('eslint-webpack-plugin')
-
 module.exports = function (ctx) {
   return {
     // app boot file (/src/boot)
@@ -20,7 +18,7 @@ module.exports = function (ctx) {
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: [
-      'app.styl'//'app.sass'
+      'app.sass'//'app.styl'
 
     ],
 
