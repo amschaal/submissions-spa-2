@@ -34,10 +34,10 @@ class DateWidget extends Widget {
   static component = DateComponent
   static name = 'Date'
   static schema =
-  [
-    {'variable': 'foo', 'label': 'Foo', 'type': 'text'},
-    {'variable': 'bar', 'label': 'Bar', 'type': 'text', 'options': [{'label': 'One', 'value': 1}, {'label': 'Two', 'value': 2}]}
-  ]
+    [
+      {'variable': 'foo', 'label': 'Foo', 'type': 'text'},
+      {'variable': 'bar', 'label': 'Bar', 'type': 'text', 'options': [{'label': 'One', 'value': 1}, {'label': 'Two', 'value': 2}]}
+    ]
 }
 
 class CheckboxWidget extends Widget {
@@ -55,7 +55,7 @@ class EnumWidget extends Widget {
     return _.merge(this.options, this.getSelectOptions())
   }
   getSelectOptions () {
-    var options = this.variable.schema.enum || []
+    const options = this.variable.schema.enum || []
     return {options: options.map(function (val) { return {'label': val, 'value': val} })}
   }
 }
@@ -170,6 +170,6 @@ class MultiSelectWidget extends SelectWidget {
 //   }
 // }
 
-var widgetFactory = new WidgetFactory([TextWidget, TextAreaWidget, WYSIWYGWidget, ChipsWidget, SelectWidget, MultiSelectWidget, CheckboxWidget, RadioWidget, MultiCheckboxWidget, DateWidget], SelectWidget, MultiSelectWidget)
+const widgetFactory = new WidgetFactory([TextWidget, TextAreaWidget, WYSIWYGWidget, ChipsWidget, SelectWidget, MultiSelectWidget, CheckboxWidget, RadioWidget, MultiCheckboxWidget, DateWidget], SelectWidget, MultiSelectWidget)
 // export {MultiSelectWidget}
 export default widgetFactory

@@ -39,10 +39,10 @@ class DateWidget extends GridWidget {
   static component = DateComponent
   static name = 'Date'
   static schema =
-  [
-    {'variable': 'foo', 'label': 'Foo', 'type': 'text'},
-    {'variable': 'bar', 'label': 'Bar', 'type': 'text', 'options': [{'label': 'One', 'value': 1}, {'label': 'Two', 'value': 2}]}
-  ]
+    [
+      {'variable': 'foo', 'label': 'Foo', 'type': 'text'},
+      {'variable': 'bar', 'label': 'Bar', 'type': 'text', 'options': [{'label': 'One', 'value': 1}, {'label': 'Two', 'value': 2}]}
+    ]
 }
 
 class VocabularyWidget extends GridWidget {
@@ -53,14 +53,14 @@ class VocabularyWidget extends GridWidget {
   static name = 'Vocabulary Autocomplete'
   static description = 'Auto complete terms based on a configured vocabulary.'
   static schema =
-  [
-    {'variable': 'vocabulary', 'label': 'Vocabulary ID', 'type': 'text'},
-    {'variable': 'vocabulary_variable', 'label': 'Variable specifying vocabulary', 'type': 'text'}
+    [
+      {'variable': 'vocabulary', 'label': 'Vocabulary ID', 'type': 'text'},
+      {'variable': 'vocabulary_variable', 'label': 'Variable specifying vocabulary', 'type': 'text'}
     // {'variable': 'bar', 'label': 'Bar', 'type': 'text', 'options': [{'label': 'One', 'value': 1}, {'label': 'Two', 'value': 2}]}
-  ]
+    ]
   static getSchema (schema, vue) {
     console.log('getSchema', schema, vue, this.schema)
-    var _schema = this.schema
+    const _schema = this.schema
     if (vue) {
       _schema[0].enum = vue.$store.getters.vocabularies
     }
@@ -68,7 +68,7 @@ class VocabularyWidget extends GridWidget {
   }
   validateOptions (options, field, schema) {
     console.log('hello!!!', options, field, schema)
-    var errors = {}
+    const errors = {}
     if (options.vocabulary_variable && !schema.properties[options.vocabulary_variable]) {
       errors['vocabulary_variable'] = [`Variable "${options.vocabulary_variable}" does not exist.`]
     }
@@ -86,12 +86,12 @@ class APIAutocompleteWidget extends GridWidget {
   static component = APIAutocompleteComponent
   static name = 'API Autocomplete'
   static schema =
-  [
-    {'variable': 'url', 'label': 'API URL', 'type': 'text'},
-    {'variable': 'params', 'label': 'Additional query parameters', 'type': 'text'},
-    {'variable': 'value_property', 'label': 'Value property', 'type': 'text'},
-    {'variable': 'label_property', 'label': 'Label property', 'type': 'text'}
-  ]
+    [
+      {'variable': 'url', 'label': 'API URL', 'type': 'text'},
+      {'variable': 'params', 'label': 'Additional query parameters', 'type': 'text'},
+      {'variable': 'value_property', 'label': 'Value property', 'type': 'text'},
+      {'variable': 'label_property', 'label': 'Label property', 'type': 'text'}
+    ]
 }
 /*
 class AdapterWidget extends APIAutocompleteWidget {
@@ -197,11 +197,11 @@ class GridComponentWidget extends GridWidget {
   static component = GridComponent
   static name = 'Spreadsheet'
   static schema =
-  [
-    {'variable': 'schema', 'label': 'Schema', 'type': 'text'}
-  ]
+    [
+      {'variable': 'schema', 'label': 'Schema', 'type': 'text'}
+    ]
 }
 
-var widgetFactory = new WidgetFactory([DateWidget, BooleanWidget, AutocompleteWidget, VocabularyWidget, APIAutocompleteWidget, APISelectWidget, MultiSelectWidget, GridComponentWidget])
+const widgetFactory = new WidgetFactory([DateWidget, BooleanWidget, AutocompleteWidget, VocabularyWidget, APIAutocompleteWidget, APISelectWidget, MultiSelectWidget, GridComponentWidget])
 
 export default widgetFactory

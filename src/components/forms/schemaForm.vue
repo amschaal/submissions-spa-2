@@ -112,7 +112,7 @@
 </template>
 
 <script>
-import '../forms/docs-input.styl'
+// import '../forms/docs-input.styl'
 // import axios from 'axios'
 import _ from 'lodash'
 import Fieldoptions from '../fieldoptions.vue'
@@ -189,7 +189,7 @@ export default {
         if (!name.match(this.variable_re)) {
           return 'Variables should only contain lowercase letters, numbers, and underscores'
         }
-        for (var n in this.schema.properties) {
+        for (const n in this.schema.properties) {
           if (n.toLowerCase() === name.toLowerCase()) {
             return 'That variable name exists'
           }
@@ -236,14 +236,14 @@ export default {
     },
     move (variable, displacement, schema) {
       console.log('moveUp', variable)
-      var index = this.schema.order.indexOf(variable)
+      const index = this.schema.order.indexOf(variable)
       this.schema.order.splice(index + displacement, 0, this.schema.order.splice(index, 1)[0])
     },
     setNested (path, value) {
-      var props = path.split('.')
+      const props = path.split('.')
       console.log('setNested', props, value)
-      var self = this
-      var last = this
+      const self = this
+      let last = this
 
       props.forEach(function (prop, index) {
         if (!last[prop] && index < props.length - 1) {
@@ -258,9 +258,9 @@ export default {
       })
     },
     getNested (path) {
-      var props = path.split('.')
+      const props = path.split('.')
       console.log('getNested', props)
-      var last = this
+      let last = this
       props.forEach(function (prop, index) {
         if (index < props.length - 1 && !last[prop]) {
           return undefined
@@ -271,7 +271,7 @@ export default {
       })
     },
     deleteVariable (variable, schema) {
-      var self = this
+      const self = this
       this.$q.dialog({
         title: 'Confirm variable deletion',
         message: 'Are you sure you want to delete the variable "' + variable + '"?',
@@ -279,7 +279,7 @@ export default {
         cancel: 'Cancel'
       }).onOk(() => {
         if (self.schema.order) {
-          var index = self.schema.order.indexOf(variable)
+          const index = self.schema.order.indexOf(variable)
           if (index >= 0) {
             self.schema.order.splice(index, 1)
           }
@@ -290,7 +290,7 @@ export default {
     },
     toggleRequired (variable) {
       console.log('toggleRequired', variable)
-      var index = this.schema.required.indexOf(variable.variable)
+      const index = this.schema.required.indexOf(variable.variable)
       if (variable.schema && variable.schema.internal && index >= 0) {
         this.schema.required.splice(index, 1)
       }
@@ -298,7 +298,7 @@ export default {
     fields_sorted_method () {
       console.log('field_sorted', this.schema)
       return this.schema.order.map(function (variable) {
-        return {'variable': variable, 'schema': this.schema.properties[variable]}
+        return {variable, 'schema': this.schema.properties[variable]}
       })
     }
 
@@ -336,13 +336,13 @@ export default {
       if (!this.schema || !this.schema.order) {
         return []
       }
-      var self = this
+      const self = this
       return this.schema.order.map(function (variable) {
-        return {'variable': variable, 'schema': self.schema.properties[variable]}
+        return {variable, 'schema': self.schema.properties[variable]}
       })
     },
     variables () {
-      var variables = this.options && this.options.variables && this.options.variables.order ? this.options.variables.order.slice() : []
+      const variables = this.options && this.options.variables && this.options.variables.order ? this.options.variables.order.slice() : []
       variables.sort()
       return variables
     }

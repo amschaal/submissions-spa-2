@@ -304,7 +304,7 @@
 </template>
 
 <script>
-import './docs-input.styl'
+// import './docs-input.styl'
 // import axios from 'axios'
 // import Samplesheet from '../../components/samplesheet.vue'
 // import Agschema from '../../components/agschema.vue'
