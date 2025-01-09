@@ -7,13 +7,13 @@
       :visible-columns="visibleColumns"
       :filter="filter"
       row-key="id"
-      :pagination.sync="serverPagination"
+      v-model:pagination="serverPagination"
       :loading="loading"
       @request="request"
       binary-state-sort
       :rows-per-page-options="[10,25,0]"
     >
-      <template slot="top-left">
+      <template v-slot:top-left>
         <!-- <q-table-columns
           color="secondary"
           class="q-mr-sm"
@@ -37,7 +37,7 @@
         />
         <q-checkbox v-model="showImported" label="Show imported" @input="refresh"/>
       </template>
-      <template slot="top-right">
+      <template v-slot:top-right>
         <q-input
           v-model="filter"
           debounce="500"
@@ -51,7 +51,7 @@
           </template>
         </q-input>
       </template>
-      <template slot="body" slot-scope="props">
+      <template v-slot:body="props" >
         <q-tr :props="props" v-bind:class="{'imported': props.row.submission}">
           <q-td key="created" :props="props">{{ props.row.created | formatDate }}</q-td>
           <q-td key="external_id" :props="props"><a target="_blank" :href="props.row.url">{{ props.row.external_id }}</a></q-td>
@@ -74,7 +74,7 @@
 // import _ from 'lodash'
 
 export default {
-  name: 'imports',
+  name: 'ImportsPage',
   data () {
     return {
       filter: '',
@@ -107,13 +107,13 @@ export default {
       // we do the server data fetch, based on pagination and filter received
       // (using Axios here, but can be anything; parameters vary based on backend implementation)
       console.log(pagination, filter)
-      var sortBy = pagination.sortBy
+      let sortBy = pagination.sortBy
       if (pagination.descending) {
         sortBy = '-' + sortBy
       }
-      var search = this.filter !== '' ? `&search=${this.filter}` : ''
-      var imported = this.showImported ? '' : '&submissions__id__isnull=True'
-      var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
+      const search = this.filter !== '' ? `&search=${this.filter}` : ''
+      const imported = this.showImported ? '' : '&submissions__id__isnull=True'
+      const pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       // var type = this.$route.query.type ? `&type__name__icontains=${this.$route.query.type}` : ''
       this.$axios
         .get(`/api/imports/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${search}${imported}`)// ${pagination.descending}&filter=${filter}

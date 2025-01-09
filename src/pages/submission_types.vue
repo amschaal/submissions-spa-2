@@ -6,13 +6,13 @@
       :columns="columns"
       :filter="filter"
       row-key="id"
-      :pagination.sync="serverPagination"
+      v-model:pagination="serverPagination"
       :loading="loading"
       @request="request"
       binary-state-sort
       :rows-per-page-options="[10,25,0]"
     >
-      <template slot="top" slot-scope="props" :props="props">
+      <template>
         <div class="row full-width">
           <div class="col-2">
             <q-btn color="primary" label="Create" class="q-mr-sm" :to="{name: 'create_submission_type'}" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')"/>
@@ -38,7 +38,7 @@
         </div>
       </template>
 
-      <template slot="body" slot-scope="props">
+      <template v-slot:body="props" >
         <q-tr :props="props" v-bind:class="{'inactive': !props.row.active}">
           <q-td key="sort_order" :props="props">{{ props.row.sort_order }}</q-td>
           <q-td key="name" :props="props"><router-link :to="{ name: 'submission_type', params: { id: props.row.id }}">{{ props.row.name }}</router-link></q-td>
@@ -89,15 +89,15 @@ export default {
 
       // we do the server data fetch, based on pagination and filter received
       // (using Axios here, but can be anything; parameters vary based on backend implementation)
-      var sortBy = pagination.sortBy
+      let sortBy = pagination.sortBy
       if (pagination.descending) {
         sortBy = '-' + sortBy
       }
       sortBy += ',name'
-      var lab = '&lab=' + this.$store.getters.labId
-      var search = this.filter !== '' ? `&search=${this.filter}` : ''
-      var inactive = !this.showInactive ? '&active=true' : ''
-      var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
+      const lab = '&lab=' + this.$store.getters.labId
+      const search = this.filter !== '' ? `&search=${this.filter}` : ''
+      const inactive = !this.showInactive ? '&active=true' : ''
+      const pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       console.log('inactive', inactive)
       this.$axios
         .get(`/api/submission_types/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${lab}${search}${inactive}`)// ${pagination.descending}&filter=${filter}

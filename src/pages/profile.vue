@@ -60,7 +60,7 @@
 <script>
 import api from '../components/api.vue'
 export default {
-  name: 'Profile',
+  name: 'ProfilePage',
   components: {
     api
   },
@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     loadUser () {
-      var self = this
+      const self = this
       this.$q.loading.show()
       this.$axios
         .get('/api/get_user/')
@@ -86,7 +86,7 @@ export default {
         })
     },
     setPrimaryEmail () {
-      var self = this
+      const self = this
       this.$axios
         .post('/api/emails/set_primary/', { email: this.primary_email })
         .then(function (response) {
@@ -99,7 +99,7 @@ export default {
         })
     },
     requestEmail () {
-      var self = this
+      const self = this
       this.$axios
         .post('/api/emails/claim/', { email: this.claim_email })
         .then(function (response) {
@@ -111,7 +111,7 @@ export default {
         })
     },
     confirmEmail () {
-      var self = this
+      const self = this
       if (!this.token) {
         self.$q.notify({message: 'Please enter the confimation token sent to your email.', type: 'negative'})
       }

@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 
 export default {
   name: 'confirm_submission',
@@ -16,12 +15,11 @@ export default {
     }
   },
   mounted: function () {
-    var self = this
     this.$axios
       .get(`/api/submissions/${self.id}/`)
-      .then(function (response) {
+      .then(response => {
         console.log('response', response)
-        Vue.set(self, 'submission', response.data)
+        this.submission = response.data
       })
   }
 }

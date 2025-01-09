@@ -35,7 +35,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import { date } from 'quasar'
 import KeyValueTable from '../components/keyValueTable.vue'
 import _ from 'lodash'
@@ -50,7 +49,7 @@ export default {
   },
   mounted: function () {
     console.log('mounted')
-    var self = this
+    const self = this
 
     this.$axios
       .get(`/api/submissions/${self.id}/`)
@@ -59,8 +58,7 @@ export default {
         if (!response.data.sample_data) {
           response.data.sample_data = []
         }
-        // self.submission = response.data
-        Vue.set(self, 'submission', response.data)
+        self.submission = response.data
       })
   },
   methods: {
@@ -81,7 +79,7 @@ export default {
         return true
       }
       // The location of the printing configuration is a little bit inconsistant between table or other variable types....
-      var printing = schema.properties[variable].schema ? schema.properties[variable].schema.printing : schema.properties[variable].printing
+      const printing = schema.properties[variable].schema ? schema.properties[variable].schema.printing : schema.properties[variable].printing
       return printing && printing.hidden
     },
     getDate (timeStamp) {
@@ -91,17 +89,17 @@ export default {
       return _.chunk(arr, chunkSize)
     },
     submission_field_data_array (flatten = true) {
-      var self = this
-      var fields = this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type !== 'table' && !this.hidden(self.submission.submission_schema, v))
-      var arr = fields.map(v => [self.getTitle(self.submission.submission_schema, v), self.truncate(self.submission.submission_schema, v, self.submission.submission_data[v])])
+      const self = this
+      const fields = this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type !== 'table' && !this.hidden(self.submission.submission_schema, v))
+      const arr = fields.map(v => [self.getTitle(self.submission.submission_schema, v), self.truncate(self.submission.submission_schema, v, self.submission.submission_data[v])])
       return flatten ? _.flatten(arr) : arr
     },
     table_fields () {
-      var self = this
+      const self = this
       return this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type === 'table' && !self.hidden(self.submission.submission_schema, v))
     },
     payment_array (flatten = true) {
-      var arr = _.toPairs(this.submission.payment.display)
+      const arr = _.toPairs(this.submission.payment.display)
       return flatten ? _.flatten(arr) : arr
     }
   },

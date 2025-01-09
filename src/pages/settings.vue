@@ -144,13 +144,13 @@
               active-color="white"
               narrow-indicator
             >
-            <template v-for="(config, plugin) in plugin_settings">
-              <q-tab :key="plugin" :name="plugin" :label="plugin"/>
+            <template v-for="(config, plugin) in plugin_settings" :key="plugin">
+              <q-tab :name="plugin" :label="plugin"/>
             </template>
           </q-tabs>
           <q-tab-panels v-model="plugin_tab" animated>
-            <template v-for="(config, plugin) in plugin_settings">
-              <q-tab-panel :key="plugin" :name="plugin">
+            <template v-for="(config, plugin) in plugin_settings" :key="plugin">
+              <q-tab-panel :name="plugin">
                 <pluginSettings :updateUrl="'/api/labs/'+lab.lab_id+'/update_plugin/'" :formUrl="'/api/labs/'+lab.lab_id+'/plugin_form/'+plugin+'/'" :plugin="plugin" :config="config"/>
               </q-tab-panel>
             </template>
@@ -172,7 +172,7 @@ import variableDiffModal from '../components/modals/variableDiffModal.vue'
 import _ from 'lodash'
 // import draggable from 'vuedraggable'
 export default {
-  name: 'settings',
+  name: 'SettingsPage',
   data () {
     return {
       lab: _.cloneDeep(this.$store.getters.lab),
@@ -215,7 +215,7 @@ export default {
     }
   },
   mounted () {
-    var self = this
+    const self = this
     this.$axios
       .get('/api/users/?show=true')
       .then(function (response) {
@@ -236,16 +236,15 @@ export default {
   },
   methods: {
     save () {
-      var self = this
       if (this.$store.getters.labId) {
         this.$axios
           .put(`/api/labs/${this.$store.getters.labId}/`, this.lab)
           .then(({ data }) => {
-            self.$store.commit('lab', data)
-            self.$q.notify({message: `Settings saved for ${data.name}`, type: 'positive'})
+            this.$store.commit('lab', data)
+            this.$q.notify({message: `Settings saved for ${data.name}`, type: 'positive'})
           })
           .catch(error => {
-            self.$q.notify({message: `Error: unable to save settings`, type: 'negative'})
+            this.$q.notify({message: `Error: unable to save settings`, type: 'negative'})
             console.log('error', error)
           })
       }
@@ -264,8 +263,8 @@ export default {
         // props forwarded to component
         // (everything except "component" and "parent" props above):
         submission_types: this.$store.getters.types,
-        variable: variable,
-        type: type
+        variable,
+        type
       }).onOk(() => {
       }).onCancel(() => {
       }).onDismiss(() => {

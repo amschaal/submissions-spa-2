@@ -82,13 +82,13 @@
               active-color="white"
               narrow-indicator
             >
-            <template v-for="(config, plugin) in plugin_settings">
-              <q-tab :key="plugin" :name="plugin" :label="plugin"/>
+            <template v-for="(config, plugin) in plugin_settings" :key="plugin">
+              <q-tab :name="plugin" :label="plugin"/>
             </template>
           </q-tabs>
           <q-tab-panels v-model="plugin_tab" animated>
-            <template v-for="(config, plugin) in plugin_settings">
-              <q-tab-panel :key="plugin" :name="plugin">
+            <template v-for="(config, plugin) in plugin_settings" :key="plugin">
+              <q-tab-panel :name="plugin">
                 <pluginSettings :updateUrl="'/api/institutions/'+institution.id+'/update_plugin/'" :formUrl="('/api/institutions/'+institution.id+'/plugin_form/'+plugin+'/')" :plugin="plugin" :config="config"/>
               </q-tab-panel>
             </template>

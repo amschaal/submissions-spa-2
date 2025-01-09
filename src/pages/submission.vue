@@ -44,8 +44,8 @@
         </q-card-section>
       </q-tab-panel>
       <!-- There can be a race condition with plugins loading, should use computed property or something that will wait until plugins are fully set up-->
-      <template v-for="(tab, i) in plugin_tabs">
-        <q-tab-panel :key="i" :name="tab.id">
+      <template v-for="(tab, i) in plugin_tabs" :key="i">
+        <q-tab-panel :name="tab.id">
           <q-card-section>
             <div v-html="tab.content"/>
             <!-- <h1 tab-test>{{tab.id}}</h1> -->
@@ -69,10 +69,9 @@ import Submission from '../components/submission.vue'
 import Files from '../components/files.vue'
 import NotesTree from '../components/notesTree.vue'
 import Charges from '../components/charges.vue'
-import Vue from 'vue'
 
 export default {
-  name: 'submission',
+  name: 'SubmissionPage',
   props: ['id', 'create', 'modify'],
   data () {
     return {
@@ -90,7 +89,7 @@ export default {
   },
   mounted: function () {
     console.log('mounted')
-    var self = this
+    const self = this
 
     // if (!this.id || this.id === 'create') {
     //   this.create = true
@@ -113,7 +112,7 @@ export default {
             response.data.sample_data = []
           }
           // self.submission = response.data
-          Vue.set(self, 'submission', response.data)
+          self.submission = response.data
           self.setLab()
           // self.plugin_tabs = self.$plugins.getTabs(self.submission.lab)
           self.$plugins.getTabs(self.submission.lab).then(function (tabs) {
@@ -127,7 +126,7 @@ export default {
     submissionUpdated (submission) {
       // this.modify = false
       console.log('submissionUpdated', submission)
-      Vue.set(this, 'submission', submission)
+      this.submission = submission
       // this.submission = submission
     },
     setLab () {
@@ -136,7 +135,7 @@ export default {
       }
     },
     hasPluginPermission (submission, tabId) {
-      var permissions = this.$plugins.getPermissions(tabId)
+      const permissions = this.$plugins.getPermissions(tabId)
       console.log('permissions', tabId, permissions)
       if (!permissions) {
         return true
@@ -156,18 +155,18 @@ export default {
       // if (!id || id === 'create') {
       //   this.create = true
       // }
-      var self = this
+      const self = this
       if (this.id) {
         self.$axios
           .get('/api/submissions/' + self.id)
           .then(function (response) {
             console.log('response', response)
             self.submission = response.data
-            Vue.set(self.submission, 'type', response.data.type.id)
+            self.submission.type = response.data.type.id
             self.setLab()
           })
       } else {
-        Vue.set(this, 'submission', {'sample_data': [], 'contacts': [], 'payment': {}})
+        this.submission = {'sample_data': [], 'contacts': [], 'payment': {}}
         // this.submission = {'sample_data': [], 'contacts': [], biocore: false}
       }
     }
