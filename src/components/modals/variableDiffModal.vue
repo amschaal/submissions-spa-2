@@ -99,7 +99,7 @@ export default {
               t.submission_schema.properties[v].schema.order.forEach(v2 => {
                 const schema = t.submission_schema.properties[v].schema.properties[v2]
                 if (v2 === this.variable.variable && schema) {
-                  variables.push({ type: t, path: `${v}->${v2}`, schema: schema, diff: JD.diff(this.variable.schema, schema) })
+                  variables.push({ type: t, path: `${v}->${v2}`, schema, diff: JD.diff(this.variable.schema, schema) })
                 }
               })
             }

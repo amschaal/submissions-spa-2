@@ -129,7 +129,7 @@
                 virtual-scroll
                 style="height: 600px"
                 :rows-per-page-options="[0]"
-                :pagination.sync="pagination"
+                v-model:pagination="pagination"
               >
               <template v-slot:top-right>
                 <q-input borderless dense debounce="300" v-model="search_filter" placeholder="Search" ref="advanced-filter-search">
@@ -243,7 +243,7 @@ export default {
     },
     addVariable (v) {
       // console.log(v)
-      var variable = _.cloneDeep(v || this.variable)
+      const variable = _.cloneDeep(v || this.variable)
       variable.filter = variable.filters.length === 1 ? variable.filters[0] : null
       this.variables.push(variable)
       this.variable = null
@@ -286,7 +286,7 @@ export default {
       return this.type && this.filterMap[this.type] ? this.filterMap[this.type].filters : []
     },
     variable_options () {
-      var filters = Object.values(this.type_filters)
+      let filters = Object.values(this.type_filters)
       // .concat(Object.values(this.lab_filters.general || {}))
       Object.keys(this.lab_filters).forEach(k => {
         if (k !== 'custom') {

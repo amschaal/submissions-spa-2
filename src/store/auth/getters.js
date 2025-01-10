@@ -16,7 +16,7 @@ export const isStaff = (state, getters, rootState, rootGetters) => {
   } else if (state.user.is_superuser) {
     return true
   } else if (state.user.labs && rootGetters.labId) {
-    for (var i in state.user.labs) {
+    for (const i in state.user.labs) {
       if (state.user.labs[i].lab_id === rootGetters.labId) {
         return true
       }

@@ -8,9 +8,8 @@
     />
 </template>
 <script>
-import Vue from 'vue'
 
-export default Vue.extend({
+export default {
   props: ['value'],
   data () {
     return {
@@ -26,5 +25,5 @@ export default Vue.extend({
     // Vue.nextTick(() => {
     // })
   }
-})
+}
 </script>

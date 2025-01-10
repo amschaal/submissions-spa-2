@@ -5,7 +5,7 @@
     <table class="full bordered compact submission">
     <tbody>
       <!-- <tr><th>Submitted</th><td>{{getDate(submission.submitted)}}</td><th>ID</th><td>{{submission.internal_id}}</td><th>Type</th><td colspan="3">{{submission.type.name}}</td></tr> -->
-      <tr><th>ID</th><td>{{submission.internal_id}}</td><th>Date Samples Received</th><td>{{submission.samples_received|formatDate}}</td><th>Received by</th><td>{{submission.received_by_name}}</td></tr>
+      <tr><th>ID</th><td>{{submission.internal_id}}</td><th>Date Samples Received</th><td>{{$filters.formatDate(submission.samples_received)}}</td><th>Received by</th><td>{{submission.received_by_name}}</td></tr>
       <tr><th>PI</th><td>{{submission.pi_first_name}} {{submission.pi_last_name}}</td><th>PI email</th><td>{{submission.pi_email}}</td><th>PI Phone</th><td>{{submission.pi_phone}}</td></tr>
       <tr><th>Submitter</th><td>{{submission.first_name}} {{submission.last_name}}</td><th>Email</th><td>{{submission.email}}</td><th>Phone</th><td>{{submission.phone}}</td></tr>
       <tr v-for="(p, i) in submission.contacts" :key="i"><th>Additional contact</th><td>{{p.first_name}} {{p.last_name}}</td><th>Email</th><td colspan="3">{{p.email}}</td></tr>

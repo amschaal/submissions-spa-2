@@ -114,13 +114,13 @@
           <q-td key="type" :props="props"><router-link v-if="lab" :to="{'name': 'submission_type', 'params': { id: props.row.type.id }}">{{ props.row.type.name }}</router-link><span v-else>{{ props.row.type.name }}</span></q-td>
           <q-td key="status" :props="props">{{ props.row.status }}</q-td>
           <q-td key="participant_names" :props="props">{{ props.row.participant_names.join(', ') }}</q-td>
-          <q-td key="submitted" :props="props">{{ props.row.submitted | formatDate }}</q-td>
+          <q-td key="submitted" :props="props">{{ $filters.formatDate(props.row.submitted) }}</q-td>
           <q-td key="name" :props="props">{{ props.row.first_name }} {{ props.row.last_name }}</q-td>
           <q-td key="email" :props="props">{{ props.row.email }}</q-td>
           <q-td key="pi_name" :props="props">{{ props.row.pi_first_name }} {{ props.row.pi_last_name }}</q-td>
           <q-td key="pi_email" :props="props">{{ props.row.pi_email }}</q-td>
           <q-td key="table_count" :props="props"><span v-for="(count, v, index) in props.row.table_count" :key="v">{{count}} {{v}}<span v-if="index != Object.keys(props.row.table_count).length - 1">, </span></span></q-td>
-          <q-td key="samples_received" :props="props"><q-icon size="18px" name="check_circle" v-if="props.row.samples_received" color="green"><q-tooltip>Received on {{props.row.samples_received|formatDate}} by {{props.row.received_by_name}}</q-tooltip></q-icon></q-td>
+          <q-td key="samples_received" :props="props"><q-icon size="18px" name="check_circle" v-if="props.row.samples_received" color="green"><q-tooltip>Received on {{$filters.formatDate(props.row.samples_received)}} by {{props.row.received_by_name}}</q-tooltip></q-icon></q-td>
           <q-td :key="'submission_data.'+v" v-for="v in labVariables" :props="props">
             <span v-if="Array.isArray(props.row.submission_data[v])">
               <a class="open-table" @click="openTable(`${props.row.id}_table_${v}`)">{{ props.row.submission_data[v].length }} <q-icon name="fas fa-table" /></a>

@@ -53,7 +53,7 @@
       </template>
       <template v-slot:body="props" >
         <q-tr :props="props" v-bind:class="{'imported': props.row.submission}">
-          <q-td key="created" :props="props">{{ props.row.created | formatDate }}</q-td>
+          <q-td key="created" :props="props">{{ $filters.formatDate(props.row.created) }}</q-td>
           <q-td key="external_id" :props="props"><a target="_blank" :href="props.row.url">{{ props.row.external_id }}</a></q-td>
           <q-td key="url" :props="props"><a target="_blank" :href="props.row.url">{{ props.row.url }}</a></q-td>
           <q-td key="submissions" :props="props">

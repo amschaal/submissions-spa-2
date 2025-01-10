@@ -5,8 +5,8 @@
 export const login = (context, {username, password, axios, dispatch}) => {
   return new Promise((resolve, reject) => {
     axios.post('/api/login/', {
-      username: username,
-      password: password
+      username,
+      password
       // headers: auth.getAuthHeader(),
     })
       .then(function (response) {
@@ -61,8 +61,8 @@ export const logout = (context, {axios}) => {
 export const updateSettings = (context, {path, value, axios, self, dispatch}) => {
   return new Promise((resolve, reject) => {
     axios.post('/api/users/update_settings/', {
-      path: path,
-      value: value
+      path,
+      value
       // headers: auth.getAuthHeader(),
     })
       .then(function (response) {
@@ -80,7 +80,7 @@ export const updateSettings = (context, {path, value, axios, self, dispatch}) =>
 export const deleteSetting = (context, {path, axios, self, dispatch}) => {
   return new Promise((resolve, reject) => {
     axios.post('/api/users/delete_setting/', {
-      path: path
+      path
       // headers: auth.getAuthHeader(),
     })
       .then(function (response) {

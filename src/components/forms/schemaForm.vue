@@ -117,7 +117,6 @@
 import _ from 'lodash'
 import Fieldoptions from '../fieldoptions.vue'
 // import Formatoptions from '../components/formatoptions.vue'
-import Vue from 'vue'
 import jsonDiffModal from '../modals/jsonDiffModal.vue'
 // import Agschema from '../agschema.vue'
 export default {
@@ -153,7 +152,7 @@ export default {
   created: function () {
     console.log('created!!!', this.schema)
     if (!this.options) {
-      Vue.set(this, 'options', {})
+      this.options = {}
     }
     this.setMissingProperties()
   },
@@ -162,19 +161,19 @@ export default {
   methods: {
     setMissingProperties () {
       if (!this.schema.properties) {
-        Vue.set(this.schema, 'properties', {})
+        this.schema.properties = {}
       }
       if (!this.schema.order) {
-        Vue.set(this.schema, 'order', [])
+        this.schema.order = []
       }
       if (!this.schema.layout) {
-        Vue.set(this.schema, 'layout', {})
+        this.schema.layout = {}
       }
       if (!this.schema.printing) {
-        Vue.set(this.schema, 'printing', [])
+        this.schema.printing = []
       }
       if (!this.schema.required) {
-        Vue.set(this.schema, 'required', [])
+        this.schema.required = []
       }
     },
     openModal () {
@@ -199,9 +198,9 @@ export default {
     },
     addVariable () {
       if (this.new_variable.type === 'table') {
-        Vue.set(this.schema.properties, this.new_variable.name, {type: this.new_variable.type, internal: false, unique: false, schema: { order: [], properties: {}}, printing: { hidden: false }})
+        this.schema.properties[this.new_variable.name] = {type: this.new_variable.type, internal: false, unique: false, schema: { order: [], properties: {}}, printing: { hidden: false }}
       } else {
-        Vue.set(this.schema.properties, this.new_variable.name, {type: this.new_variable.type, internal: false, unique: false})
+        this.schema.properties[this.new_variable.name] = {type: this.new_variable.type, internal: false, unique: false}
       }
 
       this.schema.order.push(this.new_variable.name)
@@ -221,7 +220,7 @@ export default {
           left: this.schema.properties[v],
           right: this.options.variables.properties[v]
         }).onOk(() => {
-          Vue.set(this.schema.properties, v, _.cloneDeep(this.options.variables.properties[v]))
+          this.schema.properties[v] = _.cloneDeep(this.options.variables.properties[v])
           this.$q.notify({message: `Variable "${v}" updated.`, type: 'positive'})
         }).onCancel(() => {
           console.log('Cancel')
@@ -229,7 +228,7 @@ export default {
           console.log('Called on OK or Cancel')
         })
       } else {
-        Vue.set(this.schema.properties, v, _.cloneDeep(this.options.variables.properties[v]))
+        this.schema.properties[v] = _.cloneDeep(this.options.variables.properties[v])
         this.schema.order.push(v)
         this.$q.notify({message: `Variable "${v}" added.`, type: 'positive'})
       }
@@ -284,7 +283,7 @@ export default {
             self.schema.order.splice(index, 1)
           }
         }
-        Vue.delete(this.schema.properties, variable)
+        delete this.schema.properties[variable]
         self.$q.notify({message: 'Variable "' + variable + '" deleted.', type: 'negative'})
       })
     },

@@ -121,13 +121,13 @@ export default {
   },
   methods: {
     widgetClass (v) {
-      var widget = v.schema.widget ? v.schema.widget : {}
+      const widget = v.schema.widget ? v.schema.widget : {}
       console.log('widgetClass', v, widget)
       return widgetFactory.getWidget(widget.type, v.schema.type, v.schema)
     },
     widget (v) {
-      var options = v.schema.widget && v.schema.widget.options ? v.schema.widget.options : {}
-      var WidgetClass = this.widgetClass(v)
+      const options = v.schema.widget && v.schema.widget.options ? v.schema.widget.options : {}
+      const WidgetClass = this.widgetClass(v)
       return new WidgetClass(v, options)
     },
     colWidth (variable) {
@@ -138,7 +138,7 @@ export default {
     },
     getError (v) {
       // console.log('getError1', v.schema, v.schema.error_message, this.errors, v.variable)
-      var errors = v.schema.error_message ? v.schema.error_message : this.errors[v.variable]
+      let errors = v.schema.error_message ? v.schema.error_message : this.errors[v.variable]
       if (Array.isArray(errors)) {
         errors = errors.map(e => (typeof e === 'string' ? e : 'Table contains errors.'))
       }
@@ -148,7 +148,7 @@ export default {
       return this.errors && this.errors[v] !== undefined
     },
     getWarning (v, flatten) {
-      var warning = v.schema.error_message || this.warnings[v.variable]
+      const warning = v.schema.error_message || this.warnings[v.variable]
       return warning && warning.join ? warning.join(', ') : ''
     },
     hasWarning (v) {
@@ -189,10 +189,10 @@ export default {
       if (!this.schema) {
         return []
       }
-      var self = this
+      const self = this
       if (self.schema.order) {
         return self.schema.order.map(function (variable) {
-          return {'variable': variable, 'schema': self.schema.properties[variable]}
+          return {variable, 'schema': self.schema.properties[variable]}
         })
       }
       return []

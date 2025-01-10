@@ -313,7 +313,6 @@ import selectLabModal from '../modals/selectLabModal.vue'
 // import Account from '../payment/ucdAccount.vue'
 import PPMS from '../../components/payment/ppms.vue'
 // import Files from '../../components/files.vue'
-import Vue from 'vue'
 import _ from 'lodash'
 
 export default {
@@ -343,7 +342,7 @@ export default {
     }
   },
   mounted: function () {
-    var self = this
+    const self = this
     this.$q.loading.show({
       delay: 400 // ms
     })
@@ -362,7 +361,7 @@ export default {
     //   this.initialize()
     // }
   },
-  beforeDestroy: function () {
+  beforeUnmount: function () {
     if (this.draft_message) {
       this.draft_message()
     }
@@ -370,8 +369,8 @@ export default {
   },
   methods: {
     initialize: function () {
-      var submission = window.localStorage.getItem('submission')
-      var self = this
+      const submission = window.localStorage.getItem('submission')
+      const self = this
       if (!this.create) {
         // this.$axios
         //   .get(`/api/submissions/${self.id}/`)
@@ -391,7 +390,7 @@ export default {
 
         if (this.create && !this.import && !this.draft && this.$route.query.type) {
           console.log('types', this.$store.getters.types)
-          for (var i in this.$store.getters.types) {
+          for (const i in this.$store.getters.types) {
             console.log('prefix', this.$store.getters.types[i].prefix)
             if (this.$store.getters.types[i].prefix === this.$route.query.type) {
               this.type_id = this.$store.getters.types[i].id
@@ -404,7 +403,7 @@ export default {
         } else if (this.draft) {
           this.loadDraft(this.draft)
         } else if (submission && window.JSON && window.JSON.parse) {
-          var message = this.$q.notify({
+          const message = this.$q.notify({
             message: `An unsaved draft was found.  Would you like to load it?`,
             timeout: 0, // in milliseconds; 0 means no timeout
             type: 'info',
@@ -511,10 +510,10 @@ export default {
       }
     },
     submit () {
-      var self = this
-      var id = this.submission.id
-      var action = this.create ? 'post' : 'put'
-      var url = !this.create ? `/api/submissions/${id}/` : '/api/submissions/'
+      const self = this
+      const id = this.submission.id
+      const action = this.create ? 'post' : 'put'
+      const url = !this.create ? `/api/submissions/${id}/` : '/api/submissions/'
       // var url = !this.create ? '/api/submissions/' + id + '/update/' : '/api/submit/'
       this.submitting = true
       this.$axios[action]('' + url, this.submission)
@@ -523,7 +522,7 @@ export default {
           // self.errors = {}
           // self.warnings = {}
           self.submission = response.data
-          Vue.set(self, 'errors', response.data.data.errors)
+          self.errors = response.data.data.errors
           // Vue.set(self, 'warnings', response.data.data.warnings)
           // console.log(response)
           self.$q.notify({message: 'Submission successfully saved.', type: 'positive'})
@@ -541,8 +540,8 @@ export default {
           // raise different exception if due to invalid credentials
           self.submitting = false
           console.log('ERROR', error.response)
-          var message = error.response.data.detail || 'There were errors saving your submission.'
-          self.$q.notify({message: message, type: 'negative'})
+          const message = error.response.data.detail || 'There were errors saving your submission.'
+          self.$q.notify({message, type: 'negative'})
           if (error.response.data.warnings && !self.submission.ignore_warnings) {
             self.$q.notify({
               message: 'There are warnings in your submission.',
@@ -562,7 +561,7 @@ export default {
           if (error.response) {
             // Vue.set(self, 'errors', error.response.data)
             self.errors = error.response.data
-            Vue.set(self.errors, 'payment', error.response.data.payment || {})
+            self.errors.payment = error.response.data.payment || {}
           }
           throw error
         })
@@ -570,11 +569,11 @@ export default {
     loadDraftMessage () {
       console.log(this.draft_message, this.draft)
       if (!this.draft_message && this.draft) {
-        var page = window.location.href // self.$router.query.page
+        let page = window.location.href // self.$router.query.page
         if (!this.$route.query.draft) {
           page += '?draft=' + this.draft
         }
-        var self = this
+        const self = this
         this.draft_message = this.$q.notify({
           message: `This is a draft.  In order to make it a submission, you must first click on the submit button at the bottom of the form and ensure that the form submits without errors.  You may refer to this draft by the following URL: ${page}`,
           timeout: 0, // in milliseconds; 0 means no timeout
@@ -593,9 +592,9 @@ export default {
       }
     },
     saveDraft () {
-      var self = this
-      var action = !this.draft ? 'post' : 'put'
-      var url = this.draft ? `/api/drafts/${this.draft}/` : '/api/drafts/'
+      const self = this
+      const action = !this.draft ? 'post' : 'put'
+      const url = this.draft ? `/api/drafts/${this.draft}/` : '/api/drafts/'
       // var url = !this.create ? '/api/submissions/' + id + '/update/' : '/api/submit/'
       this.$axios[action]('' + url, {data: this.submission})
         .then(function (response) {
@@ -615,7 +614,7 @@ export default {
         })
     },
     loadDraft: function (id) {
-      var self = this
+      const self = this
       this.$axios
         .get(`/api/drafts/${id}/`)
         .then(function (response) {
@@ -637,14 +636,14 @@ export default {
       if (url) {
         this.import = url
       }
-      var self = this
+      const self = this
       this.$axios
         // .get(`${self.import}/`)
         .get(`/api/imports/get_submission/?url=${self.import}`)
         .then(function (response) {
-          var imported = response.data.data
+          const imported = response.data.data
           // Rather than getting the url directly, which may have security restrictions, proxy through server which will clean the following.
-          var type = imported['type']
+          const type = imported['type']
           self.imported = _.cloneDeep(imported)
           delete imported['id']
           delete imported['type']
@@ -653,10 +652,10 @@ export default {
           delete imported['participants']
           delete imported['received_by']
           delete imported['samples_received']
-          var internalID = imported['internal_id']
+          const internalID = imported['internal_id']
           delete imported['internal_id']
           if (imported.contacts) {
-            for (var i in imported.contacts) {
+            for (const i in imported.contacts) {
               delete imported.contacts[i]['id']
             }
           }
@@ -674,7 +673,7 @@ export default {
         })
     },
     loadSubmission: function (id) {
-      var self = this
+      const self = this
       this.$axios
         .get(`/api/submissions/${id}/`)
         .then(function (response) {
@@ -683,9 +682,9 @@ export default {
           //   response.data.sample_data = []
           // }
           self.submission = response.data
-          Vue.set(self, 'errors', {contacts: [], payment: {}, warnings: response.data.warnings})
+          self.errors = {contacts: [], payment: {}, warnings: response.data.warnings}
           // Vue.set(self, 'warnings', response.data.warnings || {})
-          Vue.set(self.submission, 'type', response.data.type.id)
+          self.submission.type = response.data.type.id
           self.updatePaymentForm()
         })
     },
@@ -723,13 +722,13 @@ export default {
     //   }
     // },
     copyPI () {
-      Vue.set(this.submission, 'first_name', this.submission.pi_first_name)
-      Vue.set(this.submission, 'last_name', this.submission.pi_last_name)
-      Vue.set(this.submission, 'phone', this.submission.pi_phone)
-      Vue.set(this.submission, 'email', this.submission.pi_email)
+      this.submission.first_name = this.submission.pi_first_name
+      this.submission.last_name = this.submission.pi_last_name
+      this.submission.phone = this.submission.pi_phone
+      this.submission.email = this.submission.pi_email
     },
     flashHelpTooltip () {
-      var self = this
+      const self = this
       // this.$refs.help_tooltip.show()
       setTimeout(function () {
         console.log('tooltip', self.$refs.help_tooltip)

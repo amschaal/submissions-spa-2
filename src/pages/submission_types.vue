@@ -43,7 +43,7 @@
           <q-td key="sort_order" :props="props">{{ props.row.sort_order }}</q-td>
           <q-td key="name" :props="props"><router-link :to="{ name: 'submission_type', params: { id: props.row.id }}">{{ props.row.name }}</router-link></q-td>
           <q-td key="description" :props="props">{{ props.row.description }}</q-td>
-          <q-td key="updated" :props="props">{{ props.row.updated | formatDate }}</q-td>
+          <q-td key="updated" :props="props">{{ $filters.formatDate(props.row.updated) }}</q-td>
           <q-td key="submission_count" :props="props"><router-link :to="{ name: 'submissions', query: { search: props.row.name }}">{{ props.row.submission_count }}</router-link></q-td>
         </q-tr>
       </template>
