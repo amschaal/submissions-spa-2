@@ -7,13 +7,13 @@
       :visible-columns="filters.visibleColumns"
       :filter="filters.filter"
       row-key="id"
-      :pagination.sync="filters.serverPagination"
+      v-model:pagination="filters.serverPagination"
       :loading="loading"
       @request="request"
       binary-state-sort
       :rows-per-page-options="[10,25,0]"
       selection="multiple"
-      :selected.sync="selected"
+      v-model:selected="selected"
     >
       <template v-slot:top-right>
         <q-input borderless dense debounce="300" v-model="filters.filter" placeholder="Search">
@@ -61,12 +61,12 @@ export default {
       // we do the server data fetch, based on pagination and filter received
       // (using Axios here, but can be anything; parameters vary based on backend implementation)
       console.log(pagination, filter)
-      var sortBy = pagination.sortBy
+      let sortBy = pagination.sortBy
       if (pagination.descending) {
         sortBy = '-' + sortBy
       }
-      var search = this.filters.filter !== '' ? `&search=${this.filters.filter}` : ''
-      var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
+      const search = this.filters.filter !== '' ? `&search=${this.filters.filter}` : ''
+      const pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       this.$axios
         .get(`/api/users/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${search}&${this.queryParams}`)// ${pagination.descending}&filter=${filter}
         .then(({ data }) => {

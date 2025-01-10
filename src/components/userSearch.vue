@@ -27,13 +27,12 @@
 </template>
 
 <script>
-import Vue from 'vue'
-export default Vue.extend({
+export default {
   props: {
     queryParams: {
-        type: String
-        default: ''
-      }
+      type: String,
+      default: ''
+    }
   },
   // props: {
   //   url: String,
@@ -64,7 +63,7 @@ export default Vue.extend({
   },
   methods: {
     filterFn (val, update, abort) {
-      var self = this
+      const self = this
       this.$axios
         .get(`/api/users/?search=${val}&${this.queryParams}`)
         .then(function (response) {
@@ -81,7 +80,7 @@ export default Vue.extend({
   },
   mounted () {
   }
-})
+}
 
 </script>
 

@@ -15,10 +15,12 @@
           </thead>
           <tbody>
             <tr v-for="t in filtered_types" :key="t.id">
-              <td class="text-left"><router-link :to="{ name: 'submission_type', params: { id: t.type.id }}">{{t.type.name}}</router-link></td>
-              <td class="text-right">{{t.path}}</td>
+              <td class="text-left"><router-link :to="{ name: 'submission_type', params: { id: t.type.id } }">{{
+                t.type.name }}</router-link></td>
+              <td class="text-right">{{ t.path }}</td>
               <td class="text-right">
-                <q-chip clickable @click="viewDiff(t)" v-if="t.diff" text-color="white" color="negative" icon="list">View Diff</q-chip>
+                <q-chip clickable @click="viewDiff(t)" v-if="t.diff" text-color="white" color="negative"
+                  icon="list">View Diff</q-chip>
                 <q-chip v-else color="green" text-color="white" icon="check">No changes</q-chip>
               </td>
             </tr>
@@ -97,7 +99,7 @@ export default {
               t.submission_schema.properties[v].schema.order.forEach(v2 => {
                 const schema = t.submission_schema.properties[v].schema.properties[v2]
                 if (v2 === this.variable.variable && schema) {
-                  variables.push({type: t, path: `${v}->${v2}`, schema: schema, diff: JD.diff(this.variable.schema, schema)})
+                  variables.push({ type: t, path: `${v}->${v2}`, schema: schema, diff: JD.diff(this.variable.schema, schema) })
                 }
               })
             }
@@ -106,7 +108,7 @@ export default {
         return variables
       } else {
         // return this.submission_types
-        return this.submission_types.filter(t => t.submission_schema.order.indexOf(this.variable.variable) !== -1 && t.submission_schema.properties[this.variable.variable] !== undefined).map(t => ({ type: t, path: this.variable.variable, schema: t.submission_schema.properties[this.variable.variable], diff: JD.diff(this.variable.schema, t.submission_schema.properties[this.variable.variable])}))
+        return this.submission_types.filter(t => t.submission_schema.order.indexOf(this.variable.variable) !== -1 && t.submission_schema.properties[this.variable.variable] !== undefined).map(t => ({ type: t, path: this.variable.variable, schema: t.submission_schema.properties[this.variable.variable], diff: JD.diff(this.variable.schema, t.submission_schema.properties[this.variable.variable]) }))
       }
     }
   }

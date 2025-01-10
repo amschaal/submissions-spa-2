@@ -35,7 +35,7 @@ export default {
   },
   methods: {
     idChanged () {
-      var self = this
+      const self = this
       console.log('status', this.status)
       this.$axios.post(`/api/submissions/${this.submission.id}/update_id/`, {project_id: this.project_id, email: this.email})
         .then(function (response) {
@@ -51,7 +51,7 @@ export default {
         })
     },
     loadProjectIds () {
-      var self = this
+      const self = this
       this.$axios.get(`/api/project_ids/?lab_id=${this.submission.lab.id}`)
         .then(
           function (response) {

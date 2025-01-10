@@ -30,7 +30,7 @@ export default {
   },
   methods: {
     statusChanged () {
-      var self = this
+      const self = this
       console.log('status', this.status)
       this.$axios.post(`/api/submissions/${this.submission.id}/update_status/`, {status: this.status, email: this.email})
         .then(function (response) {
