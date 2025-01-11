@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import Vue from 'vue'
-export default Vue.extend({
+import { nextTick } from 'vue'
+export default {
   data () {
     return {
       value: null
@@ -58,13 +58,13 @@ export default Vue.extend({
     }
   },
   mounted () {
-    Vue.nextTick(() => {
+    nextTick(() => {
       if (this.$refs.input) {
         this.$refs.input.focus()
       }
     })
   }
-})
+}
 
 </script>
 

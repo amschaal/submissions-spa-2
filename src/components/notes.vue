@@ -4,7 +4,7 @@
       <q-card :class="getClasses(note)">
         <q-card-section>
            <div class="text-h7">{{getTypeText(note)}} {{getEmailsText(note)}} <span class="float-right"><q-icon name="edit" @click.native="$set(note, 'edit', true)" v-if="note.can_modify"/> <q-icon name="delete" @click.native="deleteNote(note)" v-if="!note.id || note.can_modify"/> <q-icon v-if="note.id" name="reply" @click.native="reply(note)"/></span></div>
-           <div class="text-subtitle3"><span v-if="note.user"><b>{{ note.user }}</b> wrote:</span> <span class="float-right" v-if="note.created">{{note.created | formatDate}}</span></div>
+           <div class="text-subtitle3"><span v-if="note.user"><b>{{ note.user }}</b> wrote:</span> <span class="float-right" v-if="note.created">{{ $filters.formatDate(note.created) }}</span></div>
         </q-card-section>
         <q-card-section v-if="!note.edit">
         {{note.text}}
@@ -59,16 +59,16 @@ export default {
     },
     save (note) {
       console.log('save', note.submission, note)
-      var self = this
-      var method = note.id ? 'put' : 'post'
-      var url = note.id ? `/api/notes/${note.id}/?submission=${note.submission}` : '/api/notes/'
+      const self = this
+      const method = note.id ? 'put' : 'post'
+      const url = note.id ? `/api/notes/${note.id}/?submission=${note.submission}` : '/api/notes/'
       if (!note.id && !note.public) {
         note.send_email = false
       }
       this.$axios[method](url, note)
         .then(function (response) {
           console.log(response, self.noteHash[note.parent].indexOf(note))
-          var index = self.noteHash[note.parent].indexOf(note)
+          const index = self.noteHash[note.parent].indexOf(note)
           self.noteHash[note.parent].splice(index, 1, response.data)
           self.$q.notify({message: 'Note saved', type: 'positive'})
         })
@@ -115,7 +115,7 @@ export default {
     // },
     reply (parent) {
       console.log('reply', parent)
-      var note = {
+      const note = {
         type: 'NOTE',
         submission: parent.submission,
         send_email: true,

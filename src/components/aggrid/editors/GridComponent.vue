@@ -21,10 +21,10 @@
 </template>
 
 <script>
-import Vue from 'vue'
+import { nextTick } from 'vue'
 // import _ from 'lodash'
 // import Agschema from '../../agschema.vue'
-export default Vue.extend({
+export default {
   data () {
     return {
       value: null,
@@ -33,7 +33,7 @@ export default Vue.extend({
   },
   methods: {
     filterFn (val, update, abort) {
-      var self = this
+      const self = this
       this.$axios
         .get(`/api/terms/${this.vocabulary}/?search=${val}`)
         .then(function (response) {
@@ -60,18 +60,18 @@ export default Vue.extend({
     console.log('grid schema', this.schema, this.params.widget_options)
   },
   mounted () {
-    Vue.nextTick(() => {
+    nextTick(() => {
       console.log('nextTick', this.params)
       // this.$refs.grid.openSamplesheet()
     })
   },
-  destroyed () {
+  unmounted () {
     console.log('destroyed GridComponent')
   },
   components: {
     Agschema: () => import('../../agschema.vue')
   }
-})
+}
 
 </script>
 

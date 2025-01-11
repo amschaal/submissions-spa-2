@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import Vue from 'vue'
-export default Vue.extend({
+import { nextTick } from 'vue'
+export default {
   data () {
     return {
       value: null,
@@ -53,7 +53,7 @@ export default Vue.extend({
     //     // })
     // },
     filterFn (val, update, abort) {
-      var self = this
+      const self = this
       this.$axios
         .get(`${this.url}?search=${val}&${this.query_params}`)
         .then(function (response) {
@@ -77,7 +77,7 @@ export default Vue.extend({
   created () {
     this.value = this.params.value
     console.log('autocomplete params', this.params)
-    var options = this.params.widget_options ? this.params.widget_options : {}
+    const options = this.params.widget_options ? this.params.widget_options : {}
     this.url = options.url
     this.query_params = options.params
     this.value_property = options.value_property
@@ -87,13 +87,13 @@ export default Vue.extend({
     }
   },
   mounted () {
-    Vue.nextTick(() => {
+    nextTick(() => {
       if (this.$refs.select) {
         this.$refs.select.focus()
       }
     })
   }
-})
+}
 
 </script>
 

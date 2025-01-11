@@ -10,7 +10,7 @@ export default {
       if (!confirm('Are you sure you want to cancel this submission?')) {
         return
       }
-      var self = this
+      const self = this
       this.$axios.post(`/api/submissions/${this.submission.id}/cancel/`)
         .then(
           function (response) {
@@ -25,7 +25,7 @@ export default {
         )
     },
     uncancel () {
-      var self = this
+      const self = this
       this.$axios.post(`/api/submissions/${this.submission.id}/uncancel/`)
         .then(
           function (response) {

@@ -73,7 +73,7 @@ export default {
   methods: {
     addUsers () {
       while (this.new_users.length) {
-        var user = this.new_users.pop()
+        const user = this.new_users.pop()
         if (!this.permissions.user_permissions[user.username]) {
           this.$set(this.permissions.user_permissions, user.username, user)
           this.$set(user, 'permissions', [])
@@ -84,7 +84,7 @@ export default {
       }
     },
     getPermissions () {
-      var self = this
+      const self = this
       this.$axios.get(`${this.baseUrl}/permissions/`)
         .then(
           function (response) {
@@ -104,7 +104,7 @@ export default {
         )
     },
     setPermissions () {
-      var self = this
+      const self = this
       this.$axios.post(`${this.baseUrl}/set_permissions/`, this.permissions)
         .then(
           function (response) {

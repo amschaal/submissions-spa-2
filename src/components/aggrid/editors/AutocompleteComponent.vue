@@ -26,8 +26,8 @@
 </template>
 
 <script>
-import Vue from 'vue'
-export default Vue.extend({
+import { nextTick } from 'vue'
+export default {
   data () {
     return {
       value: null,
@@ -55,18 +55,18 @@ export default Vue.extend({
   },
   created () {
     this.value = this.params.value
-    Vue.set(this, 'options', this.params.definition.enum)
-    Vue.set(this, 'filteredOptions', this.params.definition.enum)
+    this.options = this.params.definition.enum
+    this.filteredOptions = this.params.definition.enum
     console.log('autocomplete params', this.params)
   },
   mounted () {
-    Vue.nextTick(() => {
+    nextTick(() => {
       if (this.$refs.select) {
         this.$refs.select.focus()
       }
     })
   }
-})
+}
 
 </script>
 

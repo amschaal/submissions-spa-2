@@ -18,7 +18,7 @@ export default {
   },
   mounted: function () {
     console.log('mounted')
-    var self = this
+    const self = this
     console.log('hash', this.noteHash)
 
     // this.note = null
@@ -39,7 +39,7 @@ export default {
       })
   },
   created () {
-    var self = this
+    const self = this
     this.$on('addNote', function (note) {
       console.log('catch addNote', note)
       self.addNote(note)
@@ -59,7 +59,7 @@ export default {
     //   // note[method](function() { Materialize.toast('Note saved',5000)}, function(){ Materialize.toast('Error saving note',5000)})
     // },
     newNote () {
-      var note = {
+      const note = {
         type: 'NOTE',
         submission: this.submission.id,
         // created_by:{{request.user.id}},
@@ -75,11 +75,11 @@ export default {
       if (note.id && !confirm('Are you sure you want to delete this note and all responses?')) {
         return
       }
-      var self = this
-      var parent = note.parent
-      var id = note.id
-      var removeFunc = function () {
-        for (var i in self.noteHash[parent]) {
+      const self = this
+      const parent = note.parent
+      const id = note.id
+      const removeFunc = function () {
+        for (const i in self.noteHash[parent]) {
           if (self.noteHash[parent][i].id === id) {
             self.noteHash[parent].splice(i, 1)
           }

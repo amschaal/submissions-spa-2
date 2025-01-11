@@ -46,7 +46,7 @@
           </div>
           <div class="field col-sm-12 col-md-6">
             <p class="caption">Submitted</p>
-            {{submission.submitted|formatDate}}
+            {{$filters.formatDate(submission.submitted)}}
           </div>
           <div class="field col-sm-12 col-md-12" v-if="isAdmin">
             <p class="caption">Participants</p>
@@ -239,7 +239,7 @@ export default {
       return this.submission && this.submission.warnings && _.size(this.submission.warnings) > 0
     },
     formatOptions () {
-      var options = [
+      const options = [
         {
           label: 'XLSX',
           value: 'xlsx'
@@ -256,7 +256,7 @@ export default {
       }
     },
     dataOptions () {
-      var opts = [
+      const opts = [
         {
           label: 'All (XLSX)',
           value: 'all'
@@ -266,8 +266,8 @@ export default {
           value: 'submission'
         }
       ]
-      for (var i in this.submission.submission_schema.order) {
-        var v = this.submission.submission_schema.order[i]
+      for (const i in this.submission.submission_schema.order) {
+        const v = this.submission.submission_schema.order[i]
         if (this.submission.submission_schema.properties[v].type === 'table') {
           opts.push({ label: this.submission.submission_schema.properties[v].title || v, value: v })
         }

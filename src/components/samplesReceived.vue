@@ -14,7 +14,7 @@
       <template v-slot:avatar>
         <q-icon name="info" size="sm"/>
       </template>
-      Samples received on {{value.samples_received|formatDate}} by {{value.received_by_name}} <a class="action" @click="openModal" v-if="admin">Edit</a>
+      Samples received on {{$filters.formatDate(value.samples_received)}} by {{value.received_by_name}} <a class="action" @click="openModal" v-if="admin">Edit</a>
     </q-banner>
 
     <q-dialog  v-model="opened" :content-css="{width: '500px', minHeight: '40vh'}" ref="modal">
@@ -119,8 +119,8 @@ export default {
       // this.data['samples_received'] = '2019-12-01'
       // this.$emit('input', this.data)
       // this.$refs.modal.hide()
-      var self = this
-      var data = {}
+      const self = this
+      const data = {}
       if (received) {
         data['received'] = received
       }

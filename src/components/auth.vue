@@ -2,11 +2,13 @@
   <div>
     <q-modal v-model="opened" ref="modal" @hide="clear()">
       <q-modal-layout>
-        <q-toolbar slot="header">
+        <template v-slot:header>
+<q-toolbar >
           <q-toolbar-title>
             Login
           </q-toolbar-title>
         </q-toolbar>
+</template>
 
         <div class="layout-padding">
           <q-field
@@ -23,7 +25,8 @@
             <q-input v-model="password" type="password"/>
           </q-field>
         </div>
-        <q-toolbar slot="footer">
+        <template v-slot:footer>
+<q-toolbar >
           <q-toolbar-title>
             <q-btn
               color="positive"
@@ -32,6 +35,7 @@
             />
           </q-toolbar-title>
         </q-toolbar>
+</template>
       </q-modal-layout>
     </q-modal>
   </div>
@@ -52,7 +56,7 @@ export default {
   },
   methods: {
     login () {
-      var self = this
+      const self = this
       console.log('$auth', this.$store._actions)
       this.$store.dispatch('login', {username: this.username, password: this.password, axios: this.$axios}).then(
         function () {

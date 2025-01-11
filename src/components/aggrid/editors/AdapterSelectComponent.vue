@@ -12,9 +12,9 @@
 </template>
 
 <script>
-import Vue from 'vue'
+import { nextTick } from 'vue'
 // import { filter } from 'quasar'
-export default Vue.extend({
+export default {
   data () {
     return {
       value: null,
@@ -26,7 +26,7 @@ export default Vue.extend({
       this.params.stopEditing()
     },
     getOptions () {
-      var self = this
+      const self = this
       this.$axios
         .get(`${this.url}?page_size=1000`)
         .then(function (response) {
@@ -59,14 +59,14 @@ export default Vue.extend({
     this.getOptions()
   },
   mounted () {
-    Vue.nextTick(() => {
+    nextTick(() => {
       if (this.$refs.select) {
         console.log('select', this.$refs.select)
         this.$refs.select.show()
       }
     })
   }
-})
+}
 
 </script>
 

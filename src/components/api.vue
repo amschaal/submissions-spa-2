@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     getToken () {
-      var self = this
+      const self = this
       this.$axios
         .get('/api/users/get_token/')
         .then(function (response) {
@@ -59,8 +59,8 @@ export default {
         })
     },
     createToken () {
-      var self = this
-      var create = function () {
+      const self = this
+      const create = function () {
         self.$axios
           .post('/api/users/create_token/')
           .then(function (response) {
@@ -81,7 +81,7 @@ export default {
       }
     },
     deleteToken () {
-      var self = this
+      const self = this
       this.$q.dialog({
         title: 'Confirm Auth Token Deletion',
         message: 'Are you sure you want to delete your auth token?',

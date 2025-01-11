@@ -33,7 +33,7 @@ export default Vue.extend({
   props: {
     url: String,
     query_params: {
-      type: String
+      type: String,
       default: ''
     },
     search_param: {
@@ -49,7 +49,7 @@ export default Vue.extend({
       required: true
     }
   },
-  ['url','query_params','search_param', 'option_value', 'option_label'],
+  // ['url','query_params','search_param', 'option_value', 'option_label'],
   // opt => Object(opt) === opt && 'id' in opt ? opt.id : null
   data () {
     return {
@@ -70,7 +70,7 @@ export default Vue.extend({
     //     // })
     // },
     filterFn (val, update, abort) {
-      var self = this
+      const self = this
       this.$axios
         .get(`${this.url}?${this.search}=${val}&${this.query_params}`)
         .then(function (response) {

@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import Vue from 'vue'
-export default Vue.extend({
+import { nextTick } from 'vue'
+export default {
   data () {
     return {
       value: null,
@@ -47,9 +47,9 @@ export default Vue.extend({
             this.value = [this.value]
           }
         }
-        var filtered = []
+        const filtered = []
         // filter bad values here
-        for (var i in this.options) {
+        for (const i in this.options) {
           if (this.value.indexOf(this.options[i]) >= 0) {
             filtered.push(this.options[i])
           }
@@ -70,7 +70,7 @@ export default Vue.extend({
   },
   mounted () {
     console.log('mounted')
-    Vue.nextTick(() => {
+    nextTick(() => {
       if (this.isDelete()) {
         this.value = ''
         this.params.stopEditing()
@@ -80,7 +80,7 @@ export default Vue.extend({
       }
     })
   }
-})
+}
 
 </script>
 

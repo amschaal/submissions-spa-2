@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     update () {
-      var self = this
+      const self = this
       this.$axios.post(`/api/submissions/${this.submission.id}/update_participants/`, { participants: this.participants })
         .then(function (response) {
           self.$q.notify({message: 'Participants updated.', type: 'positive'})

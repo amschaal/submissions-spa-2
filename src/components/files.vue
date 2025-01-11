@@ -7,7 +7,7 @@
       :columns="columns"
       :filter="filter"
       row-key="id"
-      :pagination.sync="serverPagination"
+      v-model:pagination="serverPagination"
       :loading="loading"
       @request="request"
       :refresh="true"
@@ -15,10 +15,10 @@
       <!-- <template slot="top-right" slot-scope="props">
         <q-search hide-underline v-model="filter" />
       </template> -->
-      <template slot="body" slot-scope="props">
+      <template v-slot:body="props" >
         <q-tr :props="props">
           <q-td key="file" :props="props"><q-btn v-if="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')" class="float-left" color="red" label="Delete" @click="deleteFile(props.row)"/><a :href="props.row.file" target="_blank">{{ props.row.filename }}</a></q-td>
-          <q-td key="uploaded_at" :props="props">{{ props.row.uploaded_at | formatDate }}</q-td>
+          <q-td key="uploaded_at" :props="props">{{ $filters.formatDate(props.row.uploaded_at) }}</q-td>
         </q-tr>
       </template>
     </q-table>
@@ -65,7 +65,7 @@ export default {
 
       // we do the server data fetch, based on pagination and filter received
       // (using Axios here, but can be anything; parameters vary based on backend implementation)
-      var sortBy = pagination.sortBy
+      let sortBy = pagination.sortBy
       if (pagination.descending) {
         sortBy = '-' + sortBy
       }
@@ -98,7 +98,7 @@ export default {
       if (!confirm(`Are you sure you want to delete this file: '${file.filename}'?`)) {
         return
       }
-      var self = this
+      const self = this
       this.$axios.delete(`/api/submission_files/${file.id}/?submission=${this.submission.id}`)
         .then(function () {
           self.$q.notify({message: 'File deleted', type: 'positive'})
@@ -109,13 +109,13 @@ export default {
         })
     },
     uploadFile (files) {
-      var file = files[0]
+      const file = files[0]
       // console.log('uploadFile', files, this.$refs)
-      var self = this
-      var formData = new FormData()
+      const self = this
+      const formData = new FormData()
       formData.append('file', file)
       formData.append('submission', this.submission.id)
-      var request = this.$axios.post('/api/submission_files/',
+      const request = this.$axios.post('/api/submission_files/',
         formData,
         {
           headers: {
