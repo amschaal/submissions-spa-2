@@ -561,3 +561,4 @@ export default {
 .inactive {
   color: red;
 }
+</style>

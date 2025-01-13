@@ -441,6 +441,7 @@ export default {
     getColDef (id, definition, schema) {
       console.log('getColDef', definition, schema)
       const self = this
+      let options, _options, def
       function cellClass (params) {
         // console.log('cellClass', params, self.errors)
         if (params.node.rowPinned) {
@@ -499,7 +500,7 @@ export default {
       // console.log('factory', sampleWidgetFactory)
       if (WidgetClass) {
         // console.log('WidgetClass', definition.widget.options)
-        var options = definition.widget.options
+        options = definition.widget.options
         // options._schema = JSON.parse(JSON.stringify(schema))
         // Object.freeze(options)
         const widget = new WidgetClass(id, options)
@@ -509,7 +510,7 @@ export default {
         case 'table':
           // console.log('object', definition)
           // var _options = JSON.parse(JSON.stringify(definition.widget.options))
-          var _options = {_schema: JSON.parse(JSON.stringify(definition.schema))}
+          _options = {_schema: JSON.parse(JSON.stringify(definition.schema))}
           Object.freeze(options)
           // var widget = new WidgetClass(id, options)
           return {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: GridComponent, cellEditorParams: {definition, widget_options: _options}, cellClass, tooltip: cellTooltip, pinned: definition.pinned}
@@ -527,7 +528,7 @@ export default {
         case 'boolean':
           return {headerName: header, headerTooltip: tooltip, field: id, type: 'checkbox', cellEditorFramework: BooleanComponent, cellClass, tooltip: cellTooltip, dataType: 'boolean', pinned: definition.pinned}
         case 'array':
-          var def = {headerName: header, field: id, type: 'dropdown', cellClass, tooltip: cellTooltip, pinned: definition.pinned}
+          def = {headerName: header, field: id, type: 'dropdown', cellClass, tooltip: cellTooltip, pinned: definition.pinned}
           if (definition.items && definition.items.enum) {
             def.source = definition.items.enum
           }

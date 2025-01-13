@@ -27,7 +27,7 @@ export default {
       .get('/api/notes/', {params: {submission: this.submission.id, page_size: 100}})
       .then(function (response) {
         // self.notes = response.data.results
-        response.data.results.map(function (value, key) {
+        response.data.results.foreach(function (value) {
           self.addNote(value)
         })
         // self.addNote({id: 1, created: new Date(), user: 'Anonymous', text: 'This is the content of the note.', parent: null, type: 'NOTE'})

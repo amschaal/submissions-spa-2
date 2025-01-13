@@ -13,19 +13,17 @@
 //     // onLoad: 'check-sso'
 //   }
 // })\
-import moment from 'moment'
-import Vue from 'vue'
 import { mapGetters } from 'vuex'
-Vue.filter('formatDateTime', function (value) {
-  if (value) {
-    return moment(String(value)).format('MM/DD/YYYY hh:mm')
-  }
-})
-Vue.filter('formatDate', function (value) {
-  if (value) {
-    return moment(String(value)).format('MM/DD/YYYY')
-  }
-})
+// Vue.filter('formatDateTime', function (value) {
+//   if (value) {
+//     return moment(String(value)).format('MM/DD/YYYY hh:mm')
+//   }
+// })
+// Vue.filter('formatDate', function (value) {
+//   if (value) {
+//     return moment(String(value)).format('MM/DD/YYYY')
+//   }
+// })
 export default {
   name: 'App',
   props: ['authenticated', 'blah'],

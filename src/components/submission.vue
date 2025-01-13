@@ -176,7 +176,12 @@ import _ from 'lodash'
 
 export default {
   // name: 'submission',
-  props: ['id', 'submission'],
+  // props: ['id', 'submission'],
+  props: {
+    modelValue: { type: Object, default () { return {} } },
+    id: String
+  },
+  emits: ['update:modelValue'],
   data () {
     return {
       downloadParams: {'data': 'all', 'format': 'xlsx'}
@@ -218,6 +223,9 @@ export default {
     }
   },
   computed: {
+    submission () {
+      return this.modelValue
+    },
     submission_type () {
       if (this.submission && this.submission.type && this.submission.type.id) {
         return this.submission.type

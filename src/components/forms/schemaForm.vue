@@ -51,14 +51,14 @@
         label="Add field"
         >
           <q-list>
-            <q-item v-close-popup @click.native="openModal" clickable>
+            <q-item v-close-popup @click="openModal" clickable>
               <q-item-label>
                 <q-item-section label>New</q-item-section>
               </q-item-label>
               <q-item-section right icon="create" color="green" />
             </q-item>
             <q-separator/>
-            <q-item clickable v-for="v in variables" :key="v" v-close-popup @click.native="addExistingVariable(v)">
+            <q-item clickable v-for="v in variables" :key="v" v-close-popup @click="addExistingVariable(v)">
               <q-item-label>
                 <q-item-section label>{{v}}</q-item-section>
               </q-item-label>
@@ -390,3 +390,4 @@ export default {
 .inactive {
   color: red;
 }
+</style>

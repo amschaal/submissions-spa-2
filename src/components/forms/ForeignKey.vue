@@ -18,9 +18,8 @@
              header-class="text-weight-bold"
             :label="scope.opt.label"
           >
-            <template v-for="child in scope.opt.children">
+            <template v-for="child in scope.opt.children" :key="child.label">
               <q-item
-                :key="child.label"
                 clickable
                 v-ripple
                 v-close-popup

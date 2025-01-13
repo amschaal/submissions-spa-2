@@ -135,7 +135,7 @@ export default {
   },
   mounted: function () {
     if (!this.$store.getters.institution) {
-      var self = this
+      const self = this
       setTimeout(function () {
         if (!self.$store.getters.institution) {
           self.error = true
