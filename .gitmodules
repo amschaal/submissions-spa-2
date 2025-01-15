@@ -7,3 +7,6 @@
 [submodule "src/assets/plugins/ppms"]
 	path = src/assets/plugins/ppms
 	url = https://github.com/amschaal/coreomics-plugin-ppms-ui
+[submodule "src/assets/schema_forms"]
+	path = src/assets/schema_forms
+	url = https://github.com/amschaal/schema_forms
