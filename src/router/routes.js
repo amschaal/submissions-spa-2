@@ -112,22 +112,28 @@ const routes = [
       }
     ]
   },
-  { // Always leave this as last one
-    path: '*',
-    component: () => import('pages/404'),
-    name: 'not_found'
-  },
-  { // Always leave this as last one
+  // { // Always leave this as last one
+  //   path: '*',
+  //   component: () => import('pages/404'),
+  //   name: 'not_found'
+  // },
+  {
     path: '/error',
     component: () => import('pages/404'),
     name: 'not_found'
+  },
+  // Always leave this as last one,
+  // but you can also remove it
+  {
+    path: '/:catchAll(.*)*',
+    component: () => import('pages/Error404.vue')
   }
 ]
 
 // Always leave this as last one
 if (process.env.MODE !== 'ssr') {
   routes.push({
-    path: '*',
+    path: '/:catchAll(.*)*',
     component: () => import('pages/Error404.vue')
   })
 }

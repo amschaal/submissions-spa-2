@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import _ from 'lodash'
 import Payment from '../components/payment/ucdAccount.vue'
 
@@ -6,7 +5,8 @@ import Payment from '../components/payment/ucdAccount.vue'
 // var plugins = ['test', 'bioshare']
 
 class PluginManager {
-  constructor (plugins) {
+  constructor (plugins, app) {
+    this.app = app
     this.labs = {}
     this.plugins = {}
     // this.tabs = []
@@ -25,16 +25,16 @@ class PluginManager {
   }
   initLab (labId, plugins) {
     console.log('initLab', labId, plugins)
-    var labPlugins = plugins != null ? plugins : {}
-    var promises = []
+    const labPlugins = plugins != null ? plugins : {}
+    const promises = []
     if (!this.labs[labId]) {
       this.labs[labId] = {'tabs': [], 'plugins': labPlugins}
-      var pluginIds = _.keys(labPlugins)
+      const pluginIds = _.keys(labPlugins)
       // console.log('pluginIds', pluginIds)
       pluginIds.forEach((pluginId) => {
-        var manager = this
+        const manager = this
         if (!this.plugins[pluginId]) { // Plugin is not yet loaded.  Load it, then add to the lab config.
-          var promise = manager.initPlugin(pluginId).then(() => {
+          const promise = manager.initPlugin(pluginId).then(() => {
             // console.log('initPlugin', pluginId, Object.keys(manager.plugins))
             manager.labs[labId].tabs = manager.labs[labId].tabs.concat(manager.plugins[pluginId].tabs)
           })
@@ -53,8 +53,8 @@ class PluginManager {
         console.log('set plugin', pluginId)
         this.plugins[pluginId] = {'config': module.config, 'tabs': module.config.submission_tabs, 'payment': module.config.payment}
         // register Vue component for tabs
-        module.config.submission_tabs.forEach(t => Vue.component(this.componentName(t.id), t.component))
-        for (var j in module.config.submission_tabs) {
+        module.config.submission_tabs.forEach(t => this.app.component(this.componentName(t.id), t.component))
+        for (const j in module.config.submission_tabs) {
           this.permissions[module.config.submission_tabs[j].id] = module.config.submission_tabs[j].permissions
         }
         // module.loadPageInto(main);
@@ -94,8 +94,14 @@ class PluginManager {
     return this.labs[labId].plugins[pluginId]
   }
 }
-// console.log('plugins', this)
-var pluginManager = new PluginManager([])
 
-Vue.prototype.$plugins = pluginManager
+const pluginManager = new PluginManager([])
+
+import { boot } from 'quasar/wrappers'
+
+export default boot(({ app }) => {
+  pluginManager.app = app
+  app.config.globalProperties.$plugins = pluginManager
+})
+
 export { pluginManager }

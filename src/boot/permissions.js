@@ -1,4 +1,3 @@
-import Vue from 'vue'
 // import store from '../store'
 // var plugins = []
 // window.permissions_store = store
@@ -34,14 +33,14 @@ class Permissions {
       return false
     }
     if (operator === 'ANY') {
-      for (var i in perms) {
+      for (const i in perms) {
         if (submission.permissions.indexOf(perms[i]) !== -1) {
           return true
         }
       }
       return false
     } else {
-      for (var j in perms) {
+      for (const j in perms) {
         if (submission.permissions.indexOf(perms[j]) === -1) {
           return false
         }
@@ -50,7 +49,10 @@ class Permissions {
     }
   }
 }
-var permissions = new Permissions()
-Vue.prototype.$perms = permissions
+import { boot } from 'quasar/wrappers'
+export default boot(({ app }) => {
+  const permissions = new Permissions()
+  app.config.globalProperties.$perms = permissions
+})
 
 // export { plugins }
