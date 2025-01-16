@@ -6,7 +6,7 @@
     <!-- defaultFilters: {{ defaultFilters.advancedFilters }} -->
     <q-table
       ref="table"
-      :data="serverData"
+      :rows="serverData"
       :columns="allColumns"
       :visible-columns="filters.visibleColumns"
       :filter="filters.filter"
@@ -40,10 +40,10 @@
               </q-checkbox>
             </template>
             </q-select>
-            <q-checkbox v-model="filters.showCancelled" label="Show cancelled" @input="refresh"/>
-            <q-checkbox v-model="filters.showCompleted" label="Show completed" @input="refresh"><q-tooltip>Include submissions with a status of "completed"</q-tooltip></q-checkbox>
-            <q-checkbox v-if="this.lab" v-model="filters.participating" label="Participating" @input="refresh"><q-tooltip>Only show submissions in which I am a participant</q-tooltip></q-checkbox>
-            <q-checkbox v-if="this.lab" v-model="filters.mySubmissions" label="My submissions" @input="refresh"><q-tooltip>Only show submissions for which I am a submitter or PI</q-tooltip></q-checkbox>
+            <q-checkbox v-model="filters.showCancelled" label="Show cancelled" @update:model-value="refresh"/>
+            <q-checkbox v-model="filters.showCompleted" label="Show completed" @update:model-value="refresh"><q-tooltip>Include submissions with a status of "completed"</q-tooltip></q-checkbox>
+            <q-checkbox v-if="this.lab" v-model="filters.participating" label="Participating" @update:model-value="refresh"><q-tooltip>Only show submissions in which I am a participant</q-tooltip></q-checkbox>
+            <q-checkbox v-if="this.lab" v-model="filters.mySubmissions" label="My submissions" @update:model-value="refresh"><q-tooltip>Only show submissions for which I am a submitter or PI</q-tooltip></q-checkbox>
           </div>
           <div class="col-6 q-table__title text-center"><span v-if="lab && $store.getters.lab">{{$store.getters.lab.name}} Submissions <selectLabModal page="submissions"/></span><span v-else>My Submissions</span></div>
         <!-- <q-search hide-underline v-model="filters.filter" :props="props"/> -->
@@ -266,7 +266,7 @@ export default {
       this.$refs.reports.open(qs)
     },
     request ({ pagination, filter }) {
-      // console.log('request', qs, )
+      console.log('request', pagination, filter)
       // we set QTable to "loading" state
       this.loading = true
       // we do the server data fetch, based on pagination and filter received
@@ -305,6 +305,7 @@ export default {
       this.refresh()
     },
     refresh () {
+      console.log('refresh')
       this.request({
         pagination: this.filters.serverPagination,
         filter: this.filters.filter
@@ -320,7 +321,7 @@ export default {
     loadSettings (settings) {
       // const settings = this.$store.getters.getUserSettings[this.filterNamespace]
       // this.filters = _.assign(this.defaultFilters, _.clone(settings.filters))
-      this.$set(this, 'filters', _.assign(this.getDefaultFilters().filters, _.clone(settings.filters)))
+      this.filters = _.assign(this.getDefaultFilters().filters, _.cloneDeep(settings.filters))
       // this.$set(this, 'filters', _.cloneDeep(settings.filters))
       if (settings.advancedFilters) {
         // this.advancedFilters = _.cloneDeep(settings.advancedFilters)

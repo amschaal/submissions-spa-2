@@ -276,7 +276,7 @@ export default {
         .then((response) => {
           this.plugin_selection.forEach((plugin) => {
             if (!this.plugin_settings[plugin]) {
-              this.$set(this.plugin_settings, plugin, response.data.plugins[plugin])
+              this.plugin_settings[plugin] = response.data.plugins[plugin]
             }
           }
           )

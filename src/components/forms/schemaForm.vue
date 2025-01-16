@@ -241,17 +241,16 @@ export default {
     setNested (path, value) {
       const props = path.split('.')
       console.log('setNested', props, value)
-      const self = this
       let last = this
 
       props.forEach(function (prop, index) {
         if (!last[prop] && index < props.length - 1) {
           console.log('set blank', last, prop)
-          self.$set(last, prop, {})
+          last[prop] = {}
         }
         if (index === props.length - 1) {
           console.log('set value', last, prop, value)
-          self.$set(last, prop, value)
+          last[prop] = value
         }
         last = last[prop]
       })

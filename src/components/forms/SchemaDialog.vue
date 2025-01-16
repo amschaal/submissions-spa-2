@@ -158,10 +158,10 @@ export default {
     setup () {
       this.schema = _.cloneDeep(this.variable.schema.schema)
       if (!this.schema.examples) {
-        this.$set(this.schema, 'examples', [])
+        this.schema.examples = []
       }
       if (!this.schema.printing) {
-        this.$set(this.schema, 'printing', { hidden: false })
+        this.schema.printing = { hidden: false }
       }
     },
     open () {

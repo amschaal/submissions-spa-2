@@ -164,7 +164,7 @@ export default {
       if (value.cancelBubble) {
         value.cancelBubble = true
       } else if (!value.target) {
-        this.$set(value, variable, val)
+        value[variable] = val
       }
       console.log('setValue', type, value, variable, val, e)
     },

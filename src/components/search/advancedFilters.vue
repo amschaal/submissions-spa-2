@@ -229,7 +229,7 @@ export default {
   methods: {
     update (params) {
       if (params) {
-        this.$set(this, 'variables', params.variables ? _.cloneDeep(params.variables) : [])
+        this.variables = params.variables ? _.cloneDeep(params.variables) : []
         this.type = params.type || 'ALL'
       }
       if (this.$refs.filters && this.$refs.filters.map(c => c.validate()).indexOf(false) !== -1) {

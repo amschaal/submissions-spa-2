@@ -117,7 +117,7 @@ export default {
           // self.plugin_tabs = self.$plugins.getTabs(self.submission.lab)
           self.$plugins.getTabs(self.submission.lab).then(function (tabs) {
             console.log('plugin_tabs', tabs, self.plugin_tabs)
-            self.$set(self, 'plugin_tabs', tabs)
+            self.plugin_tabs = tabs
           })
         })
     }

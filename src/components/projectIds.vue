@@ -65,7 +65,7 @@ export default {
       this.$axios[action]('' + url, obj)
         .then(function (response) {
           obj.id = response.data.id
-          self.$set(obj, 'id', response.data.id)
+          obj.id = response.data.id
           self.$q.notify({message: 'Project ID saved.', type: 'positive'})
         })
         .catch(function () {
