@@ -2,7 +2,7 @@
   <div v-if="$store.getters.isStaff">
     <q-table
       title="Project IDs"
-      :data="project_ids"
+      :rows="project_ids"
       :columns="columns"
       row-key="id"
       style="max-width:800px"

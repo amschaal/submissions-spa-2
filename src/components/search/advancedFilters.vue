@@ -122,7 +122,7 @@
               <!-- {{ filter_sources }} -->
               <q-table
                 title="Filters"
-                :data="variable_options"
+                :rows="variable_options"
                 :columns="search_filter_columns"
                 row-key="variable"
                 :filter="search_filter"

@@ -14,7 +14,7 @@
           {{ reports }} -->
           {{ selected_report }}
           <q-table
-            :data="reports"
+            :rows="reports"
             :columns="columns"
             :filter="filter"
             row-key="id"

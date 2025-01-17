@@ -193,16 +193,16 @@ export default {
       this.data = _.cloneDeep(this.value)
 
       if (!this.data.enum) {
-        this.$set(this.data, 'enum', [])
+        this.data.enum = []
       }
       if (!this.data.widget) {
-        this.$set(this.data, 'widget', {'type': null, 'options': {}})
+        this.data.widget = {'type': null, 'options': {}}
       }
       if (!this.data.printing) {
-        this.$set(this.data, 'printing', {'hidden': false})
+        this.data.printing = {'hidden': false}
       }
       if (!this.data.validators) {
-        this.$set(this.data, 'validators', [])
+        this.data.validators = []
       }
     },
     openModal () {

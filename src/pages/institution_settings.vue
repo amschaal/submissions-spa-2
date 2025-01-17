@@ -33,7 +33,7 @@
             <q-table
               title="Labs"
               :columns="lab_columns"
-              :data="labs"
+              :rows="labs"
               row-key="lab_id"
               :dense="true"
               :filter="filter"

@@ -197,9 +197,12 @@
 
 <script>
 // import { QSelect } from 'quasar'
-import { AgGridVue } from 'ag-grid-vue'
-import '../../node_modules/ag-grid-community/dist/styles/ag-grid.css'
-import '../../node_modules/ag-grid-community/dist/styles/ag-theme-balham.css'
+// import { AgGridVue } from 'ag-grid-vue'
+import { AgGridVue } from 'ag-grid-vue3'
+// import '../../node_modules/ag-grid-community/dist/styles/ag-grid.css'
+// import '../../node_modules/ag-grid-community/dist/styles/ag-theme-balham.css'
+import 'ag-grid-community/styles/ag-grid.css' // Core grid CSS, always needed
+import 'ag-grid-community/styles/ag-theme-balham.css' // Optional theme CSS
 import 'ag-grid-enterprise'
 import NumericComponent from './aggrid/editors/NumericComponent.vue'
 // import DateComponent from './aggrid/DateComponent.vue'

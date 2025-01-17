@@ -5,7 +5,7 @@
     <div>columns: {{columns.length}}</div> -->
     <q-table
       title="Permissions"
-      :data="permission_rows"
+      :rows="permission_rows"
       :columns="columns"
       row-key="username"
       v-if="permission_rows"
@@ -75,9 +75,9 @@ export default {
       while (this.new_users.length) {
         const user = this.new_users.pop()
         if (!this.permissions.user_permissions[user.username]) {
-          this.$set(this.permissions.user_permissions, user.username, user)
-          this.$set(user, 'permissions', [])
-          this.$set(user, 'modified', true)
+          this.permissions.user_permissions[user.username] = user
+          user.permissions = []
+          user.modified = true
         } else {
           this.$q.notify({message: `The user "${user.first_name} ${user.last_name}" has already has permissions.  Please update them in the permissions table.`, type: 'negative'})
         }

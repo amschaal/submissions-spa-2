@@ -2,7 +2,7 @@
   <q-page class="docs-input justify-center"><!-- row -->
     <q-table
       ref="table"
-      :data="serverData"
+      :rows="serverData"
       :columns="columns"
       :visible-columns="visibleColumns"
       :filter="filter"

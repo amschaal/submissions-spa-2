@@ -115,7 +115,7 @@ export default {
     addNote (note) {
       console.log('addNote', note)
       if (!this.noteHash[note.parent]) {
-        this.$set(this.noteHash, note.parent, [])
+        this.noteHash[note.parent] = []
         // this.noteHash[note.parent] = []
       }
       this.noteHash[note.parent].push(note)
