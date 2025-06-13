@@ -5,11 +5,12 @@ FROM node:18-alpine as develop-stage
 ENV NODE_OPTIONS=--openssl-legacy-provider
 WORKDIR /app
 COPY package*.json ./
-RUN yarn global add @quasar/cli
+RUN yarn global add @quasar/cli@latest
 COPY . .
 # build stage
 FROM develop-stage as build-stage
 RUN yarn
+# CMD ["tail", "-f", "/dev/null"]
 CMD ["quasar", "dev"]
 # # production stage
 # FROM nginx:stable-alpine as production-stage

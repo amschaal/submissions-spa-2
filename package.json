@@ -11,9 +11,9 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.9.8",
-    "ag-grid-community": "^24.0.0",
-    "ag-grid-enterprise": "^24.0.0",
-    "ag-grid-vue": "^24.0.0",
+    "ag-grid-community": "^30.2.1",
+    "ag-grid-enterprise": "^30.2.1",
+    "ag-grid-vue3": "^33.0.3",
     "axios": "^0.21.2",
     "core-js": "^3.0.0",
     "jsondiffpatch": "^0.6.0",

@@ -85,7 +85,7 @@ module.exports = {
     'quasar/no-legacy-components': 'warn',
     'quasar/no-legacy-css': 'warn',
     'quasar/no-legacy-directives': 'warn',
-    'quasar/no-legacy-properties': 'warn',
+    'quasar/no-legacy-properties': 'warn', // 'warn'
 
     'object-curly-spacing': 'off',
     'dot-notation': 'off',
@@ -93,6 +93,13 @@ module.exports = {
     'quote-props': 'off',
     'lines-between-class-members': 'off',
     'no-prototype-builtins': 'off',
-    "space-before-function-paren": ["error", "always"]
+    "space-before-function-paren": ["error", "always"],
+
+    'vue/multi-word-component-names': 'off',
+    'vue/no-v-text-v-html-on-component': 'off',
+    // should re-enable below
+    'vue/no-mutating-props': 'off',
+    'vue/no-deprecated-events-api': 'off'
+
   }
 }
