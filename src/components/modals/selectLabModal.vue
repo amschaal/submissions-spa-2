@@ -19,7 +19,7 @@
             outlined
             style="min-width: 250px; max-width: 300px"
             v-if="$store.getters.labs.length"
-            @input="action(lab)"
+            @update:model-value="action(lab)"
           />
         </q-card-section>
 
