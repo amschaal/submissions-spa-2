@@ -50,6 +50,7 @@
               </q-item>
             </template>
           </q-select>
+          {{ computed_type }}
       </fieldset>
         <fieldset>
         <legend>PI</legend>
@@ -218,7 +219,7 @@
       <fieldset>
         <legend>Submission Information</legend>
         <p v-if="!type.id" class="error">***Please select submission type at the top of the form before filling in sample information***</p>
-        <CustomFields v-model="submission.submission_data" :schema="submission.submission_schema || type.submission_schema" ref="submission_fields" v-if="type && type.submission_schema" :errors="errors.submission_data" :warnings="errors.warnings ? errors.warnings.submission_data : {}" modify="true"/>
+        <JSONSchemaForm v-model="submission.submission_data" :schema="submission.submission_schema || type.submission_schema" ref="submission_fields" v-if="type && type.submission_schema" :errors="errors.submission_data" :warnings="errors.warnings ? errors.warnings.submission_data : {}" modify="true"/>
 <!--        <q-field
           :error="sample_data_error"
           bottom-slots :error-message="sample_data_error_label"
@@ -298,7 +299,7 @@
           </q-modal-layout>
         </q-modal> -->
         <q-page-sticky position="left" :offset="[18, 18]">
-          <q-btn class="pull-right" rounded color="primary" label="Help" icon="fas fa-question-circle" @click="show_help = true" v-if="type && type.submission_help"><q-tooltip ref="help_tooltip">Click for help with {{type.name}}</q-tooltip></q-btn>
+          <q-btn class="pull-right" rounded color="primary" label="Help" icon="fas fa-question-circle" @click="show_help = true" v-show="type && type.submission_help"><q-tooltip ref="help_tooltip">Click for help with {{type.name}}</q-tooltip></q-btn>
         </q-page-sticky>
       </div>
 </template>
@@ -308,19 +309,21 @@
 // import axios from 'axios'
 // import Samplesheet from '../../components/samplesheet.vue'
 // import Agschema from '../../components/agschema.vue'
-import CustomFields from './customFields.vue'
+// import CustomFields from './customFields.vue'
+import JSONSchemaForm from "assets/schema_forms/components/forms/JSONSchemaForm.vue"
 import selectLabModal from '../modals/selectLabModal.vue'
 // import Account from '../payment/ucdAccount.vue'
 import PPMS from '../../components/payment/ppms.vue'
 // import Files from '../../components/files.vue'
 import _ from 'lodash'
+// import { markRaw } from 'vue'
 
 export default {
   // name: 'submission',
   props: ['id', 'submission_types', 'create'],
   data () {
     return {
-      submission: {'submission_data': {}, 'contacts': [], 'payment': {}},
+      submission: {'submission_data': {}, 'contacts': [], 'payment': {}, type: null},
       errors: {contacts: [], payment: {}, warnings: {}},
       warnings: {},
       // submission_types: [{ foo: 'bar' }],
@@ -447,7 +450,7 @@ export default {
         if (this.submission.type.id) {
           this.submission.type = this.submission.type.id
         } else {
-          this.type = this.$store.getters.typesDict[this.submission.type]
+          this.type = _.cloneDeep(this.$store.getters.typesDict[this.submission.type])
         }
       }
 
@@ -731,11 +734,10 @@ export default {
       const self = this
       // this.$refs.help_tooltip.show()
       setTimeout(function () {
-        console.log('tooltip', self.$refs.help_tooltip)
         self.$refs.help_tooltip.show()
       }, 250)
       setTimeout(function () {
-        console.log('tooltip', self.$refs.help_tooltip)
+        // console.log('tooltip', self.$refs, 'refs', self.$refs)
         self.$refs.help_tooltip.hide()
       }, 5000)
     }
@@ -744,7 +746,8 @@ export default {
     'submission.type': function (id) {
       // this.assignType(id)
       console.log('type dict', id, this.$store.getters.typesDict[id])
-      this.type = id ? Object.freeze(this.$store.getters.typesDict[id]) : Object.freeze({})
+      console.log('submission.type', (id ? this.$store.getters.typesDict[id] : {}))
+      this.type = id ? _.cloneDeep(this.$store.getters.typesDict[id]) : {}
       console.log('type changed', id, this.type, this.$store.getters.typesDict)
       if (this.type.submission_help) {
         this.flashHelpTooltip()
@@ -754,7 +757,7 @@ export default {
     },
     'submission': {
       handler (newVal, oldVal) {
-        console.log('submission changed')
+        // console.log('submission changed', window.JSON.stringify(newVal))
         if (window.JSON && window.JSON.stringify && !newVal.id) {
           window.localStorage.setItem('submission', window.JSON.stringify(newVal))
         }
@@ -793,6 +796,15 @@ export default {
     //     return {}
     //   }
     // },
+    computed_type () {
+      const type = this.submission.type
+      if (type) {
+        const id = type.id || type
+        return this.$store.getters.typesDict[id]
+      } else {
+        return {}
+      }
+    },
     error_message (field) {
       return this.errors[field]
     },
@@ -826,7 +838,8 @@ export default {
   components: {
     // Agschema,
     // Agschema: () => import('../../components/agschema.vue'),
-    CustomFields,
+    // CustomFields,
+    JSONSchemaForm,
     // Account,
     selectLabModal,
     // UCDAccount
