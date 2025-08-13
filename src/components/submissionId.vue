@@ -20,8 +20,8 @@
         <q-input label="Custom Project ID" v-model="custom_id"/><q-btn label="assign" @click="assignCustomId()" :disable="!custom_id"/>
       </span>
       <q-checkbox v-model="email" label="Email submitter"/>
-      <q-checkbox v-model="custom" label="Custom"/>
-      <q-btn size="sm" label="Cancel" color="negative" @click="edit=false"/>
+      <q-checkbox v-model="custom" label="Custom ID"/>
+      <q-btn size="sm" label="Cancel" color="negative" @click="edit=false" class="q-ml-sm"/>
     </div>
 </div>
 </template>
