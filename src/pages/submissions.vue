@@ -161,6 +161,11 @@
             <q-item-label>JSON</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item clickable v-close-popup @click="exportSubmissions('workbook')">
+          <q-item-section>
+            <q-item-label>XLSX (w/ tables)</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-btn-dropdown>
     <reportsModal ref="reports"/>
