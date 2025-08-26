@@ -27,7 +27,7 @@
         </q-card-section>
 
         <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="OK" @click="update" /> <q-btn flat label="Cancel" @click="cancel" />
+          <q-btn flat label="Save" @click="update" /> <q-btn flat label="Cancel" @click="cancel" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -54,14 +54,12 @@ export default {
   },
   methods: {
     addParticipant (newUsers) {
-      console.log(this.newUsers, newUsers)
+      // console.log(this.newUsers, newUsers)
       newUsers.forEach(user => {
-        this.participants.push({user: user, roles: [], submission_id: this.submission.id})
+        if (!this.participants.some(obj => obj.user.id === user.id)) {
+          this.participants.push({user: user, roles: [], submission_id: this.submission.id})
+        }
       })
-      // while (this.newUsers) {
-      //   var user = this.newUsers.pop()
-      //   this.participants.push({user: user, roles: [], submission_id: this.submission.id})
-      // }
     },
     modify () {
       this.participants = _.cloneDeep(this.submission.participants)
