@@ -3,6 +3,7 @@
     <q-markup-table>
       <thead>
         <tr>
+          <th class="text-left">Action</th>
           <th class="text-left">Compare</th>
           <th class="text-left">Created</th>
           <th class="text-left">Created By</th>
@@ -11,7 +12,8 @@
       </thead>
       <tbody>
         <tr v-for="v in versions" :key="v.id">
-          <td class="text-left"><q-radio v-model="v1" :val="v.id" label="V1" /><q-radio v-model="v2" :val="v.id" label="V2" /></td>
+          <td><q-btn label="revert" @click="revert(v)"/></td>
+          <td class="text-left"><q-radio v-model="v1" :val="v" label="V1" /><q-radio v-model="v2" :val="v" label="V2" :disable="v1 && v1.revision.date_created < v.revision.date_created"/></td>
           <td class="text-left">{{ v.revision.date_created}}</td>
           <td class="text-left">{{ v.revision.user.username}}</td>
           <td class="text-right">{{ v.revision.comment}}</td>
@@ -20,21 +22,19 @@
     </q-markup-table>
     <q-btn label="Compare" @click="loadVersions"/>
     <!-- {{ versions }} -->
-      {{ diff }}
   </div>
 </template>
 
 <script>
 import jsonDiffModal from './modals/jsonDiffModal.vue'
 export default {
-  props: ['submission'],
+  props: ['submission', 'versionsUrl'],
   data () {
     return {
       versions: [],
       versionDetails: {},
       v1: null,
-      v2: null,
-      diff: null
+      v2: null
     }
   },
   mounted: function () {
@@ -43,7 +43,7 @@ export default {
   methods: {
     refreshVersions () {
       this.$axios
-        .get(`/api/submissions/${this.submission.id}/versions/`)
+        .get(this.versionsUrl)
         .then(({ data }) => {
           this.versions = data
         })
@@ -53,16 +53,16 @@ export default {
         })
     },
     compareVersions () {
-      if (this.versionDetails[this.v1] && this.versionDetails[this.v2]) {
+      if (this.v1 && this.v2 && this.versionDetails[this.v1.id] && this.versionDetails[this.v2.id]) {
         this.$q.dialog({
           component: jsonDiffModal,
           parent: this,
           // props forwarded to component
           // (everything except "component" and "parent" props above):
-          // text: 'Comparing selected versions:',
+          text: `Showing changes that happened between ${this.v2.revision.date_created} and ${this.v1.revision.date_created}`,
           dismissOnly: true,
-          left: this.versionDetails[this.v1],
-          right: this.versionDetails[this.v2]
+          left: this.versionDetails[this.v2.id],
+          right: this.versionDetails[this.v1.id]
         // }).onOk(() => {
         //   // this.$q.notify({message: `Okay.`, type: 'positive'})
         // }).onCancel(() => {
@@ -77,7 +77,7 @@ export default {
         this.compareVersions()
       } else {
         this.$axios
-          .get(`/api/submissions/${this.submission.id}/versions/${id}/serialize/`)
+          .get(`${this.versionsUrl}/${id}/serialize/`)
           .then(({ data }) => {
             this.versionDetails[id] = data
             this.compareVersions()
@@ -90,14 +90,32 @@ export default {
     },
     loadVersions () {
       if (this.v1 && this.v2) {
-        if (this.versionDetails[this.v1] && this.versionDetails[this.v2]) {
+        if (this.versionDetails[this.v1.id] && this.versionDetails[this.v2.id]) {
           this.compareVersions()
         } else {
-          this.loadAndCompare(this.v1)
-          this.loadAndCompare(this.v2)
+          this.loadAndCompare(this.v1.id)
+          this.loadAndCompare(this.v2.id)
         }
       } else {
         this.$q.notify({message: 'Please select 2 versions to compare'})
+      }
+    },
+    revert (version) {
+      this.$axios
+        .post(`${this.versionsUrl}/${version.id}/revert/`)
+        .then(({ data }) => {
+          this.$q.notify({message: `Version reverted to ${version.revision.date_created}, please refresh this page.`})
+        })
+        .catch(error => {
+          console.log(error)
+          this.$q.notify({message: 'Unable to load version '})
+        })
+    }
+  },
+  watch: {
+    v1 (val) {
+      if (val && this.v2 && this.v2.revision.date_created > val.revision.date_created) {
+        this.v2 = null
       }
     }
   }
