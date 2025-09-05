@@ -104,7 +104,17 @@ export default {
       this.$axios
         .post(`${this.versionsUrl}/${version.id}/revert/`)
         .then(({ data }) => {
-          this.$q.notify({message: `Version reverted to ${version.revision.date_created}, please refresh this page.`})
+          // this.$q.notify({message: `Version reverted to ${version.revision.date_created}, please refresh this page.`})
+          this.$q.notify({
+            message: `Version reverted to ${version.revision.date_created}, please refresh this page.`,
+            icon: 'refresh',
+            closeBtn: 'Refresh',
+            color: "positive",
+            timeout: 0,
+            onDismiss () {
+              location.reload(true)
+            }
+          })
         })
         .catch(error => {
           console.log(error)
