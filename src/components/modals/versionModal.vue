@@ -1,0 +1,58 @@
+<template>
+  <div>
+  <span><q-btn label="View" @click="show"/> past versions.</span>
+  <q-dialog ref="dialog" @hide="onDialogHide">
+    <q-card class="q-dialog-plugin" style="min-width: 90%;">
+      <q-card-section>
+        <div class="text-h6">Versions</div>
+      </q-card-section>
+      <q-card-section class="q-pt-none">
+        <Versions ref="versions" :versions-url="versionsUrl"/>
+      </q-card-section>
+      <q-card-actions align="right">
+        <div v-if="dismissOnly">
+          <q-btn color="primary" label="Dismiss" @click="dismiss" />
+        </div>
+        <div v-else>
+          <q-btn v-if="onLoad" color="primary" label="Load" @click="onLoad" />
+          <q-btn color="primary" label="Dismiss" @click="dismiss" />
+        </div>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  </div>
+</template>
+
+<script>
+import Versions from '../Versions.vue'
+export default {
+  props: ['versionsUrl', 'onLoad'],
+
+  methods: {
+    show () {
+      this.$refs.dialog.show()
+    },
+    hide () {
+      this.$refs.dialog.hide()
+    },
+    onDialogHide () {
+      // required to be emitted
+      // when QDialog emits "hide" event
+      this.$emit('hide')
+    },
+    dismiss () {
+      // we just need to hide dialog
+      this.hide()
+    }
+  },
+  computed: {
+    versionCount () {
+      console.log('refs!!', this.$refs)
+      return 3
+    }
+  },
+  components: {
+    Versions
+  }
+}
+</script>

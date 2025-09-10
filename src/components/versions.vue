@@ -15,12 +15,12 @@
           <td><q-btn label="revert" @click="revert(v)"/></td>
           <td class="text-left"><q-radio v-model="v1" :val="v" label="V1" /><q-radio v-model="v2" :val="v" label="V2" :disable="v1 && v1.revision.date_created < v.revision.date_created"/></td>
           <td class="text-left">{{ v.revision.date_created}}</td>
-          <td class="text-left">{{ v.revision.user.username}}</td>
+          <td class="text-left"><span v-if="v.revision.user">{{ v.revision.user.username}}</span><span v-else></span></td>
           <td class="text-right">{{ v.revision.comment}}</td>
         </tr>
       </tbody>
     </q-markup-table>
-    <q-btn label="Compare" @click="loadVersions"/>
+    <q-btn color="primary" label="Compare" @click="loadVersions"/>
     <!-- {{ versions }} -->
   </div>
 </template>
@@ -28,7 +28,7 @@
 <script>
 import jsonDiffModal from './modals/jsonDiffModal.vue'
 export default {
-  props: ['submission', 'versionsUrl'],
+  props: ['versionsUrl'],
   data () {
     return {
       versions: [],
@@ -101,6 +101,9 @@ export default {
       }
     },
     revert (version) {
+      if (!confirm(`Are you sure you want to revert to the version from ${version.revision.date_created}?`)) {
+        return
+      }
       this.$axios
         .post(`${this.versionsUrl}/${version.id}/revert/`)
         .then(({ data }) => {

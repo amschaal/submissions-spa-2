@@ -7,6 +7,7 @@
         <q-btn @click="delete_type" color="negative" label="Delete" class="float-right" v-if="type.id && can_modify"  :disable="type.submission_count !== 0" title="Only types with no associated permissions may be deleted."/>
         <router-link v-if="type.submission_count > 0 && type.id" :to="{'name': 'submissions', 'query': { 'search': type.name }}" class="float-right">{{type.submission_count}} Submissions</router-link>
         <b v-if="!can_modify"> (Viewing with read only permissions)</b>
+        <VersionModal v-if="this.id" :versions-url="`/api/submission_types/${this.id}/versions/`"/>
       </q-card-section>
       <!-- <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id"/> -->
       <q-separator />
@@ -191,6 +192,7 @@ import SchemaForm from '../components/forms/schemaForm.vue'
 import Vue from 'vue'
 // import Agschema from '../components/agschema.vue'
 import draggable from 'vuedraggable'
+import VersionModal from '../components/modals/versionModal.vue'
 export default {
   name: 'submission_type',
   props: ['id'],
@@ -554,7 +556,8 @@ export default {
   components: {
     SchemaForm,
     // Agschema,
-    draggable
+    draggable,
+    VersionModal
   }
 }
 </script>
