@@ -18,6 +18,12 @@ const routes = [
         props: true
       },
       {
+        path: ':id/version/:version_id',
+        component: () => import('pages/submissionVersion'),
+        name: 'submission_version',
+        props: true
+      },
+      {
         path: ':id/modify/',
         component: () => import('pages/submission'),
         name: 'modify_submission',
