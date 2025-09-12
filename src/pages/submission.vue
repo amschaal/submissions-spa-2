@@ -23,7 +23,7 @@
           <!-- <h6>Plugins here: {{$plugins}}</h6> -->
           <h3 v-if="submission.cancelled" class="text-red">Submission cancelled</h3>
           <h3 v-if="modify && id && !canModify">You do not have permission to modify this submission.</h3>
-          <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id && canModify) || create" v-on:submission_updated="submissionUpdated"/>
+          <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id && canModify) || create" v-on:submission_updated="submissionUpdated" ref="submission_form"/>
           <Submission :submission="submission" v-if="(!modify || !canModify) && id"/>
         </q-card-section>
       </q-tab-panel>
@@ -46,7 +46,7 @@
       </q-tab-panel>
       <q-tab-panel name="versions"  v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')">
         <q-card-section>
-          <Versions :submission="submission" :versions-url="`/api/submissions/${this.submission.id}/versions/`"/>
+          <Versions :submission="submission" :versions-url="`/api/submissions/${this.submission.id}/versions/`" :object-id="id" view-router-name="submission_version"/>
         </q-card-section>
       </q-tab-panel>
       <!-- There can be a race condition with plugins loading, should use computed property or something that will wait until plugins are fully set up-->

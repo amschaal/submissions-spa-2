@@ -2,12 +2,12 @@
   <q-page padding class="docs-input row justify-center" v-if="$store.getters.lab">
     <q-card style="width:100%">
       <q-card-section>
-        <span v-if="!type.id">Create</span> Submission Type <span class="inactive" v-if="type.id && !type.active"> (Inactive)</span>
-        <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id && can_modify"/>
-        <q-btn @click="delete_type" color="negative" label="Delete" class="float-right" v-if="type.id && can_modify"  :disable="type.submission_count !== 0" title="Only types with no associated permissions may be deleted."/>
+        <span v-if="!type.id">Create</span> Submission Type <span v-if="type.id && type.name"> - <i>{{ type.name }}</i></span><span class="inactive" v-if="type.id && !type.active"> (Inactive)</span>
+        <q-btn @click="delete_type" color="negative" label="Delete" class="q-ml-sm float-right" v-if="type.id && can_modify"  :disable="type.submission_count !== 0" title="Only types with no associated permissions may be deleted."/>
+        <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id && can_modify" class="q-ml-sm float-right"/>
+        <VersionModal v-if="this.id" :versions-url="`/api/submission_types/${this.id}/versions/`" class="q-ml-sm float-right"/>
         <router-link v-if="type.submission_count > 0 && type.id" :to="{'name': 'submissions', 'query': { 'search': type.name }}" class="float-right">{{type.submission_count}} Submissions</router-link>
         <b v-if="!can_modify"> (Viewing with read only permissions)</b>
-        <VersionModal v-if="this.id" :versions-url="`/api/submission_types/${this.id}/versions/`"/>
       </q-card-section>
       <!-- <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id"/> -->
       <q-separator />

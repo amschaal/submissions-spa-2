@@ -1,20 +1,19 @@
 <template>
   <div>
-  <span><q-btn label="View" @click="show"/> past versions.</span>
+  <span><q-btn label="Versions" @click="show"/></span>
   <q-dialog ref="dialog" @hide="onDialogHide">
     <q-card class="q-dialog-plugin" style="min-width: 90%;">
       <q-card-section>
         <div class="text-h6">Versions</div>
       </q-card-section>
       <q-card-section class="q-pt-none">
-        <Versions ref="versions" :versions-url="versionsUrl"/>
+        <Versions ref="versions" :versions-url="versionsUrl" @on-load="load"/>
       </q-card-section>
       <q-card-actions align="right">
         <div v-if="dismissOnly">
           <q-btn color="primary" label="Dismiss" @click="dismiss" />
         </div>
         <div v-else>
-          <q-btn v-if="onLoad" color="primary" label="Load" @click="onLoad" />
           <q-btn color="primary" label="Dismiss" @click="dismiss" />
         </div>
       </q-card-actions>
@@ -43,6 +42,8 @@ export default {
     dismiss () {
       // we just need to hide dialog
       this.hide()
+    },
+    load (version) {
     }
   },
   computed: {

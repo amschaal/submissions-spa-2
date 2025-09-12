@@ -12,7 +12,10 @@
       </thead>
       <tbody>
         <tr v-for="v in versions" :key="v.id">
-          <td><q-btn label="revert" @click="revert(v)"/></td>
+          <td>
+            <q-btn v-if="viewRouterName && objectId" label="View" class="q-ml-xs" @click="$router.push({name: viewRouterName, params: {id: objectId, version_id: v.id}})"/>
+            <q-btn v-if="useLoad" label="load" @click="load(v)"/>
+            <q-btn label="revert" @click="revert(v)"/></td>
           <td class="text-left"><q-radio v-model="v1" :val="v" label="V1" /><q-radio v-model="v2" :val="v" label="V2" :disable="v1 && v1.revision.date_created < v.revision.date_created"/></td>
           <td class="text-left">{{ v.revision.date_created}}</td>
           <td class="text-left"><span v-if="v.revision.user">{{ v.revision.user.username}}</span><span v-else></span></td>
@@ -28,7 +31,7 @@
 <script>
 import jsonDiffModal from './modals/jsonDiffModal.vue'
 export default {
-  props: ['versionsUrl'],
+  props: ['versionsUrl', 'objectId', 'viewRouterName', 'useLoad'],
   data () {
     return {
       versions: [],
@@ -98,6 +101,22 @@ export default {
         }
       } else {
         this.$q.notify({message: 'Please select 2 versions to compare'})
+      }
+    },
+    load (version) {
+      if (this.versionDetails[version.id]) {
+        this.$emit('on-load', this.versionDetails[version.id])
+      } else {
+        this.$axios
+          .get(`${this.versionsUrl}/${version.id}/serialize/`)
+          .then(({ data }) => {
+            this.versionDetails[version.id] = data
+            this.$emit('on-load', this.versionDetails[version.id])
+          })
+          .catch(error => {
+            console.log(error)
+            this.$q.notify({message: 'Unable to load version'})
+          })
       }
     },
     revert (version) {
