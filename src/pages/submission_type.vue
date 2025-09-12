@@ -2,11 +2,14 @@
   <q-page padding class="docs-input row justify-center" v-if="$store.getters.lab">
     <q-card style="width:100%">
       <q-card-section>
-        <span v-if="!type.id">Create</span> Submission Type <span v-if="type.id && type.name"> - <i>{{ type.name }}</i></span><span class="inactive" v-if="type.id && !type.active"> (Inactive)</span>
+        <span v-if="!version_id">
         <q-btn @click="delete_type" color="negative" label="Delete" class="q-ml-sm float-right" v-if="type.id && can_modify"  :disable="type.submission_count !== 0" title="Only types with no associated permissions may be deleted."/>
         <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id && can_modify" class="q-ml-sm float-right"/>
-        <VersionModal v-if="this.id" :versions-url="`/api/submission_types/${this.id}/versions/`" class="q-ml-sm float-right"/>
+        </span>
+        <VersionModal v-if="this.id" :versions-url="`/api/submission_types/${this.id}/versions/`" class="q-ml-sm float-right" :object-id="id" view-router-name="submission_type_version"/>
         <router-link v-if="type.submission_count > 0 && type.id" :to="{'name': 'submissions', 'query': { 'search': type.name }}" class="float-right">{{type.submission_count}} Submissions</router-link>
+        <div><b><span v-if="!type.id">Create</span> Submission Type <span v-if="type.id && type.name"> - <i>{{ type.name }}</i></span><span class="inactive" v-if="type.id && !type.active"> (Inactive)</span></b></div>
+        <div v-if="version_id" class="text-primary"><b>This is a specific version of the submission type.  You may work from it and save it as the current version, or you may <router-link v-if="type.id && type.prefix" :to="{'name': 'submission_type', 'params': {'id': id}}">load the current version</router-link>.</b></div>
         <b v-if="!can_modify"> (Viewing with read only permissions)</b>
       </q-card-section>
       <!-- <q-btn :to="{ name: 'create_submission_type', query: { copy_from: type.id } }" label="Copy" v-if="type.id"/> -->
@@ -195,7 +198,7 @@ import draggable from 'vuedraggable'
 import VersionModal from '../components/modals/versionModal.vue'
 export default {
   name: 'submission_type',
-  props: ['id'],
+  props: ['id', 'version_id'],
   data () {
     return {
       type: {active: true, submission_help: '', help: '', statuses: [], default_participants: [], submission_schema: {properties: {}, order: [], required: [], layout: {}, printing: {}}, sample_schema: {properties: {}, order: [], required: [], printing: {}, examples: []}},
@@ -285,7 +288,7 @@ export default {
     // Edit, Create, and Copy from logic is a bit convoluted.  Would be good to clean this up.
     var self = this
     this.init_lab()
-    if (!this.id || this.id === 'create') {
+    if ((!this.id || this.id === 'create') && !this.version_id) {
       this.create = true
     }
     var id = this.$route.query.copy_from || this.id
@@ -293,7 +296,15 @@ export default {
     // if (this.create) {
     //   this.notify_autosave()
     // }
-    if (!this.create || this.$route.query.copy_from) {
+    if (this.version_id && this.id) {
+      this.$q.loading.show()
+      this.$axios
+        .get(`/api/submission_types/${id}/versions/${this.version_id}/serialize`)
+        .then(function (response) {
+          self.type = response.data
+          self.$q.loading.hide()
+        })
+    } else if (!this.create || this.$route.query.copy_from) {
       this.$q.loading.show()
       this.$axios
         .get('/api/submission_types/' + id + '/')

@@ -95,6 +95,13 @@ const routes = [
         meta: { authorize: {isLoggedIn: true, isStaff: true} }
       },
       {
+        path: 'submission_type/:id/versions/:version_id',
+        component: () => import('pages/submission_type'),
+        name: 'submission_type_version',
+        props: true,
+        meta: { authorize: {isLoggedIn: true, isStaff: true} }
+      },
+      {
         path: 'submission_type/create',
         component: () => import('pages/submission_type'),
         name: 'create_submission_type'
