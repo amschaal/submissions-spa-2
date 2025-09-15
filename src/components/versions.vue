@@ -13,7 +13,7 @@
       <tbody>
         <tr v-for="v in versions" :key="v.id">
           <td>
-            <q-btn v-if="viewRouterName && objectId" label="View" class="q-ml-xs" @click="$router.push({name: viewRouterName, params: {id: objectId, version_id: v.id}})"/>
+            <q-btn v-if="viewRouterName && objectId" label="View" class="q-ml-xs" @click="$router.push({name: viewRouterName, params: {id: objectId, version: v.id}})"/>
             <q-btn v-if="useLoad" label="load" @click="load(v)"/>
             <q-btn label="revert" @click="revert(v)"/></td>
           <td class="text-left"><q-radio v-model="v1" :val="v" label="V1" /><q-radio v-model="v2" :val="v" label="V2" :disable="v1 && v1.revision.date_created < v.revision.date_created"/></td>
@@ -80,7 +80,7 @@ export default {
         this.compareVersions()
       } else {
         this.$axios
-          .get(`${this.versionsUrl}/${id}/serialize/`)
+          .get(`${this.versionsUrl}/${id}/`)
           .then(({ data }) => {
             this.versionDetails[id] = data
             this.compareVersions()
@@ -108,7 +108,7 @@ export default {
         this.$emit('on-load', this.versionDetails[version.id])
       } else {
         this.$axios
-          .get(`${this.versionsUrl}/${version.id}/serialize/`)
+          .get(`${this.versionsUrl}/${version.id}/`)
           .then(({ data }) => {
             this.versionDetails[version.id] = data
             this.$emit('on-load', this.versionDetails[version.id])

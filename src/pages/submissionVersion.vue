@@ -2,7 +2,17 @@
   <q-page padding class="docs-input row justify-center">
     <q-card class="p90">
         <q-card-section>
-          <Submission :submission="submission" v-if="(!modify || !canModify) && id"/>
+          <div class="row">
+            <div class="field col-12 q-mt-xs q-mb-xs">
+              <q-banner dense class="text-white bg-warning" rounded>
+                <p v-if="!version_details">Loading version details...</p>
+                <p v-else>Version created by {{ created_by }} at <b>{{ version_details.revision.date_created }}</b></p>
+                <p>You may view or modify the submission as it was at this version.  If modifying the submission from this version, the version will remain the same and a new version of the submission will be created.</p>
+              </q-banner>
+            </div>
+          </div>
+          <SubmissionForm :create="false" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id && canModify)" ref="submission_form" :version="version"/>
+          <Submission :submission="submission" v-if="(!modify || !canModify) && id" :version="version"/>
         </q-card-section>
   </q-card>
   </q-page>
@@ -10,14 +20,16 @@
 
 <script>
 import Submission from '../components/submission.vue'
+import SubmissionForm from '../components/forms/submissionForm.vue'
 import Vue from 'vue'
 
 export default {
   name: 'submission_version',
-  props: ['id', 'version_id', 'modify'],
+  props: ['id', 'version', 'modify'],
   data () {
     return {
       submission: {'sample_data': [], 'payment': {}, 'contacts': []},
+      version_details: null,
       errors: {},
       submission_types: [],
       type_options: this.$store.getters.typeOptions
@@ -26,16 +38,18 @@ export default {
   mounted: function () {
     console.log('mounted')
     var self = this
-    if (this.id && this.version_id) {
+    if (this.id && this.version) {
       console.log('id', this.id)
       this.$axios
-        .get(`/api/submissions/${self.id}/versions/${self.version_id}/serialize/`)
+        .get(`/api/submissions/${self.id}/versions/${self.version}/`)
         .then(function (response) {
           console.log('response', response)
-          if (!response.data.sample_data) {
-            response.data.sample_data = []
+          self.version_details = response.data
+          var submission = response.data.serialized
+          if (!submission.sample_data) {
+            submission.sample_data = []
           }
-          Vue.set(self, 'submission', response.data)
+          Vue.set(self, 'submission', submission)
           self.setLab()
         })
     }
@@ -78,10 +92,15 @@ export default {
     },
     canModify () {
       return !this.submission.locked || this.isAdmin
+    },
+    created_by () {
+      var u = this.version_details.revision.user
+      return u && u.first_name ? `${u.last_name}, ${u.first_name} (${u.email})` : 'unknown'
     }
   },
   components: {
-    Submission
+    Submission,
+    SubmissionForm
   }
 }
 </script>

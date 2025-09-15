@@ -318,7 +318,7 @@ import _ from 'lodash'
 
 export default {
   // name: 'submission',
-  props: ['id', 'submission_types', 'create'],
+  props: ['id', 'submission_types', 'create', 'version'],
   data () {
     return {
       submission: {'submission_data': {}, 'contacts': [], 'payment': {}},
@@ -675,17 +675,14 @@ export default {
     },
     loadSubmission: function (id) {
       var self = this
+      var url = this.version ? `/api/submissions/${id}/versions/${this.version}/` : `/api/submissions/${id}/`
       this.$axios
-        .get(`/api/submissions/${id}/`)
+        .get(url)
         .then(function (response) {
-          console.log('response', response)
-          // if (!response.data.sample_data) {
-          //   response.data.sample_data = []
-          // }
-          self.submission = response.data
+          self.submission = self.version ? response.data.serialized : response.data
           Vue.set(self, 'errors', {contacts: [], payment: {}, warnings: response.data.warnings})
           // Vue.set(self, 'warnings', response.data.warnings || {})
-          Vue.set(self.submission, 'type', response.data.type.id)
+          Vue.set(self.submission, 'type', self.submission.type.id)
           self.updatePaymentForm()
         })
     },

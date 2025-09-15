@@ -18,7 +18,7 @@ const routes = [
         props: true
       },
       {
-        path: ':id/version/:version_id',
+        path: ':id/version/:version',
         component: () => import('pages/submissionVersion'),
         name: 'submission_version',
         props: true
@@ -28,6 +28,12 @@ const routes = [
         component: () => import('pages/submission'),
         name: 'modify_submission',
         props: (route) => ({ id: route.params.id, modify: true })
+      },
+      {
+        path: ':id/version/:version/modify',
+        component: () => import('pages/submissionVersion'),
+        name: 'modify_submission_version',
+        props: (route) => ({ id: route.params.id, version: route.params.version, modify: true })
       },
       {
         path: ':id/confirm/',

@@ -1,12 +1,12 @@
 <template>
   <div>
         <div class="row">
-          <div class="field col-12 q-mt-xs q-mb-xs" v-if="submission.import_data">
+          <div class="field col-12 q-mt-xs q-mb-xs" v-if="submission.import_data && !version">
             <q-banner dense class="text-white bg-light-blue" rounded>
               Imported from <a target="_blank" :href="submission.import_data.url">{{submission.import_data.internal_id}}: {{submission.import_data.type.name}}</a>
             </q-banner>
           </div>
-          <div class="field col-12 q-mt-xs q-mb-xs">
+          <div class="field col-12 q-mt-xs q-mb-xs" v-if="!version">
             <SamplesReceived v-if="submission.id" v-model="submission" :admin="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')"/>
           </div>
           <div class="field col-12 q-mt-xs q-mb-xs" v-if="hasWarnings">
@@ -23,10 +23,11 @@
           <div class="col-sm-12 col-lg-12 q-mt-sm q-mb-sm">
             <div class="row">
               <div class="col-lg-12">
-                <q-btn v-if="canModify" label="Modify" class="float-right q-ml-xs" @click="$router.push({name: 'modify_submission', params: {id: submission.id}})"/>
+                <q-btn v-if="canModify && version" label="Modify" class="float-right q-ml-xs" @click="$router.push({name: 'modify_submission_version', params: {id: submission.id, version: version}})"/>
+                <q-btn v-else-if="canModify" label="Modify" class="float-right q-ml-xs" @click="$router.push({name: 'modify_submission', params: {id: submission.id}})"/>
                 <q-btn label="Print" class="float-right q-ml-xs" @click="$router.push({name: 'print_submission', params: {id: submission.id}})"/>
-                <Lock v-if="submission.id && isAdmin" :submission="submission" class="float-right q-ml-xs"/>
-                <Cancel v-if="submission.id" :submission="submission" class="float-right q-ml-xs"/>
+                <Lock v-if="submission.id && isAdmin && !version" :submission="submission" class="float-right q-ml-xs"/>
+                <Cancel v-if="submission.id && !version" :submission="submission" class="float-right q-ml-xs"/>
               </div>
             </div>
           </div>
@@ -34,11 +35,11 @@
         <div class="row">
           <div class="field col-sm-12 col-md-6">
             <p class="caption">Status</p>
-            <StatusSelector v-model="submission.status" :submission="submission" v-if="submission.id && isAdmin"/><span v-else-if="submission.status">{{submission.status}}</span><span v-else>None</span>
+            <StatusSelector v-model="submission.status" :submission="submission" v-if="submission.id && isAdmin && !version"/><span v-else-if="submission.status">{{submission.status}}</span><span v-else>None</span>
           </div>
           <div class="field col-sm-12 col-md-6">
             <p class="caption">Project ID</p>
-            <SubmissionId v-model="submission.internal_id" :submission="submission" v-if="submission.id && isAdmin"/><span v-else-if="submission.internal_id">{{submission.internal_id}}</span><span v-else>Not assigned</span>
+            <SubmissionId v-model="submission.internal_id" :submission="submission" v-if="submission.id && isAdmin && !version"/><span v-else-if="submission.internal_id">{{submission.internal_id}}</span><span v-else>Not assigned</span>
           </div>
           <div class="field col-sm-12 col-md-6">
             <p class="caption">Type</p>
@@ -176,7 +177,7 @@ import _ from 'lodash'
 
 export default {
   // name: 'submission',
-  props: ['id', 'submission'],
+  props: ['id', 'submission', 'version'],
   data () {
     return {
       downloadParams: {'data': 'all', 'format': 'xlsx'}
