@@ -4,10 +4,11 @@
         <q-card-section>
           <div class="row">
             <div class="field col-12 q-mt-xs q-mb-xs">
-              <q-banner dense class="text-white bg-warning" rounded>
+              <q-banner dense class="text-white bg-primary" rounded>
                 <p v-if="!version_details">Loading version details...</p>
-                <p v-else>Version created by {{ created_by }} at <b>{{ version_details.revision.date_created }}</b></p>
+                <p v-else>Version created by {{ created_by }} at <b>{{ version_details.revision.date_created | formatDateTime }}</b></p>
                 <p>You may view or modify the submission as it was at this version.  If modifying the submission from this version, the version will remain the same and a new version of the submission will be created.</p>
+                <p><router-link class="text-white" :to="{ name: 'submission', params: { id: id }}">Return</router-link> to the current version.</p>
               </q-banner>
             </div>
           </div>
