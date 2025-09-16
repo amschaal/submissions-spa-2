@@ -14,7 +14,6 @@
       <q-tab name="files" label="Files"  v-if="submission.id"/>
       <q-tab name="comments" label="comments"  v-if="submission.id"/>
       <q-tab name="charges" label="charges"  v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')"/>
-      <q-tab name="versions" label="Versions"  v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')"/>
       <template v-for="(tab, i) in plugin_tabs"><q-tab :key="i" :name="tab.id" :label="tab.label" v-if="submission.id && hasPluginPermission(submission, tab.id)"/></template>
     </q-tabs>
     <q-tab-panels v-model="tab" animated :keep-alive="true">
@@ -44,11 +43,6 @@
           <charges :submission="submission"/>
         </q-card-section>
       </q-tab-panel>
-      <q-tab-panel name="versions"  v-if="submission.id && $perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')">
-        <q-card-section>
-          <Versions :submission="submission" :versions-url="`/api/submissions/${this.submission.id}/versions/`" :object-id="id" view-router-name="submission_version"/>
-        </q-card-section>
-      </q-tab-panel>
       <!-- There can be a race condition with plugins loading, should use computed property or something that will wait until plugins are fully set up-->
       <template v-for="(tab, i) in plugin_tabs">
         <q-tab-panel :key="i" :name="tab.id">
@@ -75,7 +69,6 @@ import Submission from '../components/submission.vue'
 import Files from '../components/files.vue'
 import NotesTree from '../components/notesTree.vue'
 import Charges from '../components/charges.vue'
-import Versions from '../components/versions.vue'
 import Vue from 'vue'
 
 export default {
@@ -200,8 +193,7 @@ export default {
     SubmissionForm,
     NotesTree,
     Submission,
-    Charges,
-    Versions
+    Charges
   }
 }
 </script>

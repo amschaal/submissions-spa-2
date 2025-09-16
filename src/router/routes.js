@@ -129,6 +129,12 @@ const routes = [
         component: () => import('pages/print_submission'),
         name: 'print_submission',
         props: (route) => ({ id: route.params.id })
+      },
+      {
+        path: '/print/submissions/:id/versions/:version',
+        component: () => import('pages/print_submission'),
+        name: 'print_submission_version',
+        props: (route) => ({ id: route.params.id, version: route.params.version })
       }
     ]
   },
