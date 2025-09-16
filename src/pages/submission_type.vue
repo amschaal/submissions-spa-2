@@ -16,7 +16,7 @@
               </q-banner>
             </div>
           </div>
-        <VersionModal v-if="this.id" :versions-url="`/api/submission_types/${this.id}/versions/`" class="q-ml-sm float-right" :object-id="id" view-router-name="submission_type_version"/>
+        <VersionModal v-if="this.id" :versions-url="`/api/submission_types/${this.id}/versions/`" class="q-ml-sm float-right" :object-id="id" view-router-name="submission_type_version" object-url-name="submission_type"/>
         <router-link v-if="type.submission_count > 0 && type.id" :to="{'name': 'submissions', 'query': { 'search': type.name }}" class="float-right">{{type.submission_count}} Submissions</router-link>
         <div><b><span v-if="!type.id">Create</span> Submission Type <span v-if="type.id && type.name"> - <i>{{ type.name }}</i></span><span class="inactive" v-if="type.id && !type.active"> (Inactive)</span></b></div>
         <div v-if="version_id" class="text-primary"><b>This is a specific version of the submission type.  You may work from it and save it as the current version, or you may <router-link v-if="type.id && type.prefix" :to="{'name': 'submission_type', 'params': {'id': id}}">load the current version</router-link>.</b></div>

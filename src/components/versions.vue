@@ -31,7 +31,7 @@
 <script>
 import jsonDiffModal from './modals/jsonDiffModal.vue'
 export default {
-  props: ['versionsUrl', 'objectId', 'viewRouterName', 'useLoad'],
+  props: ['versionsUrl', 'objectId', 'viewRouterName', 'useLoad', 'objectUrlName'],
   data () {
     return {
       versions: [],
@@ -64,8 +64,8 @@ export default {
           // (everything except "component" and "parent" props above):
           text: `Showing changes that happened between ${this.v2.revision.date_created} and ${this.v1.revision.date_created}`,
           dismissOnly: true,
-          left: this.versionDetails[this.v2.id],
-          right: this.versionDetails[this.v1.id]
+          left: this.versionDetails[this.v2.id].serialized,
+          right: this.versionDetails[this.v1.id].serialized
         // }).onOk(() => {
         //   // this.$q.notify({message: `Okay.`, type: 'positive'})
         // }).onCancel(() => {
@@ -127,16 +127,24 @@ export default {
         .post(`${this.versionsUrl}/${version.id}/revert/`)
         .then(({ data }) => {
           // this.$q.notify({message: `Version reverted to ${version.revision.date_created}, please refresh this page.`})
-          this.$q.notify({
-            message: `Version reverted to ${version.revision.date_created}, please refresh this page.`,
-            icon: 'refresh',
-            closeBtn: 'Refresh',
-            color: "positive",
-            timeout: 0,
-            onDismiss () {
-              location.reload(true)
-            }
-          })
+          if (this.objectUrlName) {
+            this.$q.notify({
+              message: `Reverted to version from ${version.revision.date_created}.`,
+              color: "positive"
+            })
+            this.$router.push({name: this.objectUrlName, params: {id: this.objectId}, query: {reverted_to: version.id, updated: Date.now()}})
+          } else {
+            this.$q.notify({
+              message: `Reverted to version from ${version.revision.date_created}, please refresh this page.`,
+              icon: 'refresh',
+              closeBtn: 'Refresh',
+              color: "positive",
+              timeout: 0,
+              onDismiss () {
+                location.reload(true)
+              }
+            })
+          }
         })
         .catch(error => {
           console.log(error)

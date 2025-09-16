@@ -25,7 +25,7 @@
               <div class="col-lg-12">
                 <q-btn v-if="canModify && version" label="Modify" class="float-right q-ml-xs" @click="$router.push({name: 'modify_submission_version', params: {id: submission.id, version: version}})"/>
                 <q-btn v-else-if="canModify" label="Modify" class="float-right q-ml-xs" @click="$router.push({name: 'modify_submission', params: {id: submission.id}})"/>
-                <VersionModal v-if="submission && submission.id && isAdmin" :versions-url="`/api/submissions/${submission.id}/versions/`" class="q-ml-sm float-right" :object-id="submission.id" view-router-name="submission_version"/>
+                <VersionModal v-if="submission && submission.id && isAdmin" :versions-url="`/api/submissions/${submission.id}/versions/`" class="q-ml-sm float-right" :object-id="submission.id" view-router-name="submission_version" object-url-name="submission"/>
                 <q-btn label="Print" class="float-right q-ml-xs" @click="print()"/>
                 <Lock v-if="submission.id && isAdmin && !version" :submission="submission" class="float-right q-ml-xs"/>
                 <Cancel v-if="submission.id && !version" :submission="submission" class="float-right q-ml-xs"/>

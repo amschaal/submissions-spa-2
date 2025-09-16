@@ -7,7 +7,7 @@
         <div class="text-h6">Versions</div>
       </q-card-section>
       <q-card-section class="q-pt-none">
-        <Versions ref="versions" :versions-url="versionsUrl" @on-load="load" :object-id="objectId" :view-router-name="viewRouterName"/>
+        <Versions ref="versions" :versions-url="versionsUrl" @on-load="load" :object-id="objectId" :view-router-name="viewRouterName" :object-url-name="objectUrlName"/>
       </q-card-section>
       <q-card-actions align="right">
         <div v-if="dismissOnly">
@@ -25,7 +25,7 @@
 <script>
 import Versions from '../Versions.vue'
 export default {
-  props: ['versionsUrl', 'onLoad', 'objectId', 'viewRouterName'],
+  props: ['versionsUrl', 'onLoad', 'objectId', 'viewRouterName', 'objectUrlName'],
 
   methods: {
     show () {
