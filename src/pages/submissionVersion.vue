@@ -6,10 +6,13 @@
             <div class="field col-12 q-mt-xs q-mb-xs">
               <q-banner dense class="text-white bg-primary" rounded>
                 <p v-if="!version_details">Loading version details...</p>
-                <p v-else>Version created by {{ created_by }} at <b>{{ version_details.revision.date_created | formatDateTime }}</b></p>
-                <p>You may view or modify the submission as it was at this version.  If modifying the submission from this version, the version will remain the same and a new version of the submission will be created.</p>
-                <p><router-link class="text-white" :to="{ name: 'submission', params: { id: id }}">Return</router-link> to the current version.</p>
-              </q-banner>
+                <div v-else>
+                  <RevertButton v-if="version_details" :object-url="`/submissions/${id}`" :version="version_details" :revert-url="`/api/submissions/${id}/versions/${version_details.id}/revert/`" class="float-right"/>
+                  <p>Version created by {{ created_by }} at <b>{{ version_details.revision.date_created | formatDateTime }}</b></p>
+                  <p>You may view or modify the submission as it was at this version.  If modifying the submission from this version, the version will remain the same and a new version of the submission will be created.</p>
+                  <p><router-link class="text-white" :to="{ name: 'submission', params: { id: id }}">Return</router-link> to the current version.</p>
+                </div>
+                </q-banner>
             </div>
           </div>
           <SubmissionForm :create="false" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id && canModify)" ref="submission_form" :version="version"/>
@@ -21,6 +24,7 @@
 
 <script>
 import Submission from '../components/submission.vue'
+import RevertButton from '../components/revertButton.vue'
 import SubmissionForm from '../components/forms/submissionForm.vue'
 import Vue from 'vue'
 
@@ -101,7 +105,8 @@ export default {
   },
   components: {
     Submission,
-    SubmissionForm
+    SubmissionForm,
+    RevertButton
   }
 }
 </script>

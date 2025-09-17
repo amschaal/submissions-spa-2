@@ -10,13 +10,16 @@
             <div class="field col-12 q-mt-xs q-mb-xs">
               <q-banner dense class="text-white bg-primary" rounded>
                 <p v-if="!version_details">Loading version details...</p>
-                <p v-else>Version created by {{ created_by }} at <b>{{ version_details.revision.date_created | formatDateTime }}</b></p>
-                <p>You may view or modify the submission type as it was at this version.  If modifying the submission type from this version, the version will remain the same and a new version of the submission type will be created.</p>
-                <p><router-link class="text-white" :to="{ name: 'submission_type', params: { id: id }}">Return</router-link> to the current version.</p>
+                <div v-else>
+                  <RevertButton v-if="version_details" :object-url="$router.resolve({name: 'submission_type', params: { id: id }}).href" :version="version_details" :revert-url="`/api/submission_types/${id}/versions/${version_details.id}/revert/`" class="float-right"/>
+                  <p>Version created by {{ created_by }} at <b>{{ version_details.revision.date_created | formatDateTime }}</b></p>
+                  <p>You may view or modify the submission type as it was at this version.  If modifying the submission type from this version, the version will remain the same and a new version of the submission type will be created.</p>
+                  <p><router-link class="text-white" :to="{ name: 'submission_type', params: { id: id }}">Return</router-link> to the current version.</p>
+                </div>
               </q-banner>
             </div>
           </div>
-        <VersionModal v-if="this.id" :versions-url="`/api/submission_types/${this.id}/versions/`" class="q-ml-sm float-right" :object-id="id" view-router-name="submission_type_version" object-url-name="submission_type"/>
+        <VersionModal v-if="this.id" :versions-url="`/api/submission_types/${this.id}/versions/`" class="q-ml-sm float-right" :object-id="id" view-router-name="submission_type_version" :object-url="$router.resolve({name: 'submission_type', params: { id: id }}).href"/>
         <router-link v-if="type.submission_count > 0 && type.id" :to="{'name': 'submissions', 'query': { 'search': type.name }}" class="float-right">{{type.submission_count}} Submissions</router-link>
         <div><b><span v-if="!type.id">Create</span> Submission Type <span v-if="type.id && type.name"> - <i>{{ type.name }}</i></span><span class="inactive" v-if="type.id && !type.active"> (Inactive)</span></b></div>
         <div v-if="version_id" class="text-primary"><b>This is a specific version of the submission type.  You may work from it and save it as the current version, or you may <router-link v-if="type.id && type.prefix" :to="{'name': 'submission_type', 'params': {'id': id}}">load the current version</router-link>.</b></div>
@@ -206,6 +209,7 @@ import Vue from 'vue'
 // import Agschema from '../components/agschema.vue'
 import draggable from 'vuedraggable'
 import VersionModal from '../components/modals/versionModal.vue'
+import RevertButton from '../components/revertButton.vue'
 export default {
   name: 'submission_type',
   props: ['id', 'version'],
@@ -584,7 +588,8 @@ export default {
     SchemaForm,
     // Agschema,
     draggable,
-    VersionModal
+    VersionModal,
+    RevertButton
   }
 }
 </script>

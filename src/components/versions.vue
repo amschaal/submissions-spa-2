@@ -15,9 +15,11 @@
           <td>
             <q-btn v-if="viewRouterName && objectId" label="View" class="q-ml-xs" @click="$router.push({name: viewRouterName, params: {id: objectId, version: v.id}})"/>
             <q-btn v-if="useLoad" label="load" @click="load(v)"/>
-            <q-btn label="revert" @click="revert(v)"/></td>
+            <!-- <q-btn label="revert" @click="revert(v)"/> -->
+            <RevertButton :object-url="objectUrl" :version="v" :revert-url="`${versionsUrl}/${v.id}/revert/`"/>
+          </td>
           <td class="text-left"><q-radio v-model="v1" :val="v" label="V1" /><q-radio v-model="v2" :val="v" label="V2" :disable="v1 && v1.revision.date_created < v.revision.date_created"/></td>
-          <td class="text-left">{{ v.revision.date_created}}</td>
+          <td class="text-left">{{ v.revision.date_created | formatDateTime}}</td>
           <td class="text-left"><span v-if="v.revision.user">{{ v.revision.user.username}}</span><span v-else></span></td>
           <td class="text-right">{{ v.revision.comment}}</td>
         </tr>
@@ -30,8 +32,9 @@
 
 <script>
 import jsonDiffModal from './modals/jsonDiffModal.vue'
+import RevertButton from './revertButton.vue'
 export default {
-  props: ['versionsUrl', 'objectId', 'viewRouterName', 'useLoad', 'objectUrlName'],
+  props: ['versionsUrl', 'objectId', 'viewRouterName', 'useLoad', 'objectUrlName', 'objectUrl'],
   data () {
     return {
       versions: [],
@@ -118,38 +121,6 @@ export default {
             this.$q.notify({message: 'Unable to load version'})
           })
       }
-    },
-    revert (version) {
-      if (!confirm(`Are you sure you want to revert to the version from ${version.revision.date_created}?`)) {
-        return
-      }
-      this.$axios
-        .post(`${this.versionsUrl}/${version.id}/revert/`)
-        .then(({ data }) => {
-          // this.$q.notify({message: `Version reverted to ${version.revision.date_created}, please refresh this page.`})
-          if (this.objectUrlName) {
-            this.$q.notify({
-              message: `Reverted to version from ${version.revision.date_created}.`,
-              color: "positive"
-            })
-            this.$router.push({name: this.objectUrlName, params: {id: this.objectId}, query: {reverted_to: version.id, updated: Date.now()}})
-          } else {
-            this.$q.notify({
-              message: `Reverted to version from ${version.revision.date_created}, please refresh this page.`,
-              icon: 'refresh',
-              closeBtn: 'Refresh',
-              color: "positive",
-              timeout: 0,
-              onDismiss () {
-                location.reload(true)
-              }
-            })
-          }
-        })
-        .catch(error => {
-          console.log(error)
-          this.$q.notify({message: 'Unable to load version '})
-        })
     }
   },
   watch: {
@@ -158,6 +129,9 @@ export default {
         this.v2 = null
       }
     }
+  },
+  components: {
+    RevertButton
   }
 }
 </script>
