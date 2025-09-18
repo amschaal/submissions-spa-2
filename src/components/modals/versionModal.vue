@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import Versions from '../Versions.vue'
+import Versions from '../versions.vue'
 export default {
   props: ['versionsUrl', 'onLoad', 'objectId', 'viewRouterName', 'objectUrlName', 'objectUrl'],
 
@@ -42,14 +42,6 @@ export default {
     dismiss () {
       // we just need to hide dialog
       this.hide()
-    },
-    load (version) {
-    }
-  },
-  computed: {
-    versionCount () {
-      console.log('refs!!', this.$refs)
-      return 3
     }
   },
   components: {
