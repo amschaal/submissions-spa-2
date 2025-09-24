@@ -1,12 +1,12 @@
 <template>
   <div>
         <div class="row">
-          <div class="field col-12 q-mt-xs q-mb-xs" v-if="submission.import_data">
+          <div class="field col-12 q-mt-xs q-mb-xs" v-if="submission.import_data && !version">
             <q-banner dense class="text-white bg-light-blue" rounded>
               Imported from <a target="_blank" :href="submission.import_data.url">{{submission.import_data.internal_id}}: {{submission.import_data.type.name}}</a>
             </q-banner>
           </div>
-          <div class="field col-12 q-mt-xs q-mb-xs">
+          <div class="field col-12 q-mt-xs q-mb-xs" v-if="!version">
             <SamplesReceived v-if="submission.id" v-model="submission" :admin="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')"/>
           </div>
           <div class="field col-12 q-mt-xs q-mb-xs" v-if="hasWarnings">
@@ -23,10 +23,12 @@
           <div class="col-sm-12 col-lg-12 q-mt-sm q-mb-sm">
             <div class="row">
               <div class="col-lg-12">
-                <q-btn v-if="canModify" label="Modify" class="float-right q-ml-xs" @click="$router.push({name: 'modify_submission', params: {id: submission.id}})"/>
-                <q-btn label="Print" class="float-right q-ml-xs" @click="$router.push({name: 'print_submission', params: {id: submission.id}})"/>
-                <Lock v-if="submission.id && isAdmin" :submission="submission" class="float-right q-ml-xs"/>
-                <Cancel v-if="submission.id" :submission="submission" class="float-right q-ml-xs"/>
+                <q-btn v-if="canModify && version" label="Modify" class="float-right q-ml-xs" @click="$router.push({name: 'modify_submission_version', params: {id: submission.id, version: version}})"/>
+                <q-btn v-else-if="canModify" label="Modify" class="float-right q-ml-xs" @click="$router.push({name: 'modify_submission', params: {id: submission.id}})"/>
+                <VersionModal v-if="submission && submission.id && isAdmin" :versions-url="`/api/submissions/${submission.id}/versions/`" class="q-ml-sm float-right" :object-id="submission.id" view-router-name="submission_version" object-url-name="submission" :object-url="`/submissions/${submission.id}`"/>
+                <q-btn label="Print" class="float-right q-ml-xs" @click="print()"/>
+                <Lock v-if="submission.id && isAdmin && !version" :submission="submission" class="float-right q-ml-xs"/>
+                <Cancel v-if="submission.id && !version" :submission="submission" class="float-right q-ml-xs"/>
               </div>
             </div>
           </div>
@@ -34,11 +36,11 @@
         <div class="row">
           <div class="field col-sm-12 col-md-6">
             <p class="caption">Status</p>
-            <StatusSelector v-model="submission.status" :submission="submission" v-if="submission.id && isAdmin"/><span v-else-if="submission.status">{{submission.status}}</span><span v-else>None</span>
+            <StatusSelector v-model="submission.status" :submission="submission" v-if="submission.id && isAdmin && !version"/><span v-else-if="submission.status">{{submission.status}}</span><span v-else>None</span>
           </div>
           <div class="field col-sm-12 col-md-6">
             <p class="caption">Project ID</p>
-            <SubmissionId v-model="submission.internal_id" :submission="submission" v-if="submission.id && isAdmin"/><span v-else-if="submission.internal_id">{{submission.internal_id}}</span><span v-else>Not assigned</span>
+            <SubmissionId v-model="submission.internal_id" :submission="submission" v-if="submission.id && isAdmin && !version"/><span v-else-if="submission.internal_id">{{submission.internal_id}}</span><span v-else>Not assigned</span>
           </div>
           <div class="field col-sm-12 col-md-6">
             <p class="caption">Type</p>
@@ -138,7 +140,7 @@
         <!-- <Agschema v-model="submission.sample_data" :type="submission_type" :editable="false" ref="samplesheet" v-if="submission_type && submission_type.sample_schema" :submission="submission"/> -->
         <!-- <q-icon size="25px" name="warning" v-if="hasWarnings" color="warning" title="Samples contain warnings."/> -->
         <!-- <q-btn :label="'Samples ('+submission.sample_data.length+')'"  @click="openSamplesheet"/> -->
-        <div class="row" v-if="submission.id">
+        <div class="row" v-if="submission.id && !version">
           <div class="col-lg-12">
             <q-btn class="float-right" label="Create copy" description="Create a new submission using data from this submission." @click="copySubmission"/>
             <q-btn label="Download" @click="download()"  class="float-right"/>
@@ -171,12 +173,13 @@ import Lock from './lock.vue'
 import Cancel from './cancel.vue'
 import SamplesReceived from './samplesReceived.vue'
 import participants from './participants.vue'
+import VersionModal from '../components/modals/versionModal.vue'
 // import Vue from 'vue'
 import _ from 'lodash'
 
 export default {
   // name: 'submission',
-  props: ['id', 'submission'],
+  props: ['id', 'submission', 'version'],
   data () {
     return {
       downloadParams: {'data': 'all', 'format': 'xlsx'}
@@ -215,6 +218,13 @@ export default {
     copySubmission () {
       this.$router.push({ name: 'create_submission', query: { import: window.location.href } })
       // window.location.href = window.location.href + '?import=' + window.location.href
+    },
+    print () {
+      if (this.version) {
+        this.$router.push({name: 'print_submission_version', params: {id: this.submission.id, version: this.version}})
+      } else {
+        this.$router.push({name: 'print_submission', params: {id: this.submission.id}})
+      }
     }
   },
   computed: {
@@ -293,7 +303,8 @@ export default {
     Cancel,
     SamplesReceived,
     SubmissionId,
-    participants
+    participants,
+    VersionModal
   }
 }
 </script>

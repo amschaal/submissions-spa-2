@@ -22,7 +22,7 @@
           <!-- <h6>Plugins here: {{$plugins}}</h6> -->
           <h3 v-if="submission.cancelled" class="text-red">Submission cancelled</h3>
           <h3 v-if="modify && id && !canModify">You do not have permission to modify this submission.</h3>
-          <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id && canModify) || create" v-on:submission_updated="submissionUpdated"/>
+          <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id && canModify) || create" v-on:submission_updated="submissionUpdated" ref="submission_form"/>
           <Submission :submission="submission" v-if="(!modify || !canModify) && id"/>
         </q-card-section>
       </q-tab-panel>

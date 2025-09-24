@@ -18,10 +18,22 @@ const routes = [
         props: true
       },
       {
+        path: ':id/version/:version',
+        component: () => import('pages/submissionVersion'),
+        name: 'submission_version',
+        props: true
+      },
+      {
         path: ':id/modify/',
         component: () => import('pages/submission'),
         name: 'modify_submission',
         props: (route) => ({ id: route.params.id, modify: true })
+      },
+      {
+        path: ':id/version/:version/modify',
+        component: () => import('pages/submissionVersion'),
+        name: 'modify_submission_version',
+        props: (route) => ({ id: route.params.id, version: route.params.version, modify: true })
       },
       {
         path: ':id/confirm/',
@@ -89,6 +101,13 @@ const routes = [
         meta: { authorize: {isLoggedIn: true, isStaff: true} }
       },
       {
+        path: 'submission_type/:id/versions/:version',
+        component: () => import('pages/submission_type'),
+        name: 'submission_type_version',
+        props: true,
+        meta: { authorize: {isLoggedIn: true, isStaff: true} }
+      },
+      {
         path: 'submission_type/create',
         component: () => import('pages/submission_type'),
         name: 'create_submission_type'
@@ -110,6 +129,12 @@ const routes = [
         component: () => import('pages/print_submission'),
         name: 'print_submission',
         props: (route) => ({ id: route.params.id })
+      },
+      {
+        path: '/print/submissions/:id/versions/:version',
+        component: () => import('pages/print_submission'),
+        name: 'print_submission_version',
+        props: (route) => ({ id: route.params.id, version: route.params.version })
       }
     ]
   },
