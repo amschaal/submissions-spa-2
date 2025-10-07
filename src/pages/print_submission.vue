@@ -1,5 +1,6 @@
 <template>
   <div v-if="submission.type">
+    <p class="heading" v-if="version_details">Viewing version created by {{ created_by }} at <b>{{ version_details.revision.date_created | formatDateTime }}</b></p>
     <p class="heading">{{submission.type.name}} - {{submission.internal_id}}</p>
     <p class="heading" v-if="submission.import_data">(Imported from {{submission.import_data.internal_id}}: {{submission.import_data.type.name}})</p>
     <table class="full bordered compact submission">
@@ -42,25 +43,29 @@ import _ from 'lodash'
 const { formatDate } = date
 export default {
   name: 'print_submission',
-  props: ['id'],
+  props: ['id', 'version'],
   data () {
     return {
-      submission: {'sample_data': []}
+      submission: {'sample_data': []},
+      version_details: null
     }
   },
   mounted: function () {
-    console.log('mounted')
     var self = this
-
+    var url = this.version ? `/api/submissions/${self.id}/versions/${self.version}` : `/api/submissions/${self.id}/`
     this.$axios
-      .get(`/api/submissions/${self.id}/`)
+      .get(url)
       .then(function (response) {
-        console.log('response', response)
-        if (!response.data.sample_data) {
-          response.data.sample_data = []
+        // console.log('response', response)
+        var submission = self.version ? response.data.serialized : response.data
+        if (self.version && response.data.revision) {
+          self.version_details = response.data
+        }
+        if (!submission.sample_data) {
+          submission.sample_data = []
         }
         // self.submission = response.data
-        Vue.set(self, 'submission', response.data)
+        Vue.set(self, 'submission', submission)
       })
   },
   methods: {
@@ -106,6 +111,10 @@ export default {
     }
   },
   computed: {
+    created_by () {
+      var u = this.version_details.revision.user
+      return u && u.first_name ? `${u.last_name}, ${u.first_name} (${u.email})` : 'unknown'
+    }
   },
   components: {
     KeyValueTable

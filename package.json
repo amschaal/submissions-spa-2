@@ -1,6 +1,6 @@
 {
   "name": "submissions",
-  "version": "1.6.2",
+  "version": "1.8.1",
   "description": "Sample Submission System",
   "productName": "submissions",
   "author": "adam <amschaal@gmail.com>",
@@ -14,7 +14,7 @@
     "ag-grid-community": "^24.0.0",
     "ag-grid-enterprise": "^24.0.0",
     "ag-grid-vue": "^24.0.0",
-    "axios": "^0.21.2",
+    "axios": "^0.30.0",
     "core-js": "^3.0.0",
     "jsondiffpatch": "^0.6.0",
     "moment": "^2.24.0",

@@ -115,6 +115,7 @@
           <q-td key="status" :props="props">{{ props.row.status }}</q-td>
           <q-td key="participant_names" :props="props">{{ props.row.participant_names.join(', ') }}</q-td>
           <q-td key="submitted" :props="props">{{ props.row.submitted | formatDate }}</q-td>
+          <q-td key="updated" :props="props">{{ props.row.updated | formatDate }}</q-td>
           <q-td key="name" :props="props">{{ props.row.first_name }} {{ props.row.last_name }}</q-td>
           <q-td key="email" :props="props">{{ props.row.email }}</q-td>
           <q-td key="pi_name" :props="props">{{ props.row.pi_first_name }} {{ props.row.pi_last_name }}</q-td>
@@ -211,6 +212,7 @@ export default {
         { name: 'status', label: 'Status', field: 'status', sortable: true },
         { name: 'participant_names', label: 'Participants', field: 'participant_names', sortable: false },
         { name: 'submitted', label: 'Submitted', field: 'submitted', sortable: true },
+        { name: 'updated', label: 'Updated', field: 'updated', sortable: true },
         { name: 'name', label: 'Name', field: 'name' },
         { name: 'email', label: 'Email', field: 'email', sortable: true },
         { name: 'pi_name', label: 'PI', field: 'pi_name' },

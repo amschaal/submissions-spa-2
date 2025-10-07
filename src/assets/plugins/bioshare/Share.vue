@@ -6,7 +6,7 @@
     <th class="text-right" v-if="is_staff">
       <span v-for="(e, index) in sharedWithEmails">
         <span v-if="index !== 0">, </span><span style="color:green">{{ e }}</span>
-      </span> 
+      </span>
       <span v-for="(e, index) in missingEmails">
         <span v-if="index !== 0 || index == 0 && sharedWithEmails.length != 0">, </span><span style="color:red">{{ e }}</span>
       </span>
@@ -36,9 +36,9 @@
                 </thead>
                 <tbody>
                 <tr v-for="p in submission.participants">
-                  <td class="text-left">{{p.first_name}} {{p.last_name}}</td>
-                  <td class="text-right">{{p.email}}</td>
-                  <td class="text-right"><q-icon name="check_circle" color="green" v-if="sharedWith(p.email)"/><q-icon name="cancel" color="red" v-else/></td>
+                  <td class="text-left">{{p.user.first_name}} {{p.user.last_name}}</td>
+                  <td class="text-right">{{p.user.email}}</td>
+                  <td class="text-right"><q-icon name="check_circle" color="green" v-if="sharedWith(p.user.email)"/><q-icon name="cancel" color="red" v-else/></td>
                 </tr>
               </tbody>
               </q-markup-table>
