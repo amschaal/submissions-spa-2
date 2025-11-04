@@ -117,6 +117,12 @@ const routes = [
         name: 'settings',
         component: () => import('pages/settings'),
         meta: { authorize: {isLoggedIn: true, isStaff: true} }
+      },
+      {
+        path: 'pis',
+        component: () => import('pages/pis'),
+        name: 'pis',
+        meta: { authorize: {isLoggedIn: true, isStaff: true} }
       }
     ]
   },
