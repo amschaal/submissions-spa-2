@@ -3,12 +3,12 @@
 
     <q-card>
       <q-card-section>
-        PIs
+        Groups
       </q-card-section>
 
       <q-separator />
       <q-card-section>
-       <pi-table></pi-table>
+       <group-table></group-table>
     </q-card-section>
   </q-card>
   </q-page>
@@ -18,11 +18,11 @@
 </style>
 
 <script>
-import piTable from '../components/tables/piTable.vue'
+import GroupTable from '../components/tables/GroupTable.vue'
 export default {
   name: 'PagePIs',
   components: {
-    piTable
+    GroupTable
   }
 }
 </script>

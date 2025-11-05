@@ -64,9 +64,15 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
-        <q-btn-dropdown auto-close stretch flat label="Institution" class="restricted" icon="vpn_key" v-if="$store.getters.isInstitutionAdmin">
+        <q-btn-dropdown auto-close stretch flat label="Site" class="restricted" icon="vpn_key" v-if="$store.getters.isStaff">
           <q-list>
-            <q-item clickable :to="{ name: 'institution_settings', params: {} }">
+            <q-item clickable :to="{ name: 'groups', params: {} }">
+              <q-item-section>Groups</q-item-section>
+            </q-item>
+            <q-item clickable :to="{ name: 'institutions', params: {} }">
+              <q-item-section>Institutions</q-item-section>
+            </q-item>
+            <q-item clickable :to="{ name: 'institution_settings', params: {} }" v-if="$store.getters.isInstitutionAdmin">
               <q-item-section>Settings</q-item-section>
             </q-item>
           </q-list>

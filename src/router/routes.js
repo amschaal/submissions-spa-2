@@ -60,7 +60,26 @@ const routes = [
     children: [
       { path: '', name: 'index', component: () => import('pages/index') },
       { path: 'profile', name: 'profile', component: () => import('pages/profile'), meta: { authorize: {isLoggedIn: true} } },
-      { path: 'settings', name: 'institution_settings', component: () => import('pages/institution_settings.vue'), meta: { authorize: {isLoggedIn: true, isStaff: true, isSuperuser: true} } }
+      { path: 'settings', name: 'institution_settings', component: () => import('pages/institution_settings.vue'), meta: { authorize: {isLoggedIn: true, isStaff: true, isSuperuser: true} } },
+      {
+        path: 'groups',
+        component: () => import('pages/groups'),
+        name: 'groups',
+        meta: { authorize: {isLoggedIn: true, isStaff: true} }
+      },
+      {
+        path: 'institutions',
+        component: () => import('pages/institutions'),
+        name: 'institutions',
+        meta: { authorize: {isLoggedIn: true, isStaff: true} }
+      },
+      {
+        path: 'institutions/:id',
+        component: () => import('pages/institution'),
+        name: 'institution',
+        props: true,
+        meta: { authorize: {isLoggedIn: true, isStaff: true} }
+      }
     ]
   },
   {
@@ -117,15 +136,38 @@ const routes = [
         name: 'settings',
         component: () => import('pages/settings'),
         meta: { authorize: {isLoggedIn: true, isStaff: true} }
-      },
-      {
-        path: 'pis',
-        component: () => import('pages/pis'),
-        name: 'pis',
-        meta: { authorize: {isLoggedIn: true, isStaff: true} }
       }
+      // {
+      //   path: 'pis',
+      //   component: () => import('pages/pis'),
+      //   name: 'pis',
+      //   meta: { authorize: {isLoggedIn: true, isStaff: true} }
+      // }
     ]
   },
+  // {
+  //   path: '/:lab_id',
+  //   component: () => import('layouts/BaseLayout'),
+  //   children: [
+  // {
+  //   path: '/pis',
+  //   component: () => import('layouts/BaseLayout'),
+  //   children: [
+  //     {
+  //       path: '',
+  //       component: () => import('pages/pis'),
+  //       name: 'pis',
+  //       meta: { authorize: {isLoggedIn: true, isStaff: true} }
+  //       // props: { lab: false }
+  //     }
+  //     // {
+  //     //   path: ':id',
+  //     //   component: () => import('pages/submission'),
+  //     //   name: 'submission',
+  //     //   props: true
+  //     // },
+  //   ]
+  // },
   {
     path: '/print',
     component: () => import('layouts/blank'),

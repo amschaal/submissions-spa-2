@@ -12,8 +12,6 @@
       @request="request"
       binary-state-sort
       :rows-per-page-options="[10,25,0]"
-      selection="multiple"
-      :selected.sync="selected"
     >
       <template v-slot:top-right>
         <q-input borderless dense debounce="300" v-model="filters.filter" placeholder="Search">
@@ -22,6 +20,11 @@
           </template>
         </q-input>
       </template>
+       <template v-slot:body-cell-name="props">
+        <q-td :props="props">
+          <router-link :to="{ name: 'institution', params: { id: props.row.id }}">{{props.row.name}}</router-link>
+        </q-td>
+      </template>
     </q-table>
   </div>
 </template>
@@ -29,7 +32,7 @@
 <script>
 // import axios from 'axios'
 export default {
-  props: ['value', 'queryParams'],
+  props: ['queryParams'],
   data () {
     return {
       filters: {
@@ -39,17 +42,14 @@ export default {
           rowsNumber: 0, // specifying this determines pagination is server-side
           rowsPerPage: 10,
           descending: false,
-          sortBy: 'last_name'
+          sortBy: 'name'
         },
-        visibleColumns: ['first_name', 'last_name', 'email']
+        visibleColumns: ['name']
       },
-      selected: this.value ? this.value : [],
       loading: false,
       serverData: [],
       columns: [
-        { name: 'first_name', label: 'First', field: 'first_name', sortable: true },
-        { name: 'last_name', label: 'Last', field: 'last_name', sortable: true },
-        { name: 'email', label: 'Email', field: 'email', sortable: true }
+        { name: 'name', label: 'Institution', field: 'name', sortable: true }
       ]
     }
   },
@@ -68,7 +68,7 @@ export default {
       var search = this.filters.filter !== '' ? `&search=${this.filters.filter}` : ''
       var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       this.$axios
-        .get(`/api/pis/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${search}&${this.queryParams}`)// ${pagination.descending}&filter=${filter}
+        .get(`/api/pi_institutions/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${search}&${this.queryParams}`)// ${pagination.descending}&filter=${filter}
         .then(({ data }) => {
           console.log('data', data)
           // updating pagination to reflect in the UI
@@ -94,10 +94,6 @@ export default {
         filter: this.filters.filter
       })
     }
-    // ,
-    // selectionChanged () {
-    //   alert('changed')
-    // }
   },
   mounted () {
     this.refresh()
