@@ -68,6 +68,13 @@ const routes = [
         meta: { authorize: {isLoggedIn: true, isStaff: true} }
       },
       {
+        path: 'groups/:id',
+        component: () => import('pages/group'),
+        name: 'group',
+        props: true,
+        meta: { authorize: {isLoggedIn: true, isStaff: true} }
+      },
+      {
         path: 'institutions',
         component: () => import('pages/institutions'),
         name: 'institutions',

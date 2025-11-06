@@ -3,7 +3,7 @@
 
     <q-card>
       <q-card-section>
-        <router-link :to="{ name: 'institutions'}">Institutions</router-link> -> <span v-if="institution">{{ institution.name }}</span>
+        <router-link :to="{ name: 'institutions'}">Institutions</router-link> / <span v-if="institution">{{ institution.name }}</span>
       </q-card-section>
 
       <q-separator />
@@ -27,7 +27,7 @@ export default {
     }
   },
   mounted () {
-    this.$axios.get(`/api/pi_institutions/${this.id}/`)
+    this.$axios.get(`/api/group_institutions/${this.id}/`)
       .then(response => {
         this.institution = response.data
       })

@@ -20,6 +20,11 @@
           </template>
         </q-input>
       </template>
+      <template v-slot:body-cell-email="props">
+        <q-td :props="props">
+         <router-link :to="{ name: 'group', params: { id: props.row.email }}">{{props.row.email}}</router-link>
+        </q-td>
+      </template>
        <template v-slot:body-cell-institution__name="props">
         <q-td :props="props">
          <router-link :to="{ name: 'institution', params: { id: props.row.institution.id }}">{{props.row.institution.name}}</router-link>
@@ -71,7 +76,7 @@ export default {
       var search = this.filters.filter !== '' ? `&search=${this.filters.filter}` : ''
       var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       this.$axios
-        .get(`/api/pis/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${search}&${this.queryParams}`)// ${pagination.descending}&filter=${filter}
+        .get(`/api/groups/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${search}&${this.queryParams}`)// ${pagination.descending}&filter=${filter}
         .then(({ data }) => {
           console.log('data', data)
           // updating pagination to reflect in the UI

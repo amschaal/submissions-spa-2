@@ -68,7 +68,7 @@ export default {
       var search = this.filters.filter !== '' ? `&search=${this.filters.filter}` : ''
       var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       this.$axios
-        .get(`/api/pi_institutions/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${search}&${this.queryParams}`)// ${pagination.descending}&filter=${filter}
+        .get(`/api/group_institutions/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${search}&${this.queryParams}`)// ${pagination.descending}&filter=${filter}
         .then(({ data }) => {
           console.log('data', data)
           // updating pagination to reflect in the UI
