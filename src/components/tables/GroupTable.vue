@@ -22,7 +22,7 @@
       </template>
       <template v-slot:body-cell-email="props">
         <q-td :props="props">
-         <router-link :to="{ name: 'group', params: { id: props.row.email }}">{{props.row.email}}</router-link>
+         <router-link :to="{ name: 'group', params: { id: props.row.id }}">{{props.row.email}}</router-link>
         </q-td>
       </template>
        <template v-slot:body-cell-institution__name="props">
@@ -49,7 +49,7 @@ export default {
           descending: false,
           sortBy: 'last_name'
         },
-        visibleColumns: ['first_name', 'last_name', 'email', 'institution__name']
+        visibleColumns: ['first_name', 'last_name', 'email', 'department', 'institution__name']
       },
       loading: false,
       serverData: [],
@@ -57,6 +57,7 @@ export default {
         { name: 'first_name', label: 'First', field: 'first_name', sortable: true },
         { name: 'last_name', label: 'Last', field: 'last_name', sortable: true },
         { name: 'email', label: 'Email', field: 'email', sortable: true },
+        { name: 'department', label: 'Department', field: 'department', sortable: true },
         { name: 'institution__name', label: 'Institution', field: 'institution', sortable: true }
       ]
     }

@@ -186,7 +186,7 @@ import loadSearch from './search/loadSearch.vue'
 import reportsModal from './modals/reportsModal.vue'
 export default {
   name: 'submissions',
-  props: ['lab', 'queryParams', 'useAdvancedFilters'],
+  props: ['lab', 'queryParams', 'useAdvancedFilters', 'mySubmissions'],
   components: {
     reportsModal,
     selectLabModal,
@@ -242,7 +242,7 @@ export default {
       var cancelled = !this.filters.showCancelled ? '&cancelled__isnull=true' : ''
       var completed = !this.filters.showCompleted ? '&exclude_status=completed' : ''
       var participating = this.filters.participating && this.lab ? '&participating' : ''
-      var mySubmissions = this.filters.mySubmissions || !this.lab ? '&my_submissions' : ''
+      var mySubmissions = this.mySubmissions ? '&my_submissions' : ''
       var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       return `ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${lab}${search}${cancelled}${completed}${participating}${mySubmissions}${qs}&${this.queryParams}&testing=blah`
     },
@@ -362,7 +362,7 @@ export default {
           showCancelled: false,
           showCompleted: false,
           participating: false,
-          mySubmissions: !this.lab,
+          mySubmissions: this.mySubmissions,
           serverPagination: {
             page: 1,
             rowsNumber: 0, // specifying this determines pagination is server-side

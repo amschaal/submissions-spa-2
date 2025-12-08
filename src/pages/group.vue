@@ -21,13 +21,40 @@
         </q-tabs>
         <q-tab-panels v-model="tab" animated :keep-alive="true">
           <q-tab-panel name="details">
-            <q-card-section>
-            {{group}}
-            </q-card-section>
+            <q-card-section class="text-h6 q-mb-sm">
+            {{ group.name }}
+          </q-card-section>
+
+          <!-- Body – Department & Institution -->
+          <q-card-section class="row q-col-gutter-md">
+            <div class="col-12 col-sm-6">
+              <q-item dense>
+                <q-item-section side>
+                  <q-icon name="work" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-subtitle2">Department</q-item-label>
+                  <q-item-label caption>{{ group.department }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </div>
+
+            <div class="col-12 col-sm-6">
+              <q-item dense>
+                <q-item-section side>
+                  <q-icon name="business" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-subtitle2">Institution</q-item-label>
+                  <q-item-label caption><router-link :to="{ name: 'institution', params: { id: group.institution.id }}">{{ group.institution.name }}</router-link></q-item-label>
+                </q-item-section>
+              </q-item>
+            </div>
+          </q-card-section>
           </q-tab-panel>
           <q-tab-panel name="submissions">
             <q-card-section>
-            <submissions :query-params="`pi__email=${group.email}`" v-if="group"></submissions>
+            <submissions :query-params="`pi__id=${group.id}`" v-if="group"></submissions>
             </q-card-section>
           </q-tab-panel>
         </q-tab-panels>
