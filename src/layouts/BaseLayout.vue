@@ -115,7 +115,7 @@
     <!-- <Auth ref="auth"/> -->
     <q-footer elevated>
       <q-toolbar>
-          Developed by the <a href="https://bioinformatics.ucdavis.edu" target="_blank"> Bioinformatics Core</a> at the <a href="https://genomecenter.ucdavis.edu" target="_blank"> UC Davis Genome Center</a>
+          Developed by the <a href="https://bioinformatics.ucdavis.edu" target="_blank" rel="noopener noreferrer"> Bioinformatics Core</a> at the <a href="https://genomecenter.ucdavis.edu" target="_blank" rel="noopener noreferrer"> UC Davis Genome Center</a>
       </q-toolbar>
     </q-footer>
   </q-layout>

@@ -19,7 +19,7 @@
             <RevertButton :object-url="objectUrl" :version="v" :revert-url="`${versionsUrl}/${v.id}/revert/`"/>
           </td>
           <td class="text-left"><q-radio v-model="v1" :val="v" label="V1" /><q-radio v-model="v2" :val="v" label="V2" :disable="v1 && v1.revision.date_created < v.revision.date_created"/></td>
-          <td class="text-left">{{ v.revision.date_created | formatDateTime}}</td>
+          <td class="text-left">{{ $formatDateTime(v.revision.date_created) }}</td>
           <td class="text-left"><span v-if="v.revision.user">{{ v.revision.user.username}}</span><span v-else></span></td>
           <td class="text-right">{{ v.revision.comment}}</td>
         </tr>

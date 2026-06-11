@@ -23,6 +23,17 @@ class PluginManager {
   getPermissions (tabId) {
     return this.permissions[tabId]
   }
+  getTabComponent (tabId) {
+    // Return the tab's component object for dynamic <component :is="...">.
+    // Replaces Vue 2 global Vue.component() registration, which is
+    // incompatible with Vue 3's register-before-mount requirement.
+    for (var pluginId in this.plugins) {
+      var tab = this.plugins[pluginId].tabs.find(t => t.id === tabId)
+      if (tab) {
+        return tab.component
+      }
+    }
+  }
   initLab (labId, plugins) {
     console.log('initLab', labId, plugins)
     var labPlugins = plugins != null ? plugins : {}
@@ -52,8 +63,8 @@ class PluginManager {
       .then(module => {
         console.log('set plugin', pluginId)
         this.plugins[pluginId] = {'config': module.config, 'tabs': module.config.submission_tabs, 'payment': module.config.payment}
-        // register Vue component for tabs
-        module.config.submission_tabs.forEach(t => Vue.component(this.componentName(t.id), t.component))
+        // Tab components are rendered via <component :is="getTabComponent(id)">
+        // rather than global registration (see getTabComponent).
         for (var j in module.config.submission_tabs) {
           this.permissions[module.config.submission_tabs[j].id] = module.config.submission_tabs[j].permissions
         }

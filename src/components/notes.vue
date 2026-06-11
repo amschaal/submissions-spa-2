@@ -4,7 +4,7 @@
       <q-card :class="getClasses(note)">
         <q-card-section>
            <div class="text-h7">{{getTypeText(note)}} {{getEmailsText(note)}} <span class="float-right"><q-icon name="edit" @click.native="$set(note, 'edit', true)" v-if="note.can_modify"/> <q-icon name="delete" @click.native="deleteNote(note)" v-if="!note.id || note.can_modify"/> <q-icon v-if="note.id" name="reply" @click.native="reply(note)"/></span></div>
-           <div class="text-subtitle3"><span v-if="note.user"><b>{{ note.user }}</b> wrote:</span> <span class="float-right" v-if="note.created">{{note.created | formatDate}}</span></div>
+           <div class="text-subtitle3"><span v-if="note.user"><b>{{ note.user }}</b> wrote:</span> <span class="float-right" v-if="note.created">{{ $formatDate(note.created) }}</span></div>
         </q-card-section>
         <q-card-section v-if="!note.edit" class="q-pt-xs">
           <div class="note-content" v-html="convertUrlsToLinks(removeHTMLTags(note.text))"></div>
@@ -102,7 +102,7 @@ export default {
     convertUrlsToLinks (text) {
       const urlPattern = /(https?:\/\/[^\s]+)/g // Match http or https URLs
       return text.replace(urlPattern, (url) => {
-        return `<a href="${url}" target="_blank">${url}</a>`
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
       })
     },
     removeHTMLTags (htmlString) {

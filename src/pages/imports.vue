@@ -13,7 +13,7 @@
       binary-state-sort
       :rows-per-page-options="[10,25,0]"
     >
-      <template slot="top-left">
+      <template v-slot:top-left>
         <!-- <q-table-columns
           color="secondary"
           class="q-mr-sm"
@@ -37,7 +37,7 @@
         />
         <q-checkbox v-model="showImported" label="Show imported" @input="refresh"/>
       </template>
-      <template slot="top-right">
+      <template v-slot:top-right>
         <q-input
           v-model="filter"
           debounce="500"
@@ -51,11 +51,11 @@
           </template>
         </q-input>
       </template>
-      <template slot="body" slot-scope="props">
+      <template v-slot:body="props">
         <q-tr :props="props" v-bind:class="{'imported': props.row.submission}">
-          <q-td key="created" :props="props">{{ props.row.created | formatDate }}</q-td>
-          <q-td key="external_id" :props="props"><a target="_blank" :href="props.row.url">{{ props.row.external_id }}</a></q-td>
-          <q-td key="url" :props="props"><a target="_blank" :href="props.row.url">{{ props.row.url }}</a></q-td>
+          <q-td key="created" :props="props">{{ $formatDate(props.row.created) }}</q-td>
+          <q-td key="external_id" :props="props"><a target="_blank" rel="noopener noreferrer" :href="props.row.url">{{ props.row.external_id }}</a></q-td>
+          <q-td key="url" :props="props"><a target="_blank" rel="noopener noreferrer" :href="props.row.url">{{ props.row.url }}</a></q-td>
           <q-td key="submissions" :props="props">
             <span v-for="(s, key) in props.row.submissions" :key="s.id">
               <router-link :to="{ name: 'submission', params: { id: s.id }}"><span v-if="s.internal_id">{{s.internal_id}}</span><span v-else class="red">{{s.id}}</span></router-link>

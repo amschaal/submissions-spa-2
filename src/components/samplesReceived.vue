@@ -14,7 +14,7 @@
       <template v-slot:avatar>
         <q-icon name="info" size="sm"/>
       </template>
-      Samples received on {{value.samples_received|formatDate}} by {{value.received_by_name}} <a class="action" @click="openModal" v-if="admin">Edit</a>
+      Samples received on {{ $formatDate(value.samples_received) }} by {{value.received_by_name}} <a class="action" @click="openModal" v-if="admin">Edit</a>
     </q-banner>
 
     <q-dialog  v-model="opened" :content-css="{width: '500px', minHeight: '40vh'}" ref="modal">

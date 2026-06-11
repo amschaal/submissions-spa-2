@@ -11,7 +11,7 @@
       <fieldset v-if="!id && $store.getters.isStaff">
         <legend>Submission import</legend>
         <q-banner dense class="text-white bg-light-blue" rounded v-if="imported">
-          Importing from <a target="_blank" :href="imported.url">{{imported.internal_id}}: {{imported.type.name}}</a>
+          Importing from <a target="_blank" rel="noopener noreferrer" :href="imported.url">{{imported.internal_id}}: {{imported.type.name}}</a>
         </q-banner>
           <q-input
           :label-width="12"

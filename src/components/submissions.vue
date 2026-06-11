@@ -17,6 +17,10 @@
       binary-state-sort
       :rows-per-page-options="[10,25,50]"
     >
+      <!-- Kept as legacy `slot="top"` (eager) intentionally: this slot holds
+           ref="advancedFilters", which mounted() -> loadDefaults() calls .update() on.
+           Vue 2.6 `v-slot:top` compiles to a lazy scoped slot, leaving that ref
+           undefined in mounted(). Convert + rework the ref access in Stage 4. -->
       <template slot="top">
         <div class="row full-width">
           <div class="col-3">
@@ -106,7 +110,7 @@
           <advancedFilters ref="advancedFilters" :lab="lab" @update="updateAdvancedFilters" :params="advancedFilters" v-show="advanced"/>
         </div>
       </template>
-      <template slot="body" slot-scope="props">
+      <template v-slot:body="props">
         <q-tr :props="props" v-bind:class="{'cancelled': props.row.cancelled, 'completed': props.row.status && props.row.status.toUpperCase() === 'COMPLETED'}">
           <q-td key="locked" :props="props"><q-icon size="18px" name="cancel" v-if="props.row.cancelled" color="red" title="Submission cancelled"/><q-icon size="18px" name="warning" v-if="hasWarnings(props.row)" color="warning" title="There are warnings associated with this submission"/><q-icon size="18px" name="lock" v-if="props.row.locked" color="red"/><q-icon size="18px" name="lock_open" v-else color="green"/></q-td>
           <q-td key="id" :props="props"><router-link :to="{ name: 'submission', params: { id: props.row.id }}">{{ props.row.id }}</router-link></q-td>
@@ -116,14 +120,14 @@
           <q-td key="type" :props="props"><router-link v-if="lab" :to="{'name': 'submission_type', 'params': { id: props.row.type.id }}">{{ props.row.type.name }}</router-link><span v-else>{{ props.row.type.name }}</span></q-td>
           <q-td key="status" :props="props">{{ props.row.status }}</q-td>
           <q-td key="participant_names" :props="props">{{ props.row.participant_names.join(', ') }}</q-td>
-          <q-td key="submitted" :props="props">{{ props.row.submitted | formatDate }}</q-td>
-          <q-td key="updated" :props="props">{{ props.row.updated | formatDate }}</q-td>
+          <q-td key="submitted" :props="props">{{ $formatDate(props.row.submitted) }}</q-td>
+          <q-td key="updated" :props="props">{{ $formatDate(props.row.updated) }}</q-td>
           <q-td key="name" :props="props">{{ props.row.first_name }} {{ props.row.last_name }}</q-td>
           <q-td key="email" :props="props">{{ props.row.email }}</q-td>
           <q-td key="pi_name" :props="props">{{ props.row.pi_first_name }} {{ props.row.pi_last_name }}</q-td>
           <q-td key="pi_email" :props="props">{{ props.row.pi_email }}</q-td>
           <q-td key="table_count" :props="props"><span v-for="(count, v, index) in props.row.table_count" :key="v">{{count}} {{v}}<span v-if="index != Object.keys(props.row.table_count).length - 1">, </span></span></q-td>
-          <q-td key="samples_received" :props="props"><q-icon size="18px" name="check_circle" v-if="props.row.samples_received" color="green"><q-tooltip>Received on {{props.row.samples_received|formatDate}} by {{props.row.received_by_name}}</q-tooltip></q-icon></q-td>
+          <q-td key="samples_received" :props="props"><q-icon size="18px" name="check_circle" v-if="props.row.samples_received" color="green"><q-tooltip>Received on {{ $formatDate(props.row.samples_received) }} by {{props.row.received_by_name}}</q-tooltip></q-icon></q-td>
           <q-td :key="'submission_data.'+v" v-for="v in labVariables" :props="props">
             <span v-if="Array.isArray(props.row.submission_data[v])">
               <a class="open-table" @click="openTable(`${props.row.id}_table_${v}`)">{{ props.row.submission_data[v].length }} <q-icon name="fas fa-table" /></a>

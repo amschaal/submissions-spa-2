@@ -8,7 +8,7 @@
       style="max-width:800px"
       :pagination="initialPagination"
     >
-    <template slot="body" slot-scope="props">
+    <template v-slot:body="props">
       <q-tr :props="props" v-bind:class="{'new': !props.row.id}">
         <q-td auto-width key="prefix" :props="props" style="width: 10em"><q-input v-model="props.row.prefix" /></q-td>
         <q-td key="next_id" :props="props" style="width: 5em"><q-input v-model="props.row.next_id"/></q-td>

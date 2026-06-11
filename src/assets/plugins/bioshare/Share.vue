@@ -1,6 +1,6 @@
 <template>
   <tr v-if="share">
-    <th class="text-left"><a target="_blank" :href="share.url">{{share.url}}</a></th>
+    <th class="text-left"><a target="_blank" rel="noopener noreferrer" :href="share.url">{{share.url}}</a></th>
     <th class="text-right">{{share.name}}</th>
     <th class="text-right">{{share.notes}}</th>
     <th class="text-right" v-if="is_staff">
@@ -18,7 +18,7 @@
           <q-layout view="Lhh lpR fff" container class="bg-white">
             <q-page-container>
             <q-page padding>
-              <h5><a :href="share.url" target="_blank">{{share.name || share.url}}</a></h5>
+              <h5><a :href="share.url" target="_blank" rel="noopener noreferrer">{{share.name || share.url}}</a></h5>
               <q-markup-table flat bordered>
                 <thead>
                   <tr>

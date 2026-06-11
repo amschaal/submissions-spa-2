@@ -12,7 +12,7 @@
                 <p v-if="!version_details">Loading version details...</p>
                 <div v-else>
                   <RevertButton v-if="version_details" :object-url="$router.resolve({name: 'submission_type', params: { id: id }}).href" :version="version_details" :revert-url="`/api/submission_types/${id}/versions/${version_details.id}/revert/`" class="float-right"/>
-                  <p>Version created by {{ created_by }} at <b>{{ version_details.revision.date_created | formatDateTime }}</b></p>
+                  <p>Version created by {{ created_by }} at <b>{{ $formatDateTime(version_details.revision.date_created) }}</b></p>
                   <p>You may view or modify the submission type as it was at this version.  If modifying the submission type from this version, the version will remain the same and a new version of the submission type will be created.</p>
                   <p><router-link class="text-white" :to="{ name: 'submission_type', params: { id: id }}">Return</router-link> to the current version.</p>
                 </div>

@@ -33,3 +33,6 @@ yarn-error.log*
 *.sln
 
 src/components/editors/old/*
+
+# a11y re-scan harness (dev only, see docs/migration-baseline)
+public/axe.min.js

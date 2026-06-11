@@ -3,7 +3,7 @@
         <div class="row">
           <div class="field col-12 q-mt-xs q-mb-xs" v-if="submission.import_data && !version">
             <q-banner dense class="text-white bg-light-blue" rounded>
-              Imported from <a target="_blank" :href="submission.import_data.url">{{submission.import_data.internal_id}}: {{submission.import_data.type.name}}</a>
+              Imported from <a target="_blank" rel="noopener noreferrer" :href="submission.import_data.url">{{submission.import_data.internal_id}}: {{submission.import_data.type.name}}</a>
             </q-banner>
           </div>
           <div class="field col-12 q-mt-xs q-mb-xs" v-if="!version">
@@ -48,7 +48,7 @@
           </div>
           <div class="field col-sm-12 col-md-6">
             <p class="caption">Submitted</p>
-            {{submission.submitted|formatDate}}
+            {{ $formatDate(submission.submitted) }}
           </div>
           <div class="field col-sm-12 col-md-12" v-if="isAdmin">
             <p class="caption">Participants</p>

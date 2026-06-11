@@ -12,7 +12,7 @@
       binary-state-sort
       :rows-per-page-options="[10,25,0]"
     >
-      <template slot="top" slot-scope="props" :props="props">
+      <template v-slot:top>
         <div class="row full-width">
           <div class="col-2">
             <q-btn color="primary" label="Create" class="q-mr-sm" :to="{name: 'create_submission_type'}" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')"/>
@@ -38,12 +38,12 @@
         </div>
       </template>
 
-      <template slot="body" slot-scope="props">
+      <template v-slot:body="props">
         <q-tr :props="props" v-bind:class="{'inactive': !props.row.active}">
           <q-td key="sort_order" :props="props">{{ props.row.sort_order }}</q-td>
           <q-td key="name" :props="props"><router-link :to="{ name: 'submission_type', params: { id: props.row.id }}">{{ props.row.name }}</router-link></q-td>
           <q-td key="description" :props="props">{{ props.row.description }}</q-td>
-          <q-td key="updated" :props="props">{{ props.row.updated | formatDate }}</q-td>
+          <q-td key="updated" :props="props">{{ $formatDate(props.row.updated) }}</q-td>
           <q-td key="submission_count" :props="props"><router-link :to="{ name: 'submissions', query: { search: props.row.name }}">{{ props.row.submission_count }}</router-link></q-td>
         </q-tr>
       </template>
