@@ -323,7 +323,11 @@ export default {
     loadSettings (settings) {
       // const settings = this.$store.getters.getUserSettings[this.filterNamespace]
       // this.filters = _.assign(this.defaultFilters, _.clone(settings.filters))
-      this.filters = _.assign(this.getDefaultFilters().filters, _.clone(settings.filters))
+      // Deep clone: a shallow _.clone leaves nested objects (serverPagination,
+      // visibleColumns) as references into Vuex store state (settings comes from
+      // getUserSettings), and request() mutates serverPagination in place ->
+      // "do not mutate vuex store state outside mutation handlers".
+      this.filters = _.assign(this.getDefaultFilters().filters, _.cloneDeep(settings.filters))
       // this.filters = _.cloneDeep(settings.filters)
       if (settings.advancedFilters) {
         // this.advancedFilters = _.cloneDeep(settings.advancedFilters)
