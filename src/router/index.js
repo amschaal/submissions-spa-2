@@ -43,5 +43,16 @@ export default function (/* { ssrContext } */) {
       next()
     }
   })
+
+  // Per-route document title (WCAG 2.4.2). Uses meta.title when set, otherwise
+  // a humanized route name, suffixed with the app name.
+  const APP_NAME = 'CoreOmics Submissions'
+  Router.afterEach((to) => {
+    const named = to.meta && to.meta.title
+      ? to.meta.title
+      : (to.name ? String(to.name).replace(/[_-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '')
+    document.title = named ? `${named} — ${APP_NAME}` : APP_NAME
+  })
+
   return Router
 }

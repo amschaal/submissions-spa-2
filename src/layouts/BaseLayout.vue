@@ -1,11 +1,12 @@
 <template>
   <q-layout view="lHh Lpr lff" ><!--v-if="$store.getters.institution"-->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <q-header reveal elevated>
       <q-toolbar
       >
-        <router-link :to="{ name: 'index'}">
-          <img v-if="$store.getters.institution && $store.getters.institution.logo" :src="$store.getters.institution.logo" style="max-height:60px;max-width:120px;"/>
-          <img v-else-if="$store.getters.institution && !$store.getters.institution.logo" src="/images/wordmark.png" style="height:60px"/>
+        <router-link :to="{ name: 'index'}" :aria-label="`${$store.getters.institution && $store.getters.institution.name ? $store.getters.institution.name + ' ' : ''}home`">
+          <img v-if="$store.getters.institution && $store.getters.institution.logo" :src="$store.getters.institution.logo" :alt="`${$store.getters.institution.name || ''} logo`" style="max-height:60px;max-width:120px;"/>
+          <img v-else-if="$store.getters.institution && !$store.getters.institution.logo" src="/images/wordmark.png" alt="CoreOmics" style="height:60px"/>
         </router-link>
         <q-toolbar-title>
             <!-- <router-link style="color: white; text-decoration: none;" :to="{ name: 'lab', params: { lab_id: $route.params.lab_id } }">{{$store.getters.lab.name}}</router-link> -->
@@ -40,6 +41,11 @@
           </span>
         </q-toolbar-title>
       </q-toolbar>
+      <nav aria-label="Main">
+      <!-- NOTE: axe flags aria-required-children on this q-tabs because the
+           Core/Site q-btn-dropdowns share the tablist with the route-tabs.
+           It is a Quasar composition limitation (documented in ACCESSIBILITY.md);
+           overriding the roles only trades it for aria-allowed-attr / -parent. -->
       <q-tabs
       >
         <!-- <q-route-tab to="/" replace label="Home" /> -->
@@ -78,6 +84,7 @@
           </q-list>
         </q-btn-dropdown>
       </q-tabs>
+      </nav>
       <!-- <q-tabs v-model="tab" id="testing">
           <q-tab name="submissions" label="Submissions" />
           <q-tab name="types" label="Submission Types" />
@@ -96,7 +103,9 @@
         </q-item>
  -->
 
-    <q-page-container>
+    <!-- QPageContainer already renders the `main` landmark; just give it the
+         skip-link target id + a programmatic focus target. -->
+    <q-page-container id="main-content" tabindex="-1">
       <div v-if="!$store.getters.institution">
         <q-banner v-if="error" inline-actions class="text-white bg-red">
           Unable to load institution data.  Please try reloading the page.
@@ -107,6 +116,7 @@
           size="50px"
           color="lime"
           class="q-ma-md"
+          aria-label="Loading institution data"
         />
       </div>
       <router-view v-else :key="$route.fullPath"/>
@@ -169,5 +179,24 @@ export default {
 footer a {
   color: white;
   margin: 0px 5px 0px 5px;
+}
+/* Skip-to-content link: off-screen until focused via keyboard (WCAG 2.4.1). */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 9999;
+  padding: 8px 16px;
+  background: #fff;
+  color: #1A3E68;
+  border: 2px solid #1A3E68;
+}
+.skip-link:focus {
+  left: 8px;
+  top: 8px;
+}
+/* main wrapper should not introduce its own focus outline when skipped to. */
+#main-content:focus {
+  outline: none;
 }
 </style>
