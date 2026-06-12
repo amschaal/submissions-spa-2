@@ -6,15 +6,15 @@
       </template>
       Samples not yet received.
       <span v-if="admin">
-        Mark as received <a class="action" @click="markReceived()">today by me</a>
-        or <a class="action" @click="openModal">set a specific date</a>.
+        Mark as received <a class="action" role="button" tabindex="0" @click="markReceived()" @keydown.enter="markReceived()" @keydown.space.prevent="markReceived()">today by me</a>
+        or <a class="action" role="button" tabindex="0" @click="openModal" @keydown.enter="openModal" @keydown.space.prevent="openModal">set a specific date</a>.
       </span>
     </q-banner>
     <q-banner dense rounded class="text-white bg-positive" v-else>
       <template v-slot:avatar>
         <q-icon name="info" size="sm"/>
       </template>
-      Samples received on {{ $formatDate(modelValue.samples_received) }} by {{modelValue.received_by_name}} <a class="action" @click="openModal" v-if="admin">Edit</a>
+      Samples received on {{ $formatDate(modelValue.samples_received) }} by {{modelValue.received_by_name}} <a class="action" role="button" tabindex="0" @click="openModal" @keydown.enter="openModal" @keydown.space.prevent="openModal" v-if="admin">Edit</a>
     </q-banner>
 
     <q-dialog  v-model="opened" :content-css="{width: '500px', minHeight: '40vh'}" ref="modal">

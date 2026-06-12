@@ -45,7 +45,7 @@
             <q-checkbox v-if="this.lab" v-model="filters.participating" label="Participating" @update:model-value="refresh"><q-tooltip>Only show submissions in which I am a participant</q-tooltip></q-checkbox>
             <q-checkbox v-if="this.lab" v-model="filters.mySubmissions" label="My submissions" @update:model-value="refresh"><q-tooltip>Only show submissions for which I am a submitter or PI</q-tooltip></q-checkbox>
           </div>
-          <div class="col-6 q-table__title text-center"><span v-if="lab && $store.getters.lab">{{$store.getters.lab.name}} Submissions <selectLabModal page="submissions"/></span><span v-else>My Submissions</span></div>
+          <h1 class="col-6 q-table__title text-center text-h6 q-my-none"><span v-if="lab && $store.getters.lab">{{$store.getters.lab.name}} Submissions <selectLabModal page="submissions"/></span><span v-else>My Submissions</span></h1>
         <!-- <q-search hide-underline v-model="filters.filter" :props="props"/> -->
         <div class="col-3">
           <q-input

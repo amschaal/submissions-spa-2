@@ -1,7 +1,7 @@
 <template>
   <div>
       <!-- <q-btn class="pull-right" color="primary" @click="show_help = true" label="Help" icon="fas fa-question-circle" v-if="type && type.submission_help"><q-tooltip>Click for help with {{type.name}}</q-tooltip></q-btn> -->
-      <h5 v-if="$store.getters.lab">{{$store.getters.lab.name}} Submission Form <selectLabModal page="create_submission"/></h5>
+      <h1 v-if="$store.getters.lab" class="text-h5 q-my-md">{{$store.getters.lab.name}} Submission Form <selectLabModal page="create_submission"/></h1>
       <div v-safe-html="$store.getters.lab.submission_page" v-if="$store.getters.lab && $store.getters.lab.submission_page"></div>
       <q-checkbox v-model="debug" label="Debug" v-if="$store.getters.isStaff && false" />
         <span v-if="debug">

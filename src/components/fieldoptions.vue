@@ -58,10 +58,12 @@
               </template>
             </q-input>
             <draggable :list="data.enum" :item-key="el => el">
-              <template #item="{ element: choice }">
+              <template #item="{ element: choice, index }">
                 <div class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white draggable">
+                  <q-btn flat dense round size="xs" icon="arrow_upward" color="white" :aria-label="`Move ${choice} up`" :disable="index === 0" @click="moveChoice(index, -1)"/>
+                  <q-btn flat dense round size="xs" icon="arrow_downward" color="white" :aria-label="`Move ${choice} down`" :disable="index === data.enum.length - 1" @click="moveChoice(index, 1)"/>
                   <div class="q-chip-main ellipsis draggable">{{choice}}</div>
-                  <div class="q-chip-side q-chip-close q-chip-right row flex-center" @click="deleteChoice(choice)"><i aria-hidden="true" class="q-icon cursor-pointer material-icons">cancel</i></div>
+                  <q-btn flat dense round size="xs" icon="cancel" color="white" :aria-label="`Remove ${choice}`" @click="deleteChoice(choice)"/>
                 </div>
               </template>
             </draggable>
@@ -266,6 +268,15 @@ export default {
       if (confirm(`Are you sure you want to delete "${choice}"?`)) {
         this.data.enum.splice(this.data.enum.indexOf(choice), 1)
       }
+    },
+    moveChoice (index, dir) {
+      // Keyboard-operable alternative to drag-and-drop reordering (WCAG 2.1.1).
+      const target = index + dir
+      if (target < 0 || target >= this.data.enum.length) {
+        return
+      }
+      const moved = this.data.enum.splice(index, 1)[0]
+      this.data.enum.splice(target, 0, moved)
     },
     addChoice () {
       if (this.option) {

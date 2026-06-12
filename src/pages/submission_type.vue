@@ -134,10 +134,12 @@
             map-options emit-value
           />
           <draggable :list="type.statuses" :item-key="el => el">
-            <template #item="{ element: status }">
+            <template #item="{ element: status, index }">
               <div class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white draggable">
+                <q-btn flat dense round size="xs" icon="arrow_upward" color="white" :aria-label="`Move ${status} up`" :disable="index === 0" @click="move_status(index, -1)"/>
+                <q-btn flat dense round size="xs" icon="arrow_downward" color="white" :aria-label="`Move ${status} down`" :disable="index === type.statuses.length - 1" @click="move_status(index, 1)"/>
                 <div class="q-chip-main ellipsis draggable">{{status}}</div>
-                <div class="q-chip-side q-chip-close q-chip-right row flex-center" @click="delete_status(status)"><i aria-hidden="true" class="q-icon cursor-pointer material-icons">cancel</i></div>
+                <q-btn flat dense round size="xs" icon="cancel" color="white" :aria-label="`Remove ${status}`" @click="delete_status(status)"/>
               </div>
             </template>
           </draggable>
@@ -440,6 +442,15 @@ export default {
       if (confirm(`Are you sure you want to delete "${status}"?`)) {
         this.type.statuses.splice(this.type.statuses.indexOf(status), 1)
       }
+    },
+    move_status (index, dir) {
+      // Keyboard-operable alternative to drag-and-drop reordering (WCAG 2.1.1).
+      const target = index + dir
+      if (target < 0 || target >= this.type.statuses.length) {
+        return
+      }
+      const moved = this.type.statuses.splice(index, 1)[0]
+      this.type.statuses.splice(target, 0, moved)
     },
     remove_autosave () {
       window.localStorage.removeItem(this.type_key)
