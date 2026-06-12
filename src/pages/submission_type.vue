@@ -507,7 +507,7 @@ export default {
       }
     },
     hasError (field) {
-      return this.errors[field] !== undefined
+      return !!this.errors && this.errors[field] !== undefined
     },
     errorMessage (field) {
       if (this.errors && this.errors[field] && this.errors[field]) {

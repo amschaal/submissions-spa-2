@@ -520,7 +520,9 @@ export default {
           // self.errors = {}
           // self.warnings = {}
           self.submission = response.data
-          self.errors = response.data.data.errors
+          // On a successful save there may be no errors object; never assign
+          // undefined or hasError()/errorMessage() will throw on re-render.
+          self.errors = (response.data.data && response.data.data.errors) || {}
           // self.warnings = response.data.data.warnings
           // console.log(response)
           self.$q.notify({message: 'Submission successfully saved.', type: 'positive'})
@@ -701,7 +703,7 @@ export default {
       return ''
     },
     hasError (field) {
-      return this.errors[field] !== undefined
+      return !!this.errors && this.errors[field] !== undefined
     },
     errorMessage (field) {
       if (this.errors && this.errors[field] && this.errors[field]) {
