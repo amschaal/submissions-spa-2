@@ -87,7 +87,7 @@
     </q-header>
 
 <!--
-        <q-item v-if="$store.getters.isLoggedIn" @click.native="$refs.auth.logout()">
+        <q-item v-if="$store.getters.isLoggedIn" @click="$refs.auth.logout()">
           <q-item-side icon="fas fa-user" />
           <q-item-main v-if="$store.getters.isLoggedIn" @click="$refs.auth.logout()">
             <q-item-tile label>{{$store.state.auth.user.first_name}} {{$store.state.auth.user.last_name}}</q-item-tile>

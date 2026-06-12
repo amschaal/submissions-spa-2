@@ -2,7 +2,7 @@
   <div class="q-pa-md">
     <q-table
       title="Saved Searches"
-      :data="searches"
+      :rows="searches"
       :columns="columns"
       row-key="name"
       :filter="filter"

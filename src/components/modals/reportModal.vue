@@ -11,7 +11,7 @@
         <q-card-section class="q-pt-none">
           <!-- {{ report }} -->
           <q-table
-            :data="report.data"
+            :rows="report.data"
             :columns="columns"
             :filter="filter"
             binary-state-sort

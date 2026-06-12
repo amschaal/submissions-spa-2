@@ -36,7 +36,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import { date } from 'quasar'
 import KeyValueTable from '../components/keyValueTable.vue'
 import _ from 'lodash'
@@ -65,7 +64,7 @@ export default {
           submission.sample_data = []
         }
         // self.submission = response.data
-        Vue.set(self, 'submission', submission)
+        self.submission = submission
       })
   },
   methods: {

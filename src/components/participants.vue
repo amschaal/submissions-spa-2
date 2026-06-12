@@ -11,7 +11,7 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          <userField v-model="newUsers" :query-params="`lab=${submission.lab.lab_id}`" @input="addParticipant" :buttonProps="{ label: 'Add participants'}"/>
+          <userField v-model="newUsers" :query-params="`lab=${submission.lab.lab_id}`" @update:model-value="addParticipant" :buttonProps="{ label: 'Add participants'}"/>
           <table>
             <tr><th>User</th><th>Email</th><th>Roles</th><th></th></tr>
             <tr v-for="p in participants" :key="p.user.id">

@@ -2,7 +2,7 @@
   <div v-if="$store.getters.isStaff">
     <q-table
       title="Project IDs"
-      :data="project_ids"
+      :rows="project_ids"
       :columns="columns"
       row-key="id"
       style="max-width:800px"
@@ -65,7 +65,7 @@ export default {
       this.$axios[action]('' + url, obj)
         .then(function (response) {
           obj.id = response.data.id
-          self.$set(obj, 'id', response.data.id)
+          obj.id = response.data.id
           self.$q.notify({message: 'Project ID saved.', type: 'positive'})
         })
         .catch(function () {

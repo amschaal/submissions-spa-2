@@ -4,7 +4,7 @@
       <q-input v-model="value" ref="input">
         <template v-slot:append>
           <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-            <q-date v-model="value" @input="onInput" mask="YYYY-MM-DD"/>
+            <q-date v-model="value" @update:model-value="onInput" mask="YYYY-MM-DD"/>
           </q-popup-proxy>
         </template>
       </q-input>
@@ -12,9 +12,9 @@
 </template>
 
 <script>
-import Vue from 'vue'
+import { nextTick } from 'vue'
 
-export default Vue.extend({
+export default {
   data () {
     return {
       value: null
@@ -37,15 +37,14 @@ export default Vue.extend({
     this.value = this.params.value
   },
   mounted () {
-    Vue.nextTick(() => {
+    nextTick(() => {
       if (this.$refs.input) {
         // this.$refs.input.show()
         this.$refs.qDateProxy.show()
       }
     })
   }
-})
-
+}
 </script>
 
 <style scoped>

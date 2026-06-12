@@ -27,12 +27,12 @@
             <q-checkbox v-model="showDescriptions" label="Show descriptions" class="show_descriptions" v-if="hasDescriptions"/> <q-checkbox v-model="showExamples" label="Show examples" v-if="allowExamples && this.sample_schema.examples && sample_schema.examples.length"  class="show_examples"/>
             <q-btn-dropdown label="Resize Columns">
             <q-list>
-              <q-item @click.native="sizeToFit" clickable>
+              <q-item @click="sizeToFit" clickable>
                 <q-item-label>
                   Fit all columns
                 </q-item-label>
               </q-item>
-              <q-item @click.native="autoSizeAll" clickable>
+              <q-item @click="autoSizeAll" clickable>
                 <q-item-label>
                   Auto-size
                 </q-item-label>
@@ -58,22 +58,22 @@
             <div v-if="editable">
               <q-btn-dropdown split label="Add row" @click="addRow(1)" color="positive">
                 <q-list>
-                  <q-item clickable v-close-popup @click.native="addRow(1)">
+                  <q-item clickable v-close-popup @click="addRow(1)">
                     <q-item-label>
                       <q-item-section label>Add 1</q-item-section>
                     </q-item-label>
                   </q-item>
-                  <q-item clickable v-close-popup @click.native="addRow(10)">
+                  <q-item clickable v-close-popup @click="addRow(10)">
                     <q-item-label>
                       <q-item-section label>Add 10</q-item-section>
                     </q-item-label>
                   </q-item>
-                  <q-item clickable v-close-popup @click.native="addRow(25)">
+                  <q-item clickable v-close-popup @click="addRow(25)">
                     <q-item-label>
                       <q-item-section label>Add 25</q-item-section>
                     </q-item-label>
                   </q-item>
-                  <q-item clickable v-close-popup @click.native="addRow(100)">
+                  <q-item clickable v-close-popup @click="addRow(100)">
                     <q-item-label>
                       <q-item-section label>Add 100</q-item-section>
                     </q-item-label>
@@ -116,22 +116,22 @@
             <q-toolbar-title v-if="editable">
               <q-btn-dropdown split label="Add row" @click="addRow(1)" color="positive">
                 <q-list link>
-                  <q-item v-close-popup @click.native="addRow(1)">
+                  <q-item v-close-popup @click="addRow(1)">
                     <q-item-main>
                       <q-item-tile label>Add 1</q-item-tile>
                     </q-item-main>
                   </q-item>
-                  <q-item v-close-popup @click.native="addRow(10)">
+                  <q-item v-close-popup @click="addRow(10)">
                     <q-item-main>
                       <q-item-tile label>Add 10</q-item-tile>
                     </q-item-main>
                   </q-item>
-                  <q-item v-close-popup @click.native="addRow(25)">
+                  <q-item v-close-popup @click="addRow(25)">
                     <q-item-main>
                       <q-item-tile label>Add 25</q-item-tile>
                     </q-item-main>
                   </q-item>
-                  <q-item v-close-popup @click.native="addRow(100)">
+                  <q-item v-close-popup @click="addRow(100)">
                     <q-item-main>
                       <q-item-tile label>Add 100</q-item-tile>
                     </q-item-main>
@@ -197,10 +197,18 @@
 
 <script>
 // import { QSelect } from 'quasar'
-import { AgGridVue } from 'ag-grid-vue'
-import '../../node_modules/ag-grid-community/dist/styles/ag-grid.css'
-import '../../node_modules/ag-grid-community/dist/styles/ag-theme-balham.css'
-import 'ag-grid-enterprise'
+import { AgGridVue } from 'ag-grid-vue3'
+import { ModuleRegistry } from 'ag-grid-community'
+import { AllEnterpriseModule, LicenseManager } from 'ag-grid-enterprise'
+import 'ag-grid-community/styles/ag-grid.css'
+import 'ag-grid-community/styles/ag-theme-balham.css'
+
+// AG Grid v33+ requires explicit module registration. AllEnterpriseModule
+// also bundles the community modules.
+ModuleRegistry.registerModules([AllEnterpriseModule])
+// TODO: set the enterprise license key to suppress the trial watermark/console warning:
+// LicenseManager.setLicenseKey('your-license-key')
+void LicenseManager
 import NumericComponent from './aggrid/editors/NumericComponent.vue'
 // import DateComponent from './aggrid/DateComponent.vue'
 // import AutocompleteComponent from './aggrid/editors/AutocompleteComponent.vue'
@@ -215,7 +223,8 @@ import sampleWidgetFactory from './aggrid/widgets.js'
 
 export default {
   name: 'Agschema',
-  props: ['value', 'type', 'schema', 'editable', 'allowExamples', 'allowForceSave', 'submission', 'tableWarnings', 'tableErrors'],
+  props: ['modelValue', 'type', 'schema', 'editable', 'allowExamples', 'allowForceSave', 'submission', 'tableWarnings', 'tableErrors'],
+  emits: ['update:modelValue'],
   data () {
     return {
       opened: false,
@@ -223,7 +232,7 @@ export default {
       showExamples: this.allowExamples,
       showDescriptions: true,
       // sample_schema: Object.freeze({}),
-      rowData: [], // this.value,
+      rowData: [], // this.modelValue,
       rootNode: {},
       // columnDefs: [],
       gridOptions: {
@@ -277,7 +286,7 @@ export default {
   created () {
     console.log('created agschema')
   },
-  destroyed () {
+  unmounted () {
     console.log('destroyed agschema')
   },
   methods: {
@@ -305,8 +314,8 @@ export default {
       this.warnings = this.tableWarnings ? _.cloneDeep(this.getValidationObject(this.tableWarnings)) : {}
       this.errors = this.tableErrors ? _.cloneDeep(this.getValidationObject(this.tableErrors)) : {}
       console.log('Samplesheet errors, warnings', this.warnings, this.errors)
-      if (this.value && this.value.length > 0) {
-        this.rowData = _.cloneDeep(this.value)
+      if (this.modelValue && this.modelValue.length > 0) {
+        this.rowData = _.cloneDeep(this.modelValue)
       } else {
         this.rowData = _.times(10, _.stubObject)
       }
@@ -320,7 +329,7 @@ export default {
       // }
       // this.sample_schema = this.schema || this.type.sample_schema
       this._columnDefs = this.schema2Columns(this.sample_schema)
-      // console.log('openSamplesheet', this.rowData, this.value, this.columnDefs)
+      // console.log('openSamplesheet', this.rowData, this.modelValue, this.columnDefs)
       // console.log('agschema refs', this.$refs)
       this.$refs.modal.show()
       // .then(() => {
@@ -537,7 +546,7 @@ export default {
       }
     },
     save () {
-      this.$emit('input', this.getRowData(false))
+      this.$emit('update:modelValue', this.getRowData(false))
       this.$emit('warnings', this.warnings)
       this.$emit('errors', this.errors)
       this.close()

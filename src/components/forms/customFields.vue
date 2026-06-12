@@ -22,7 +22,7 @@
                 v-on:warnings="updateWarnings"
                 v-on:errors="updateErrors" -->
                 <Agschema
-                  v-model="value[v.variable]"
+                  v-model="modelValue[v.variable]"
                   :schema="v.schema.schema"
                   :editable="modify && ($store.getters.isStaff || !v.schema.internal)"
                   :allow-examples="true"
@@ -42,7 +42,7 @@
           <span v-else-if="!modify" v-bind:class="{'warning': warnings && warnings[v.variable]}">
             <p class="caption">{{v.schema.title ? v.schema.title : v.variable}}</p>
 
-            <span><q-tooltip v-if="warnings && warnings[v.variable]">{{warnings ? getWarning(v) : ''}}</q-tooltip><q-icon v-if="warnings && warnings[v.variable]" size="14px" name="warning" color="orange"/> {{widget(v).formatValue(value[v.variable],'None')}}</span>
+            <span><q-tooltip v-if="warnings && warnings[v.variable]">{{warnings ? getWarning(v) : ''}}</q-tooltip><q-icon v-if="warnings && warnings[v.variable]" size="14px" name="warning" color="orange"/> {{widget(v).formatValue(modelValue[v.variable],'None')}}</span>
           </span>
           <span v-else>
             <q-field
@@ -55,21 +55,21 @@
               :hint="v.schema.description"
               borderless
             >
-            <!-- {{widget(v).getOptions()}} {{widget(v).getDefault()}} value: "{{value[v.variable]}}" -->
-              <!-- <q-input v-model="value[v.variable]" type="text" stack-label :label="v.schema.title ? v.schema.title : v.variable"/> -->
-              <!-- @change="val => {setValue('change', value, v.variable, val, $event)}" -->
+            <!-- {{widget(v).getOptions()}} {{widget(v).getDefault()}} value: "{{modelValue[v.variable]}}" -->
+              <!-- <q-input v-model="modelValue[v.variable]" type="text" stack-label :label="v.schema.title ? v.schema.title : v.variable"/> -->
+              <!-- @change="val => {setValue('change', modelValue, v.variable, val, $event)}" -->
               <component :is="widgetClass(v).component"
-              :value="value[v.variable] || widget(v).getDefault()"
-              @input="val => {setValue('input', value, v.variable, val)}"
+              :model-value="modelValue[v.variable] || widget(v).getDefault()"
+              @update:model-value="val => {setValue('input', modelValue, v.variable, val)}"
                 v-bind="widget(v).getOptions()"
               />
 
     <!--
     stack-label :label="v.schema.title ? v.schema.title : v.variable"
-    v-model="value[v.variable]"
-    :value="value[v.variable] || widgetClass(v).default"
-    @change="val => { value[v.variable] = val }"
-    @change="val => {setValue('change', value, v.variable, val, $event)}"
+    v-model="modelValue[v.variable]"
+    :value="modelValue[v.variable] || widgetClass(v).default"
+    @change="val => { modelValue[v.variable] = val }"
+    @change="val => {setValue('change', modelValue, v.variable, val, $event)}"
     -->
             <template v-slot:hint v-if="v.schema.description">
               {{v.schema.description}}
@@ -81,8 +81,8 @@
             </q-field>
             <component
               :is="widgetClass(v).component"
-              :value="value[v.variable] || widget(v).getDefault()"
-              @input="val => {setValue('input', value, v.variable, val)}"
+              :model-value="modelValue[v.variable] || widget(v).getDefault()"
+              @update:model-value="val => {setValue('input', modelValue, v.variable, val)}"
               v-bind="widget(v).getOptions()"
               v-else
               bottom-slots
@@ -97,7 +97,7 @@
               <div v-if="hasWarning(v.variable)" class="warning">{{getWarning(v)}}</div>
             </template>
           </component>
-            <!-- {{widget(v).getOptions()}}|{{widgetClass(v).component}}|{{value}}|{{v.variable}}|{{value[v.variable]}}|{{widget(v).getDefault()}} -->
+            <!-- {{widget(v).getOptions()}}|{{widgetClass(v).component}}|{{value}}|{{v.variable}}|{{modelValue[v.variable]}}|{{widget(v).getDefault()}} -->
           </span>
         </div>
     </div>
@@ -105,19 +105,20 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue'
 import widgetFactory from '../forms/widgets.js'
 import { QSelect, QOptionGroup, QCheckbox } from 'quasar'
 // import _ from 'lodash'
 
 export default {
-  props: ['value', 'schema', 'editable', 'errors', 'warnings', 'modify'],
+  props: ['modelValue', 'schema', 'editable', 'errors', 'warnings', 'modify'],
   data () {
     return {
-      data: this.value ? this.value : {}
+      data: this.modelValue ? this.modelValue : {}
     }
   },
   mounted () {
-    console.log('customFields', this.schema, this.value)
+    console.log('customFields', this.schema, this.modelValue)
   },
   methods: {
     widgetClass (v) {
@@ -164,7 +165,7 @@ export default {
       if (value.cancelBubble) {
         value.cancelBubble = true
       } else if (!value.target) {
-        this.$set(value, variable, val)
+        value[variable] = val
       }
       console.log('setValue', type, value, variable, val, e)
     },
@@ -173,8 +174,8 @@ export default {
       this.$refs[v.variable][0].openSamplesheet()
     },
     table_button_label (v) {
-      console.log('table_button_label', v, v.variable, this.value, this.value[v.variable])
-      return (v.schema.title ? v.schema.title : v.variable) + ' (' + (this.value[v.variable] && this.value[v.variable].length ? this.value[v.variable].length : 0) + ')'
+      console.log('table_button_label', v, v.variable, this.modelValue, this.modelValue[v.variable])
+      return (v.schema.title ? v.schema.title : v.variable) + ' (' + (this.modelValue[v.variable] && this.modelValue[v.variable].length ? this.modelValue[v.variable].length : 0) + ')'
     },
     tableHint (v) {
       if (v.schema.schema.description) {
@@ -202,7 +203,7 @@ export default {
     QSelect,
     QOptionGroup,
     QCheckbox,
-    Agschema: () => import('../agschema.vue')
+    Agschema: defineAsyncComponent(() => import('../agschema.vue'))
   },
   watch: {
   }

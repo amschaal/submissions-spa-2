@@ -4,27 +4,28 @@
       filled
       type="textarea"
       style="width:100%"
-      @input="onInput"
+      @update:model-value="onInput"
     />
 </template>
 <script>
-import Vue from 'vue'
+import { nextTick } from 'vue'
 
-export default Vue.extend({
-  props: ['value'],
+export default {
+  props: ['modelValue'],
+  emits: ['update:modelValue'],
   data () {
     return {
-      text: this.value
+      text: this.modelValue
     }
   },
   methods: {
     onInput () {
-      this.$emit('input', this.text)
+      this.$emit('update:modelValue', this.text)
     }
   },
   mounted () {
     // Vue.nextTick(() => {
     // })
   }
-})
+}
 </script>

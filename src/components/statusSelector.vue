@@ -1,14 +1,14 @@
 <template>
   <div>
     <div v-if="!edit">
-      <span v-if="value">{{value}} </span><span v-else>None </span> <q-btn size="sm" label="Modify" @click="edit=true"/>
+      <span v-if="modelValue">{{modelValue}} </span><span v-else>None </span> <q-btn size="sm" label="Modify" @click="edit=true"/>
     </div>
     <div v-else>
       <q-select
         label="Set Status"
         v-model="status"
        :options="statusOptions"
-       @input="statusChanged()"
+       @update:model-value="statusChanged()"
        map-options emit-value
       />
       <q-checkbox v-model="email" label="Email submitter"/>
@@ -19,10 +19,11 @@
 
 <script>
 export default {
-  props: ['value', 'submission'],
+  props: ['modelValue', 'submission'],
+  emits: ['update:modelValue'],
   data () {
     return {
-      status: this.value ? this.value : null,
+      status: this.modelValue ? this.modelValue : null,
       email: false,
       options: this.$store.getters.statusOptions,
       edit: false
@@ -35,7 +36,7 @@ export default {
       this.$axios.post(`/api/submissions/${this.submission.id}/update_status/`, {status: this.status, email: this.email})
         .then(function (response) {
           self.$q.notify({message: response.data.message, type: 'positive'})
-          self.$emit('input', self.status)
+          self.$emit('update:modelValue', self.status)
         })
         .catch(function (response) {
           self.$q.notify({message: 'Status update failed!', type: 'negative'})

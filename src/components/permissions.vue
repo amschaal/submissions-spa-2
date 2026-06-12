@@ -5,7 +5,7 @@
     <div>columns: {{columns.length}}</div> -->
     <q-table
       title="Permissions"
-      :data="permission_rows"
+      :rows="permission_rows"
       :columns="columns"
       row-key="username"
       v-if="permission_rows"
@@ -33,7 +33,7 @@
         </q-input>
       </template>
       <template v-slot:top-right>
-        <userField v-model="new_users" query-params="staff_or_email=1" @input="addUsers" :button-props="{ label: 'Add User', size: 'md'}"
+        <userField v-model="new_users" query-params="staff_or_email=1" @update:model-value="addUsers" :button-props="{ label: 'Add User', size: 'md'}"
           help="Search through a list of existing staff members to add them to your core.  For new accounts, enter the full email address in order to return the user.  Check the box next to the user and click 'OK'.  Check the desired permissions next to the user and click on 'SAVE'."
           />
         <q-btn label="Save" @click="setPermissions" color="primary"/>
@@ -75,9 +75,9 @@ export default {
       while (this.new_users.length) {
         var user = this.new_users.pop()
         if (!this.permissions.user_permissions[user.username]) {
-          this.$set(this.permissions.user_permissions, user.username, user)
-          this.$set(user, 'permissions', [])
-          this.$set(user, 'modified', true)
+          this.permissions.user_permissions[user.username] = user
+          user.permissions = []
+          user.modified = true
         } else {
           this.$q.notify({message: `The user "${user.first_name} ${user.last_name}" has already has permissions.  Please update them in the permissions table.`, type: 'negative'})
         }

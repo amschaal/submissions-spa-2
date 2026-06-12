@@ -25,7 +25,7 @@
         map-options
         style="min-width: 250px; max-width: 300px"
         v-if="labs.length"
-        @input="goToLab"
+        @update:model-value="goToLab"
         label="Select Core"
       />
     </q-card-section>

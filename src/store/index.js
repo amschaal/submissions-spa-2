@@ -1,32 +1,18 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { createStore } from 'vuex'
 
-// import example from './module-example'
 import auth from './auth'
 import cache from './cache'
 
-Vue.use(Vuex)
+// app-webpack v4 dropped CLI store wiring for Vuex (it only auto-wires Pinia),
+// so we export a ready store instance and install it via boot/store.js.
+const store = createStore({
+  modules: {
+    auth,
+    cache
+  },
 
-/*
- * If not building with SSR mode, you can
- * directly export the Store instantiation;
- *
- * The function below can be async too; either use
- * async/await or return a Promise which resolves
- * with the Store instance.
- */
+  // enable strict mode (adds overhead!) for dev only
+  strict: !!process.env.DEV
+})
 
-export default function (/* { ssrContext } */) {
-  const Store = new Vuex.Store({
-    modules: {
-      auth,
-      cache
-    },
-
-    // enable strict mode (adds overhead!)
-    // for dev mode only
-    strict: process.env.DEV
-  })
-
-  return Store
-}
+export default store

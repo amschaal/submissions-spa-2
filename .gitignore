@@ -36,3 +36,6 @@ src/components/editors/old/*
 
 # a11y re-scan harness (dev only, see docs/migration-baseline)
 public/axe.min.js
+public/version.json
+src/assets/version.json
+quasar.config.js.temporary.compiled.*

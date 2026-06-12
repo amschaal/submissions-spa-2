@@ -1,8 +1,5 @@
 # develop stage
-# FROM node:13.14-alpine as develop-stage
-FROM node:lts-alpine3.15 as develop-stage
-# FROM node:18-alpine as develop-stage
-ENV NODE_OPTIONS=--openssl-legacy-provider
+FROM node:22-alpine as develop-stage
 WORKDIR /app
 COPY package*.json ./
 RUN yarn global add @quasar/cli

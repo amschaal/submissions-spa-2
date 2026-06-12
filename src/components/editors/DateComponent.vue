@@ -1,11 +1,11 @@
 <template>
     <div class="date">
-      <!-- <q-datetime :ref="'input'" v-model="value" type="date" @input="close"/> -->
+      <!-- <q-datetime :ref="'input'" v-model="value" type="date" @update:model-value="close"/> -->
       <q-input v-model="date" :rules="[ v => !v || /^\d{4}-\d{2}-\d{2}$/.test(v) || 'Date should be in format YYYY-MM-DD' ]" ref="input">
         <template v-slot:append>
           <q-icon name="event" class="cursor-pointer">
             <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-              <q-date v-model="date" @input="onInput" mask="YYYY-MM-DD"/>
+              <q-date v-model="date" @update:model-value="onInput" mask="YYYY-MM-DD"/>
             </q-popup-proxy>
           </q-icon>
         </template>
@@ -14,22 +14,23 @@
 </template>
 
 <script>
-import Vue from 'vue'
+import { nextTick } from 'vue'
 
-export default Vue.extend({
-  props: ['value'],
+export default {
+  props: ['modelValue'],
+  emits: ['update:modelValue'],
   data () {
     return {
-      date: this.value
+      date: this.modelValue
     }
   },
   methods: {
     getValue () {
-      return this.value.substr(0, 10)
+      return this.modelValue.substr(0, 10)
     },
     onInput () {
       this.$refs.qDateProxy.hide()
-      this.$emit('input', this.date)
+      this.$emit('update:modelValue', this.date)
       // this.close()
     },
     close () {
@@ -37,19 +38,18 @@ export default Vue.extend({
   },
   created () {
     // console.log('date', this, this.params)
-    // this.value = this.params.value
+    // this.modelValue = this.params.value
   },
   mounted () {
     // Vue.nextTick(() => {
     //   console.log('date mounted', this, this.params)
-    //   this.value = this.params.value
+    //   this.modelValue = this.params.value
     //   if (this.$refs.input) {
     //     this.$refs.input.show()
     //   }
     // })
   }
-})
-
+}
 </script>
 
 <style scoped>

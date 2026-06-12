@@ -9,7 +9,7 @@
         :options="options"
         @filter="filterFn"
         @input-value="selected"
-        @input="close"
+        @update:model-value="close"
         :option-value="option_value"
         :option-label="option_label"
         hint="Search Users"
@@ -28,8 +28,7 @@
 </template>
 
 <script>
-import Vue from 'vue'
-export default Vue.extend({
+export default {
   props: {
     url: String,
     query_params: {
@@ -82,10 +81,10 @@ export default Vue.extend({
     },
     selected (item) {
       console.log('item', item)
-      this.value = item
+      this.modelValue = item
     },
     getValue () {
-      return this.value
+      return this.modelValue
     },
     close () {
       this.params.stopEditing()
@@ -93,8 +92,7 @@ export default Vue.extend({
   },
   mounted () {
   }
-})
-
+}
 </script>
 
 <style scoped>

@@ -68,10 +68,12 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue'
 import _ from 'lodash'
 
 export default {
-  props: ['value', 'variable', 'rootSchema'],
+  props: ['modelValue', 'variable', 'rootSchema'],
+  emits: ['update:modelValue'],
   data () {
     return {
       opened: false,
@@ -147,7 +149,7 @@ export default {
         times_new_roman: 'Times New Roman',
         verdana: 'Verdana'
       }
-      // options: this.value && this.value.enum ? this.value.enum : []
+      // options: this.modelValue && this.modelValue.enum ? this.modelValue.enum : []
     }
   },
   mounted () {
@@ -158,18 +160,18 @@ export default {
     setup () {
       this.schema = _.cloneDeep(this.variable.schema.schema)
       if (!this.schema.examples) {
-        this.$set(this.schema, 'examples', [])
+        this.schema.examples = []
       }
       if (!this.schema.printing) {
-        this.$set(this.schema, 'printing', { hidden: false })
+        this.schema.printing = { hidden: false }
       }
     },
     open () {
       this.setup()
-      // this.data = _.cloneDeep(this.value)
+      // this.data = _.cloneDeep(this.modelValue)
       console.log('root', this.$root.validators)
 
-      console.log('openModal', this.value, this.data)
+      console.log('openModal', this.modelValue, this.data)
       this.$refs.modal.show()
       // .then(() => {
       //
@@ -189,9 +191,9 @@ export default {
     save () {
       // this.local_data = this.hst.table.getSourceData()
       // this.data = this.hst.table.getSourceData() // this.local_data
-      // this.value = this.options
+      // this.modelValue = this.options
       // var val = _.cloneDeep(this.schema)
-      this.$emit('input', this.schema)
+      this.$emit('update:modelValue', this.schema)
       this.$refs.modal.hide()
       // this.data
     },
@@ -205,8 +207,8 @@ export default {
     }
   },
   components: {
-    schemaForm: () => import('./schemaForm.vue'),
-    Agschema: () => import('../agschema.vue')
+    schemaForm: defineAsyncComponent(() => import('./schemaForm.vue')),
+    Agschema: defineAsyncComponent(() => import('../agschema.vue'))
   }
 }
 

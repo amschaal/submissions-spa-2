@@ -2,12 +2,12 @@
   <div class="q-pa-md">
     <q-table
       ref="table"
-      :data="serverData"
+      :rows="serverData"
       :columns="columns"
       :visible-columns="filters.visibleColumns"
       :filter="filters.filter"
       row-key="id"
-      :pagination.sync="filters.serverPagination"
+      v-model:pagination="filters.serverPagination"
       :loading="loading"
       @request="request"
       binary-state-sort

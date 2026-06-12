@@ -2,12 +2,12 @@
   <q-page class="docs-input justify-center"><!-- row -->
     <q-table
       ref="table"
-      :data="serverData"
+      :rows="serverData"
       :columns="columns"
       :visible-columns="visibleColumns"
       :filter="filter"
       row-key="id"
-      :pagination.sync="serverPagination"
+      v-model:pagination="serverPagination"
       :loading="loading"
       @request="request"
       binary-state-sort
@@ -35,7 +35,7 @@
           options-cover
           style="min-width: 150px"
         />
-        <q-checkbox v-model="showImported" label="Show imported" @input="refresh"/>
+        <q-checkbox v-model="showImported" label="Show imported" @update:model-value="refresh"/>
       </template>
       <template v-slot:top-right>
         <q-input

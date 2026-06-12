@@ -26,7 +26,6 @@
 import Submission from '../components/submission.vue'
 import RevertButton from '../components/revertButton.vue'
 import SubmissionForm from '../components/forms/submissionForm.vue'
-import Vue from 'vue'
 
 export default {
   name: 'submission_version',
@@ -54,7 +53,7 @@ export default {
           if (!submission.sample_data) {
             submission.sample_data = []
           }
-          Vue.set(self, 'submission', submission)
+          self.submission = submission
           self.setLab()
         })
     }
@@ -62,7 +61,7 @@ export default {
   methods: {
     submissionUpdated (submission) {
       console.log('submissionUpdated', submission)
-      Vue.set(this, 'submission', submission)
+      this.submission = submission
     },
     setLab () {
       if (!this.$store.getters.lab || this.$store.getters.lab.lab_id !== this.submission.lab.lab_id) {
@@ -80,11 +79,11 @@ export default {
           .then(function (response) {
             console.log('response', response)
             self.submission = response.data
-            Vue.set(self.submission, 'type', response.data.type.id)
+            self.submission.type = response.data.type.id
             self.setLab()
           })
       } else {
-        Vue.set(this, 'submission', {'sample_data': [], 'contacts': [], 'payment': {}})
+        this.submission = {'sample_data': [], 'contacts': [], 'payment': {}}
       }
     }
   },

@@ -5,9 +5,9 @@
 </template>
 
 <script>
-import Vue from 'vue'
+import { nextTick } from 'vue'
 
-export default Vue.extend({
+export default {
   data () {
     return {
       value: null
@@ -34,8 +34,7 @@ export default Vue.extend({
   //     }
   //   })
   // }
-})
-
+}
 </script>
 
 <style scoped>

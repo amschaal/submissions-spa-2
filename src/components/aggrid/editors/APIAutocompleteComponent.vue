@@ -16,7 +16,7 @@
         :options="options"
         @filter="filterFn"
         @input-value="selected"
-        @input="close"
+        @update:model-value="close"
         hint="Text autocomplete"
         ref="select"
         map-options emit-value
@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import Vue from 'vue'
-export default Vue.extend({
+import { nextTick } from 'vue'
+export default {
   data () {
     return {
       value: null,
@@ -87,14 +87,13 @@ export default Vue.extend({
     }
   },
   mounted () {
-    Vue.nextTick(() => {
+    nextTick(() => {
       if (this.$refs.select) {
         this.$refs.select.focus()
       }
     })
   }
-})
-
+}
 </script>
 
 <style scoped>

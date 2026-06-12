@@ -6,7 +6,7 @@
         :error="errors.pi_email"
         :error-label="errors.pi_email"
       >
-        <q-input v-model="value.pi_email" type="text" stack-label label="PI Email/Login for PPMS"/>
+        <q-input v-model="modelValue.pi_email" type="text" stack-label label="PI Email/Login for PPMS"/>
       </q-field>
     </div>
   </div>
@@ -17,10 +17,10 @@
 // import _ from 'lodash'
 
 export default {
-  props: ['value', 'editable', 'errors', 'modify'],
+  props: ['modelValue', 'editable', 'errors', 'modify'],
   data () {
     return {
-      payment: this.value
+      payment: this.modelValue
     }
   }
 }

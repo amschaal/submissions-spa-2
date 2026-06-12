@@ -17,7 +17,7 @@
         filter
         v-model="select"
         :options="service_options"
-        @input="add_service"
+        @update:model-value="add_service"
         map-options emit-value
       />
     <table class="q-table q-table-horizontal-separator">

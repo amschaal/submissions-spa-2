@@ -5,7 +5,7 @@
           <div v-for="variable in fields_sorted" :key="variable.variable">
             <div class="row">
               <div class="col-1"><q-btn flat dense round icon="arrow_upward" color="primary" @click="move(variable.variable, -1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != 0"/> <q-btn flat dense round icon="arrow_downward" color="primary" @click="move(variable.variable, 1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != schema.order.length - 1"/></div>
-              <div class="col-1"><q-checkbox dense v-if="variable.schema" v-model="variable.schema.internal" @input="toggleRequired(variable)"/></div>
+              <div class="col-1"><q-checkbox dense v-if="variable.schema" v-model="variable.schema.internal" @update:model-value="toggleRequired(variable)"/></div>
               <div class="col-1"><q-checkbox dense v-model="schema.required" :val="variable.variable" :disable="variable.schema && variable.schema.internal"/></div>
               <div class="col-2">{{variable.variable}}</div>
               <div class="col-2"><q-input dense v-model="variable.schema.title" /></div>
@@ -25,16 +25,16 @@
                   v-model="schema.layout[variable.variable].width"
                   :options="width_options"
                   v-if="schema.layout[variable.variable]"
-                  @input="setNested(`schema.layout.${variable.variable}.width`,$event)"
+                  @update:model-value="setNested(`schema.layout.${variable.variable}.width`,$event)"
                 />
                 <q-select
                   dense options-dense
                   map-options emit-value
                   :options="width_options"
                   v-if="!schema.layout[variable.variable]"
-                  @input="setNested(`schema.layout.${variable.variable}.width`,$event)"
+                  @update:model-value="setNested(`schema.layout.${variable.variable}.width`,$event)"
                 />
-                <!-- @input="$set(item,'prop',$event.target.value)" -->
+                <!-- @update:model-value="$set(item,'prop',$event.target.value)" -->
 
               </div>
               <div class="col-2">
@@ -51,14 +51,14 @@
         label="Add field"
         >
           <q-list>
-            <q-item v-close-popup @click.native="openModal" clickable>
+            <q-item v-close-popup @click="openModal" clickable>
               <q-item-label>
                 <q-item-section label>New</q-item-section>
               </q-item-label>
               <q-item-section right icon="create" color="green" />
             </q-item>
             <q-separator/>
-            <q-item clickable v-for="v in variables" :key="v" v-close-popup @click.native="addExistingVariable(v)">
+            <q-item clickable v-for="v in variables" :key="v" v-close-popup @click="addExistingVariable(v)">
               <q-item-label>
                 <q-item-section label>{{v}}</q-item-section>
               </q-item-label>
@@ -112,18 +112,18 @@
 </template>
 
 <script>
-import '../forms/docs-input.styl'
+import { defineAsyncComponent } from 'vue'
 // import axios from 'axios'
 import _ from 'lodash'
 import Fieldoptions from '../fieldoptions.vue'
 // import Formatoptions from '../components/formatoptions.vue'
-import Vue from 'vue'
 import jsonDiffModal from '../modals/jsonDiffModal.vue'
 // import Agschema from '../agschema.vue'
 export default {
   name: 'schemaForm',
+  emits: ['update:modelValue'],
   props: {
-    value: {
+    modelValue: {
       type: Object,
       default: function () { return {} }
     },
@@ -141,7 +141,7 @@ export default {
   },
   data () {
     return {
-      schema: this.value,
+      schema: this.modelValue,
       errors: {},
       type_options: [{ 'label': 'Text', 'value': 'string' }, { 'label': 'Number', 'value': 'number' }, { 'label': 'True / False', 'value': 'boolean' }, { 'label': 'Table', 'value': 'table' }],
       width_options: [{ 'label': '100%', 'value': 'col-md-12 col-sm-12 col-xs-auto' }, { 'label': '5/6', 'value': 'col-md-10 col-sm-12 col-xs-auto' }, { 'label': '3/4', 'value': 'col-md-9 col-sm-12 col-xs-auto' }, { 'label': '2/3', 'value': 'col-md-8 col-sm-12 col-xs-auto' }, { 'label': '1/2', 'value': 'col-md-6 col-sm-12 col-xs-auto' }, { 'label': '1/3', 'value': 'col-md-4 col-sm-6 col-xs-auto' }, { 'label': '1/4', 'value': 'col-md-3 col-sm-6 col-xs-auto' }, { 'label': '1/6', 'value': 'col-md-2 col-sm-4 col-xs-auto' }],
@@ -153,7 +153,7 @@ export default {
   created: function () {
     console.log('created!!!', this.schema)
     if (!this.options) {
-      Vue.set(this, 'options', {})
+      this.options = {}
     }
     this.setMissingProperties()
   },
@@ -162,19 +162,19 @@ export default {
   methods: {
     setMissingProperties () {
       if (!this.schema.properties) {
-        Vue.set(this.schema, 'properties', {})
+        this.schema.properties = {}
       }
       if (!this.schema.order) {
-        Vue.set(this.schema, 'order', [])
+        this.schema.order = []
       }
       if (!this.schema.layout) {
-        Vue.set(this.schema, 'layout', {})
+        this.schema.layout = {}
       }
       if (!this.schema.printing) {
-        Vue.set(this.schema, 'printing', [])
+        this.schema.printing = []
       }
       if (!this.schema.required) {
-        Vue.set(this.schema, 'required', [])
+        this.schema.required = []
       }
     },
     openModal () {
@@ -199,9 +199,9 @@ export default {
     },
     addVariable () {
       if (this.new_variable.type === 'table') {
-        Vue.set(this.schema.properties, this.new_variable.name, {type: this.new_variable.type, internal: false, unique: false, schema: { order: [], properties: {}}, printing: { hidden: false }})
+        this.schema.properties[this.new_variable.name] = {type: this.new_variable.type, internal: false, unique: false, schema: { order: [], properties: {}}, printing: { hidden: false }}
       } else {
-        Vue.set(this.schema.properties, this.new_variable.name, {type: this.new_variable.type, internal: false, unique: false})
+        this.schema.properties[this.new_variable.name] = {type: this.new_variable.type, internal: false, unique: false}
       }
 
       this.schema.order.push(this.new_variable.name)
@@ -221,7 +221,7 @@ export default {
           left: this.schema.properties[v],
           right: this.options.variables.properties[v]
         }).onOk(() => {
-          Vue.set(this.schema.properties, v, _.cloneDeep(this.options.variables.properties[v]))
+          this.schema.properties[v] = _.cloneDeep(this.options.variables.properties[v])
           this.$q.notify({message: `Variable "${v}" updated.`, type: 'positive'})
         }).onCancel(() => {
           console.log('Cancel')
@@ -229,7 +229,7 @@ export default {
           console.log('Called on OK or Cancel')
         })
       } else {
-        Vue.set(this.schema.properties, v, _.cloneDeep(this.options.variables.properties[v]))
+        this.schema.properties[v] = _.cloneDeep(this.options.variables.properties[v])
         this.schema.order.push(v)
         this.$q.notify({message: `Variable "${v}" added.`, type: 'positive'})
       }
@@ -248,11 +248,11 @@ export default {
       props.forEach(function (prop, index) {
         if (!last[prop] && index < props.length - 1) {
           console.log('set blank', last, prop)
-          self.$set(last, prop, {})
+          last[prop] = {}
         }
         if (index === props.length - 1) {
           console.log('set value', last, prop, value)
-          self.$set(last, prop, value)
+          last[prop] = value
         }
         last = last[prop]
       })
@@ -284,7 +284,7 @@ export default {
             self.schema.order.splice(index, 1)
           }
         }
-        Vue.delete(this.schema.properties, variable)
+        delete this.schema.properties[variable]
         self.$q.notify({message: 'Variable "' + variable + '" deleted.', type: 'negative'})
       })
     },
@@ -367,11 +367,11 @@ export default {
     schema: {
       handler (newVal, oldVal) {
         // console.log('watch schema', this.schema)
-        this.$emit('input', this.schema)
+        this.$emit('update:modelValue', this.schema)
       },
       deep: true
     },
-    value: {
+    modelValue: {
       handler (newVal, oldVal) {
         this.schema = newVal
         this.setMissingProperties()
@@ -381,7 +381,7 @@ export default {
   },
   components: {
     Fieldoptions,
-    SchemaDialog: () => import('./SchemaDialog.vue')
+    SchemaDialog: defineAsyncComponent(() => import('./SchemaDialog.vue'))
     // Formatoptions,
     // Agschema
   }
@@ -391,3 +391,4 @@ export default {
 .inactive {
   color: red;
 }
+</style>

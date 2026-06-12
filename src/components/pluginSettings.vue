@@ -47,7 +47,7 @@ export default {
       this.$axios.post(this.updateUrl, {plugin: this.plugin, config: this.config})
         .then(
           function (response) {
-            self.$set(self, 'errors', { public: {}, private: {}})
+            self.errors = { public: {}, private: {}}
             self.$q.notify({message: 'Plugin updated.', type: 'positive'})
           })
         .catch(

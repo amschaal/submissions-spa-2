@@ -1,4 +1,3 @@
-import Vue from 'vue'
 // import store from '../store'
 // var plugins = []
 // window.permissions_store = store
@@ -51,6 +50,9 @@ class Permissions {
   }
 }
 var permissions = new Permissions()
-Vue.prototype.$perms = permissions
 
-// export { plugins }
+export default ({ app }) => {
+  app.config.globalProperties.$perms = permissions
+}
+
+export { permissions }

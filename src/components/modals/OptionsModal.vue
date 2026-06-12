@@ -33,10 +33,11 @@
 import _ from 'lodash'
 import CustomFields from '../forms/customFields.vue'
 export default {
-  props: ['variable', 'parentSchema', 'value', 'schema', 'WidgetClass'],
+  props: ['variable', 'parentSchema', 'modelValue', 'schema', 'WidgetClass'],
+  emits: ['update:modelValue'],
   data () {
     return {
-      data: _.cloneDeep(this.value),
+      data: _.cloneDeep(this.modelValue),
       opened: false,
       errors: {},
       warnings: {}
@@ -53,7 +54,7 @@ export default {
           return
         }
       }
-      this.$emit('input', this.data)
+      this.$emit('update:modelValue', this.data)
       this.close()
     },
     open () {
@@ -61,7 +62,7 @@ export default {
         this.widget = new (this.WidgetClass)(this.variable, this.data)
       }
       this.errors = {}
-      this.data = _.cloneDeep(this.value)
+      this.data = _.cloneDeep(this.modelValue)
       this.opened = true
     },
     close () {

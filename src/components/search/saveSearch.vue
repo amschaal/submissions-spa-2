@@ -33,7 +33,8 @@
 <script>
 import savedSearchesTable from './savedSearchesTable.vue'
 export default {
-  props: ['value', 'namespace', 'filters', 'advancedFilters'],
+  props: ['modelValue', 'namespace', 'filters', 'advancedFilters'],
+  emits: ['update:modelValue'],
   components: { savedSearchesTable },
   data () {
     return {
@@ -71,10 +72,10 @@ export default {
   computed: {
     show: {
       get: function () {
-        return this.value
+        return this.modelValue
       },
       set: function (val) {
-        this.$emit('input', val)
+        this.$emit('update:modelValue', val)
       }
     }
   }

@@ -8,7 +8,7 @@
         :options="options"
         @filter="filterFn"
         @input-value="selected"
-        @input="close"
+        @update:model-value="close"
         hint="Search Users"
         ref="select"
         map-options emit-value
@@ -27,8 +27,7 @@
 </template>
 
 <script>
-import Vue from 'vue'
-export default Vue.extend({
+export default {
   props: {
     queryParams: {
         type: String
@@ -81,8 +80,7 @@ export default Vue.extend({
   },
   mounted () {
   }
-})
-
+}
 </script>
 
 <style scoped>

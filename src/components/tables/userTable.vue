@@ -2,18 +2,18 @@
   <div class="q-pa-md">
     <q-table
       ref="table"
-      :data="serverData"
+      :rows="serverData"
       :columns="columns"
       :visible-columns="filters.visibleColumns"
       :filter="filters.filter"
       row-key="id"
-      :pagination.sync="filters.serverPagination"
+      v-model:pagination="filters.serverPagination"
       :loading="loading"
       @request="request"
       binary-state-sort
       :rows-per-page-options="[10,25,0]"
       selection="multiple"
-      :selected.sync="selected"
+      v-model:selected="selected"
     >
       <template v-slot:top-right>
         <q-input borderless dense debounce="300" v-model="filters.filter" placeholder="Search">
@@ -29,7 +29,8 @@
 <script>
 // import axios from 'axios'
 export default {
-  props: ['value', 'queryParams'],
+  props: ['modelValue', 'queryParams'],
+  emits: ['selected'],
   data () {
     return {
       filters: {
@@ -43,7 +44,7 @@ export default {
         },
         visibleColumns: ['first_name', 'last_name', 'email']
       },
-      selected: this.value ? this.value : [],
+      selected: this.modelValue ? this.modelValue : [],
       loading: false,
       serverData: [],
       columns: [
@@ -110,7 +111,10 @@ export default {
   },
   watch: {
     selected: function (val) {
-      this.$parent.$emit('selected', val)
+      // Was `this.$parent.$emit` (a Vue 2 hack caught by a listener on the
+      // enclosing q-card-section in tableModal); now an ordinary emit wired
+      // through tableModal's scoped slot.
+      this.$emit('selected', val)
     }
   }
 }

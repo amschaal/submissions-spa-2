@@ -4,7 +4,7 @@
         v-model="value"
         :options="select_options"
         ref="select"
-        @input="selected(value)"
+        @update:model-value="selected(value)"
         :multiple="widget_options.multiple"
         map-options emit-value
       />
@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import Vue from 'vue'
-export default Vue.extend({
+import { nextTick } from 'vue'
+export default {
   data () {
     return {
       value: null,
@@ -70,7 +70,7 @@ export default Vue.extend({
   },
   mounted () {
     console.log('mounted')
-    Vue.nextTick(() => {
+    nextTick(() => {
       if (this.isDelete()) {
         this.value = ''
         this.params.stopEditing()
@@ -80,8 +80,7 @@ export default Vue.extend({
       }
     })
   }
-})
-
+}
 </script>
 
 <style scoped>

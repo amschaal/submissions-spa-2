@@ -1,4 +1,7 @@
-import Vue from 'vue'
 import schema from '../assets/schema/schema.js'
-Vue.prototype.$schema = schema
+
+export default ({ app }) => {
+  app.config.globalProperties.$schema = schema
+}
+
 export { schema }

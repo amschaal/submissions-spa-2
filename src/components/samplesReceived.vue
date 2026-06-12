@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-banner dense rounded class="text-white bg-warning" v-if="!value.samples_received">
+    <q-banner dense rounded class="text-white bg-warning" v-if="!modelValue.samples_received">
       <template v-slot:avatar>
         <q-icon name="warning" size="sm"/>
       </template>
@@ -14,7 +14,7 @@
       <template v-slot:avatar>
         <q-icon name="info" size="sm"/>
       </template>
-      Samples received on {{ $formatDate(value.samples_received) }} by {{value.received_by_name}} <a class="action" @click="openModal" v-if="admin">Edit</a>
+      Samples received on {{ $formatDate(modelValue.samples_received) }} by {{modelValue.received_by_name}} <a class="action" @click="openModal" v-if="admin">Edit</a>
     </q-banner>
 
     <q-dialog  v-model="opened" :content-css="{width: '500px', minHeight: '40vh'}" ref="modal">
@@ -36,7 +36,7 @@
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                      <q-date v-model="data.samples_received" @input="() => $refs.qDateProxy.hide()" mask="YYYY-MM-DD" />
+                      <q-date v-model="data.samples_received" @update:model-value="() => $refs.qDateProxy.hide()" mask="YYYY-MM-DD" />
                     </q-popup-proxy>
                   </q-icon>
                 </template>
@@ -75,29 +75,30 @@
 import _ from 'lodash'
 
 export default {
-  props: ['value', 'admin'],
+  props: ['modelValue', 'admin'],
+  emits: ['update:modelValue'],
   data () {
     return {
       opened: false,
-      data: {}, // _.cloneDeep(this.value),
+      data: {}, // _.cloneDeep(this.modelValue),
       errors: {}
     }
   },
   mounted () {
     // console.log('widgetFactory', widgetFactory.getWidgetOptions('text'))
     // this.setup()
-    this.data = _.cloneDeep(this.value)
+    this.data = _.cloneDeep(this.modelValue)
   },
   methods: {
     setup () {
-      this.data = _.cloneDeep(this.value)
+      this.data = _.cloneDeep(this.modelValue)
     },
     openModal () {
       this.setup()
-      // this.data = _.cloneDeep(this.value)
+      // this.data = _.cloneDeep(this.modelValue)
       console.log('root', this.$root.validators)
 
-      console.log('openModal', this.value, this.data)
+      console.log('openModal', this.modelValue, this.data)
       this.$refs.modal.show()
     },
     open (ref) {
@@ -111,7 +112,7 @@ export default {
     save () {
       // this.local_data = this.hst.table.getSourceData()
       // this.data = this.hst.table.getSourceData() // this.local_data
-      // this.value = this.options
+      // this.modelValue = this.options
       this.markReceived(this.data.samples_received, this.data.received_by)
       // this.data
     },
@@ -127,14 +128,14 @@ export default {
       if (receivedBy) {
         data['received_by'] = receivedBy
       }
-      this.$axios.post(`/api/submissions/${this.value.id}/samples_received/`, data)
+      this.$axios.post(`/api/submissions/${this.modelValue.id}/samples_received/`, data)
         .then(function (response) {
           console.log('received', self, response.data.submission)
-          // self.$set(self, 'data', response.data.submission)
+          // self.data = response.data.submission
           self.data.samples_received = response.data.submission.samples_received
           self.data.received_by = response.data.submission.received_by
           self.data.received_by_name = response.data.submission.received_by_name
-          self.$emit('input', self.data)
+          self.$emit('update:modelValue', self.data)
           self.$refs.modal.hide()
         })
         .catch(function (response) {

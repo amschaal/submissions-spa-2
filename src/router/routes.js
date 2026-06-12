@@ -193,24 +193,16 @@ const routes = [
       }
     ]
   },
-  { // Always leave this as last one
-    path: '*',
-    component: () => import('pages/404'),
-    name: 'not_found'
-  },
-  { // Always leave this as last one
+  {
     path: '/error',
+    component: () => import('pages/404'),
+    name: 'error'
+  },
+  { // Always leave this as last one (vue-router 4 catch-all syntax)
+    path: '/:catchAll(.*)*',
     component: () => import('pages/404'),
     name: 'not_found'
   }
 ]
-
-// Always leave this as last one
-if (process.env.MODE !== 'ssr') {
-  routes.push({
-    path: '*',
-    component: () => import('pages/Error404.vue')
-  })
-}
 
 export default routes

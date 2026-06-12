@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 
 export default {
   name: 'confirm_submission',
@@ -21,7 +20,7 @@ export default {
       .get(`/api/submissions/${self.id}/`)
       .then(function (response) {
         console.log('response', response)
-        Vue.set(self, 'submission', response.data)
+        self.submission = response.data
       })
   }
 }

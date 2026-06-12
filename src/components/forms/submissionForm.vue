@@ -304,7 +304,6 @@
 </template>
 
 <script>
-import './docs-input.styl'
 // import axios from 'axios'
 // import Samplesheet from '../../components/samplesheet.vue'
 // import Agschema from '../../components/agschema.vue'
@@ -313,7 +312,6 @@ import selectLabModal from '../modals/selectLabModal.vue'
 // import Account from '../payment/ucdAccount.vue'
 import PPMS from '../../components/payment/ppms.vue'
 // import Files from '../../components/files.vue'
-import Vue from 'vue'
 import _ from 'lodash'
 
 export default {
@@ -362,7 +360,7 @@ export default {
     //   this.initialize()
     // }
   },
-  beforeDestroy: function () {
+  beforeUnmount: function () {
     if (this.draft_message) {
       this.draft_message()
     }
@@ -381,7 +379,7 @@ export default {
         //       response.data.sample_data = []
         //     }
         //     self.submission = response.data
-        //     Vue.set(self.submission, 'type', response.data.type.id)
+        //     self.submission.type = response.data.type.id
         //   })
         this.loadSubmission(this.id)
       } else {
@@ -465,7 +463,7 @@ export default {
       //         .then(function (response) {
       //           console.log('response', response)
       //           self.submission = response.data
-      //           Vue.set(self.submission, 'type', response.data.type.id)
+      //           self.submission.type = response.data.type.id
       //         })
       //     }
       //   })
@@ -490,11 +488,11 @@ export default {
     // },
     updateWarnings (warnings) {
       console.log('update', warnings)
-      // Vue.set(this.error.warnings, 'sample_data', warnings)
+      // this.error.warnings.sample_data = warnings
     },
     updateErrors (errors) {
       console.log('update errors', errors)
-      // Vue.set(this.errors, 'sample_data', errors)
+      // this.errors.sample_data = errors
     },
     removeCached () {
       window.localStorage.removeItem('submission')
@@ -523,8 +521,8 @@ export default {
           // self.errors = {}
           // self.warnings = {}
           self.submission = response.data
-          Vue.set(self, 'errors', response.data.data.errors)
-          // Vue.set(self, 'warnings', response.data.data.warnings)
+          self.errors = response.data.data.errors
+          // self.warnings = response.data.data.warnings
           // console.log(response)
           self.$q.notify({message: 'Submission successfully saved.', type: 'positive'})
           self.$emit('submission_updated', self.submission)
@@ -560,9 +558,9 @@ export default {
             })
           }
           if (error.response) {
-            // Vue.set(self, 'errors', error.response.data)
+            // self.errors = error.response.data
             self.errors = error.response.data
-            Vue.set(self.errors, 'payment', error.response.data.payment || {})
+            self.errors.payment = error.response.data.payment || {}
           }
           throw error
         })
@@ -625,7 +623,7 @@ export default {
           // }
           self.submission = response.data.data
           self.loadDraftMessage()
-          // Vue.set(self.submission, 'type', response.data.type.id)
+          // self.submission.type = response.data.type.id
         }).catch(function (error, stuff) {
           self.$q.notify({message: `No draft was found with ID: ${id}`, type: 'negative'})
           self.draft = null
@@ -666,7 +664,7 @@ export default {
           self.submission = imported
           self.$q.notify({message: `Submission information from submission "${internalID}: ${type.name}" loaded.  Please select the target type and attempt saving the import.`, type: 'positive', timeout: 15000})
           // self.loadDraftMessage()
-          // Vue.set(self.submission, 'type', response.data.type.id)
+          // self.submission.type = response.data.type.id
         }).catch(function (error, stuff) {
           self.$q.notify({message: `Unable to load import from url: ${self.import}`, type: 'negative'})
           self.$router.push({name: 'create_submission'})
@@ -680,9 +678,9 @@ export default {
         .get(url)
         .then(function (response) {
           self.submission = self.version ? response.data.serialized : response.data
-          Vue.set(self, 'errors', {contacts: [], payment: {}, warnings: response.data.warnings})
-          // Vue.set(self, 'warnings', response.data.warnings || {})
-          Vue.set(self.submission, 'type', self.submission.type.id)
+          self.errors = {contacts: [], payment: {}, warnings: response.data.warnings}
+          // self.warnings = response.data.warnings || {}
+          self.submission.type = self.submission.type.id
           self.updatePaymentForm()
         })
     },
@@ -720,10 +718,10 @@ export default {
     //   }
     // },
     copyPI () {
-      Vue.set(this.submission, 'first_name', this.submission.pi_first_name)
-      Vue.set(this.submission, 'last_name', this.submission.pi_last_name)
-      Vue.set(this.submission, 'phone', this.submission.pi_phone)
-      Vue.set(this.submission, 'email', this.submission.pi_email)
+      this.submission.first_name = this.submission.pi_first_name
+      this.submission.last_name = this.submission.pi_last_name
+      this.submission.phone = this.submission.pi_phone
+      this.submission.email = this.submission.pi_email
     },
     flashHelpTooltip () {
       var self = this
@@ -776,7 +774,7 @@ export default {
     //       .then(function (response) {
     //         console.log('response', response)
     //         self.submission = response.data
-    //         Vue.set(self.submission, 'type', response.data.type.id)
+    //         self.submission.type = response.data.type.id
     //       })
     //   } else {
     //     this.submission = {'sample_data': [{}, {}]}

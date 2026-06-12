@@ -33,7 +33,7 @@
             <q-table
               title="Labs"
               :columns="lab_columns"
-              :data="labs"
+              :rows="labs"
               row-key="lab_id"
               :dense="true"
               :filter="filter"
@@ -50,12 +50,12 @@
                   <q-btn color="primary" size="sm" :to="{ name: 'lab', params: { lab_id: props.row.lab_id} }" label="Home"/>
                   <q-btn color="primary" size="sm" :to="{ name: 'settings', params: { lab_id: props.row.lab_id} }" label="Settings"/>
                   <q-btn color="primary" label="Edit" size="sm" @click="editLab(props.row.lab_id)"/>
-                  <!-- <q-toggle label="Enabled" :false-value="true" :true-value="false" v-model="props.row.disabled" @input="toggleDisabled(props.row)"/> -->
+                  <!-- <q-toggle label="Enabled" :false-value="true" :true-value="false" v-model="props.row.disabled" @update:model-value="toggleDisabled(props.row)"/> -->
                 </q-td>
               </template>
               <template v-slot:body-cell-disabled="props">
                 <q-td :props="props">
-                  <q-toggle :false-value="true" :true-value="false" v-model="props.row.disabled" @input="toggleDisabled(props.row)"/>
+                  <q-toggle :false-value="true" :true-value="false" v-model="props.row.disabled" @update:model-value="toggleDisabled(props.row)"/>
                 </q-td>
               </template>
             </q-table>
@@ -82,13 +82,13 @@
               active-color="white"
               narrow-indicator
             >
-            <template v-for="(config, plugin) in plugin_settings">
-              <q-tab :key="plugin" :name="plugin" :label="plugin"/>
+            <template v-for="(config, plugin) in plugin_settings" :key="plugin">
+              <q-tab :name="plugin" :label="plugin"/>
             </template>
           </q-tabs>
           <q-tab-panels v-model="plugin_tab" animated>
-            <template v-for="(config, plugin) in plugin_settings">
-              <q-tab-panel :key="plugin" :name="plugin">
+            <template v-for="(config, plugin) in plugin_settings" :key="'panel-' + plugin">
+              <q-tab-panel :name="plugin">
                 <pluginSettings :updateUrl="'/api/institutions/'+institution.id+'/update_plugin/'" :formUrl="('/api/institutions/'+institution.id+'/plugin_form/'+plugin+'/')" :plugin="plugin" :config="config"/>
               </q-tab-panel>
             </template>
@@ -189,7 +189,7 @@ export default {
         .then((response) => {
           this.plugin_selection.forEach((plugin) => {
             if (!this.plugin_settings[plugin]) {
-              this.$set(this.plugin_settings, plugin, response.data.plugins[plugin])
+              this.plugin_settings[plugin] = response.data.plugins[plugin]
             }
           }
           )

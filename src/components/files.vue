@@ -3,11 +3,11 @@
     <q-uploader :factory="uploadFile" :multiple="true" label="Upload files" ref="uploader" @add="filesSelected"/>
     <q-table
       ref="table"
-      :data="serverData"
+      :rows="serverData"
       :columns="columns"
       :filter="filter"
       row-key="id"
-      :pagination.sync="serverPagination"
+      v-model:pagination="serverPagination"
       :loading="loading"
       @request="request"
       :refresh="true"

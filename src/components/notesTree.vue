@@ -38,13 +38,9 @@ export default {
         // self.initialized = true
       })
   },
-  created () {
-    var self = this
-    this.$on('addNote', function (note) {
-      console.log('catch addNote', note)
-      self.addNote(note)
-    })
-  },
+  // (removed) a Vue 2 `this.$on('addNote')` listener lived here; notes.vue
+  // calls the `addNote` prop directly, so the listener was dead code and
+  // $on no longer exists in Vue 3.
   methods: {
     // formatDate (value) {
     //   return moment(String(value)).format('MM/DD/YYYY hh:mm')
@@ -115,7 +111,7 @@ export default {
     addNote (note) {
       console.log('addNote', note)
       if (!this.noteHash[note.parent]) {
-        this.$set(this.noteHash, note.parent, [])
+        this.noteHash[note.parent] = []
         // this.noteHash[note.parent] = []
       }
       this.noteHash[note.parent].push(note)

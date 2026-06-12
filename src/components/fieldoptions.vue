@@ -95,7 +95,7 @@
           >
             <q-btn-dropdown size="md" label="Add validator">
               <q-list>
-                <q-item clickable v-for="(v, id) in validatorsByType(data.type)" :key="id" v-close-popup @click.native="addValidator(id)" :title="v.description">
+                <q-item clickable v-for="(v, id) in validatorsByType(data.type)" :key="id" v-close-popup @click="addValidator(id)" :title="v.description">
                   <q-item-label>
                     <q-item-section label>{{v.name}}</q-item-section>
                   </q-item-label>
@@ -173,7 +173,8 @@ import OptionsModal from './modals/OptionsModal.vue'
 import ForeignKey from './forms/ForeignKey.vue'
 import draggable from 'vuedraggable'
 export default {
-  props: ['value', 'variable', 'type', 'schema', 'rootSchema'],
+  props: ['modelValue', 'variable', 'type', 'schema', 'rootSchema'],
+  emits: ['update:modelValue'],
   data () {
     return {
       opened: false,
@@ -181,7 +182,7 @@ export default {
       validators: this.$store.getters.validatorDict, // t{unique: {id: 'unique', name: 'Unique'}, foo: {id: 'foo', name: 'Foo'}},
       add_validator: null,
       option: null
-      // options: this.value && this.value.enum ? this.value.enum : []
+      // options: this.modelValue && this.modelValue.enum ? this.modelValue.enum : []
     }
   },
   mounted () {
@@ -190,27 +191,27 @@ export default {
   },
   methods: {
     setup () {
-      this.data = _.cloneDeep(this.value)
+      this.data = _.cloneDeep(this.modelValue)
 
       if (!this.data.enum) {
-        this.$set(this.data, 'enum', [])
+        this.data.enum = []
       }
       if (!this.data.widget) {
-        this.$set(this.data, 'widget', {'type': null, 'options': {}})
+        this.data.widget = {'type': null, 'options': {}}
       }
       if (!this.data.printing) {
-        this.$set(this.data, 'printing', {'hidden': false})
+        this.data.printing = {'hidden': false}
       }
       if (!this.data.validators) {
-        this.$set(this.data, 'validators', [])
+        this.data.validators = []
       }
     },
     openModal () {
       this.setup()
-      // this.data = _.cloneDeep(this.value)
+      // this.data = _.cloneDeep(this.modelValue)
       console.log('root', this.$root.validators)
 
-      console.log('openModal', this.value, this.data)
+      console.log('openModal', this.modelValue, this.data)
       this.$refs.modal.show()
       // .then(() => {
       //
@@ -239,13 +240,13 @@ export default {
     save () {
       // this.local_data = this.hst.table.getSourceData()
       // this.data = this.hst.table.getSourceData() // this.local_data
-      // this.value = this.options
+      // this.modelValue = this.options
       var val = _.cloneDeep(this.data)
       if (val.enum.length < 1) {
         val.enum = undefined
       }
       console.log('emit', val)
-      this.$emit('input', val)
+      this.$emit('update:modelValue', val)
       this.$refs.modal.hide()
       // this.data
     },

@@ -5,16 +5,16 @@
         v-model="value"
         :options="options"
         ref="select"
-        @input="selected(value)"
+        @update:model-value="selected(value)"
         map-options emit-value
       />
     </div>
 </template>
 
 <script>
-import Vue from 'vue'
+import { nextTick } from 'vue'
 // import { filter } from 'quasar'
-export default Vue.extend({
+export default {
   data () {
     return {
       value: null,
@@ -59,15 +59,14 @@ export default Vue.extend({
     this.getOptions()
   },
   mounted () {
-    Vue.nextTick(() => {
+    nextTick(() => {
       if (this.$refs.select) {
         console.log('select', this.$refs.select)
         this.$refs.select.show()
       }
     })
   }
-})
-
+}
 </script>
 
 <style scoped>

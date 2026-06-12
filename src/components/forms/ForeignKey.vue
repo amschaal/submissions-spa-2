@@ -9,7 +9,7 @@
         hint="You may validate that the value for this column matches a record from another table.  Select which table and column to reference."
         stack-label
         clearable
-        @input="change"
+        @update:model-value="change"
       >
         <template v-slot:option="scope">
           <q-expansion-item
@@ -18,9 +18,8 @@
              header-class="text-weight-bold"
             :label="scope.opt.label"
           >
-            <template v-for="child in scope.opt.children">
+            <template v-for="child in scope.opt.children" :key="child.label">
               <q-item
-                :key="child.label"
                 clickable
                 v-ripple
                 v-close-popup
@@ -44,10 +43,11 @@
 
 <script>
 export default {
-  props: ['schema', 'value'],
+  props: ['schema', 'modelValue'],
+  emits: ['update:modelValue'],
   data () {
     return {
-      model: this.value && this.value.slice ? this.value.slice() : null
+      model: this.modelValue && this.modelValue.slice ? this.modelValue.slice() : null
     }
   },
   methods: {
@@ -56,7 +56,7 @@ export default {
       this.change()
     },
     change () {
-      this.$emit('input', this.model)
+      this.$emit('update:modelValue', this.model)
     },
     getLabel (scope) {
       console.log(scope)

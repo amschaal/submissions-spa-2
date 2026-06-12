@@ -15,21 +15,8 @@
 //     // onLoad: 'check-sso'
 //   }
 // })\
-import moment from 'moment'
-import Vue from 'vue'
 import { mapGetters } from 'vuex'
-// Vue 3 removes template filters; expose these as instance methods instead.
-// In Stage 3 these move to a boot file (app.config.globalProperties).
-Vue.prototype.$formatDateTime = function (value) {
-  if (value) {
-    return moment(String(value)).format('MM/DD/YYYY hh:mm')
-  }
-}
-Vue.prototype.$formatDate = function (value) {
-  if (value) {
-    return moment(String(value)).format('MM/DD/YYYY')
-  }
-}
+// $formatDate / $formatDateTime are registered in boot/filters.js
 export default {
   name: 'App',
   props: ['authenticated', 'blah'],

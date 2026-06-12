@@ -21,7 +21,7 @@
           <q-tab-panel name="emails">
             <h6>Set primary email</h6>
             <div v-for="email in user.emails" :key="email">
-              <q-radio v-model="primary_email" :val="email" :label="email" @input="setPrimaryEmail"/>
+              <q-radio v-model="primary_email" :val="email" :label="email" @update:model-value="setPrimaryEmail"/>
             </div>
             <div>
               <q-input bottom-slots v-model="claim_email" placeholder="Enter email" dense v-if="!claim_in_progress">

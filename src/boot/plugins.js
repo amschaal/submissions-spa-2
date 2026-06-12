@@ -1,6 +1,10 @@
-import Vue from 'vue'
+import { markRaw } from 'vue'
 import _ from 'lodash'
-import Payment from '../components/payment/ucdAccount.vue'
+import RawPayment from '../components/payment/ucdAccount.vue'
+
+// markRaw so the default payment component can be stored in reactive data
+// (and passed to <component :is>) without Vue 3 reactivity warnings.
+const Payment = markRaw(RawPayment)
 
 // var plugins = []
 // var plugins = ['test', 'bioshare']
@@ -62,11 +66,15 @@ class PluginManager {
     return import('assets/plugins/' + pluginId + '/config.js')
       .then(module => {
         console.log('set plugin', pluginId)
-        this.plugins[pluginId] = {'config': module.config, 'tabs': module.config.submission_tabs, 'payment': module.config.payment}
+        // markRaw the component objects so Vue 3 doesn't try to make them
+        // reactive when they're stored here / passed to <component :is="...">.
+        var tabs = (module.config.submission_tabs || []).map(t => Object.assign({}, t, { component: markRaw(t.component) }))
+        var payment = module.config.payment ? markRaw(module.config.payment) : module.config.payment
+        this.plugins[pluginId] = {'config': module.config, 'tabs': tabs, 'payment': payment}
         // Tab components are rendered via <component :is="getTabComponent(id)">
         // rather than global registration (see getTabComponent).
-        for (var j in module.config.submission_tabs) {
-          this.permissions[module.config.submission_tabs[j].id] = module.config.submission_tabs[j].permissions
+        for (var j in tabs) {
+          this.permissions[tabs[j].id] = tabs[j].permissions
         }
         // module.loadPageInto(main);
       })
@@ -108,5 +116,8 @@ class PluginManager {
 // console.log('plugins', this)
 var pluginManager = new PluginManager([])
 
-Vue.prototype.$plugins = pluginManager
+export default ({ app }) => {
+  app.config.globalProperties.$plugins = pluginManager
+}
+
 export { pluginManager }

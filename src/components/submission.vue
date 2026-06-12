@@ -7,7 +7,9 @@
             </q-banner>
           </div>
           <div class="field col-12 q-mt-xs q-mb-xs" v-if="!version">
-            <SamplesReceived v-if="submission.id" v-model="submission" :admin="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')"/>
+            <!-- `submission` is a prop here, so v-model is illegal in Vue 3;
+                 merge the updated fields into the shared object instead. -->
+            <SamplesReceived v-if="submission.id" :model-value="submission" @update:model-value="d => Object.assign(submission, d)" :admin="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')"/>
           </div>
           <div class="field col-12 q-mt-xs q-mb-xs" v-if="hasWarnings">
           <q-banner dense class="text-white bg-warning" rounded>

@@ -12,7 +12,7 @@
         type: {{ type }}<br>
         variables: {{ variables }}-->
 
-        <q-select dense v-model="type" :options="lab_filters.custom" option-value="id" option-label="name" emit-value map-options label="Submission Type" outlined @input="clearVariables">
+        <q-select dense v-model="type" :options="lab_filters.custom" option-value="id" option-label="name" emit-value map-options label="Submission Type" outlined @update:model-value="clearVariables">
             <template v-slot:after>
                 <q-icon name="help" color="primary">
                     <q-tooltip content-class="tooltip">
@@ -27,7 +27,7 @@
         <!-- {{ type_filters }} -->
         <!-- {{ filteredVariables }} -->
         <!-- <span class="col filter">
-            <q-select dense v-model="variable" @filter="filterFn" use-input input-debounce="0" :options="filteredVariables" option-value="variable" :option-label="opt => opt.variable ? `${opt.variable}: ${opt.title}` : opt.title" label="Add custom field filter" @input="addVariable" borderless style="width: 250px" behavior="dialog">
+            <q-select dense v-model="variable" @filter="filterFn" use-input input-debounce="0" :options="filteredVariables" option-value="variable" :option-label="opt => opt.variable ? `${opt.variable}: ${opt.title}` : opt.title" label="Add custom field filter" @update:model-value="addVariable" borderless style="width: 250px" behavior="dialog">
                 <template v-slot:after>
                     <q-icon name="help" color="primary">
                         <q-tooltip content-class="tooltip">
@@ -122,14 +122,14 @@
               <!-- {{ filter_sources }} -->
               <q-table
                 title="Filters"
-                :data="variable_options"
+                :rows="variable_options"
                 :columns="search_filter_columns"
                 row-key="variable"
                 :filter="search_filter"
                 virtual-scroll
                 style="height: 600px"
                 :rows-per-page-options="[0]"
-                :pagination.sync="pagination"
+                v-model:pagination="pagination"
               >
               <template v-slot:top-right>
                 <q-input borderless dense debounce="300" v-model="search_filter" placeholder="Search" ref="advanced-filter-search">
@@ -229,7 +229,7 @@ export default {
   methods: {
     update (params) {
       if (params) {
-        this.$set(this, 'variables', params.variables ? _.cloneDeep(params.variables) : [])
+        this.variables = params.variables ? _.cloneDeep(params.variables) : []
         this.type = params.type || 'ALL'
       }
       if (this.$refs.filters && this.$refs.filters.map(c => c.validate()).indexOf(false) !== -1) {

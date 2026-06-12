@@ -130,7 +130,7 @@
             v-model="status_option"
             label="Add Status"
             :options="status_options"
-            @input="add_status"
+            @update:model-value="add_status"
             map-options emit-value
           />
           <draggable :list="type.statuses">
@@ -203,9 +203,7 @@
 </template>
 
 <script>
-import '../components/forms/docs-input.styl'
 import SchemaForm from '../components/forms/schemaForm.vue'
-import Vue from 'vue'
 // import Agschema from '../components/agschema.vue'
 import draggable from 'vuedraggable'
 import VersionModal from '../components/modals/versionModal.vue'
@@ -330,10 +328,10 @@ export default {
           //   self.type.sample_schema.examples = []
           // }
           if (!self.type.submission_schema.printing) {
-            Vue.set(self.type.submission_schema, 'printing', {})
+            self.type.submission_schema.printing = {}
           }
           // if (!self.type.sample_schema.printing) {
-          //   Vue.set(self.type.sample_schema, 'printing', {})
+          //   self.type.sample_schema.printing = {}
           // }
           if (self.$route.query.copy_from) {
             delete self.type['id']
@@ -353,7 +351,7 @@ export default {
       })
     console.log('lab', this.$store.getters.lab)
   },
-  beforeDestroy: function () {
+  beforeUnmount: function () {
     if (this.save_message) {
       this.save_message()
       this.save_message = null
@@ -456,7 +454,7 @@ export default {
     load_autosave () {
       var saved = this.get_autosave()
       if (saved) {
-        Vue.set(this, 'type', this.get_autosave())
+        this.type = this.get_autosave()
       }
     },
     notify_autosave () {
@@ -477,7 +475,7 @@ export default {
               handler: () => {
                 try {
                   console.log('loading autosave', autosave)
-                  Vue.set(self, 'type', autosave)
+                  self.type = autosave
                   self.$q.notify({message: 'Submission type loaded.', type: 'positive', position: 'top'})
                 } catch {
                   self.$q.notify({message: 'There was an error restoring the submission type.', type: 'negative'})
@@ -597,3 +595,4 @@ export default {
 .inactive {
   color: red;
 }
+</style>

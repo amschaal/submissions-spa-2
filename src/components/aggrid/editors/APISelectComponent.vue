@@ -5,15 +5,15 @@
         v-model="value"
         :options="options"
         ref="select"
-        @input="selected(value)"
+        @update:model-value="selected(value)"
         map-options emit-value
       />
     </div>
 </template>
 
 <script>
-import Vue from 'vue'
-export default Vue.extend({
+import { nextTick } from 'vue'
+export default {
   data () {
     return {
       value: null,
@@ -57,15 +57,14 @@ export default Vue.extend({
     }
   },
   mounted () {
-    Vue.nextTick(() => {
+    nextTick(() => {
       if (this.$refs.select) {
         console.log('select', this.$refs.select)
         this.$refs.select.focus()
       }
     })
   }
-})
-
+}
 </script>
 
 <style scoped>

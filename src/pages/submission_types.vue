@@ -2,11 +2,11 @@
   <q-page class="docs-input justify-center">
     <q-table
       ref="table"
-      :data="serverData"
+      :rows="serverData"
       :columns="columns"
       :filter="filter"
       row-key="id"
-      :pagination.sync="serverPagination"
+      v-model:pagination="serverPagination"
       :loading="loading"
       @request="request"
       binary-state-sort
@@ -21,7 +21,7 @@
             <div class="col-6 q-table__title text-center"><span v-if="$store.getters.lab">{{$store.getters.lab.name}} Submissions Types <selectLabModal page="submission_types"/></span></div>
           </div>
           <div class="col-5">
-            <q-checkbox v-model="showInactive" label="Show inactive" @input="refresh" class="inactive"/>
+            <q-checkbox v-model="showInactive" label="Show inactive" @update:model-value="refresh" class="inactive"/>
             <q-input
               v-model="filter"
               debounce="500"

@@ -15,8 +15,10 @@
           </div>
         </q-card-section>
 
-        <q-card-section class="q-pt-none" v-on:selected="updateSelected">
-          <slot name="table">Table </slot>
+        <q-card-section class="q-pt-none">
+          <!-- Slot content should call updateSelected with the new selection
+               (e.g. <userTable @selected="slotProps.updateSelected"/>). -->
+          <slot name="table" :update-selected="updateSelected">Table </slot>
         </q-card-section>
 
         <q-card-actions align="right" class="bg-white text-teal">
@@ -31,31 +33,27 @@
 export default {
   props: {
     title: String,
-    value: Array,
+    modelValue: Array,
     buttonProps: { type: Object, default: function () { return { label: 'Modify', size: 'sm'} }},
     help: String
   },
+  emits: ['update:modelValue'],
   data () {
     return {
       opened: false,
-      selected: this.value ? this.value : []
+      selected: this.modelValue ? this.modelValue : []
     }
-  },
-  mounted () {
-    this.$on('selected', this.updateSelected)
   },
   methods: {
     open () {
       this.opened = true
     },
     select () {
-      // alert('selected')
-      this.$emit('input', this.selected)
+      this.$emit('update:modelValue', this.selected)
       this.opened = false
     },
     cancel () {
-      // alert('selected')
-      this.selected = this.value ? this.value : []
+      this.selected = this.modelValue ? this.modelValue : []
       this.opened = false
     },
     updateSelected (selection) {

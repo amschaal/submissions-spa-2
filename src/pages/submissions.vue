@@ -6,22 +6,18 @@
     <!-- defaultFilters: {{ defaultFilters.advancedFilters }} -->
     <q-table
       ref="table"
-      :data="serverData"
+      :rows="serverData"
       :columns="allColumns"
       :visible-columns="filters.visibleColumns"
       :filter="filters.filter"
       row-key="id"
-      :pagination.sync="filters.serverPagination"
+      v-model:pagination="filters.serverPagination"
       :loading="loading"
       @request="request"
       binary-state-sort
       :rows-per-page-options="[10,25,50]"
     >
-      <!-- Kept as legacy `slot="top"` (eager) intentionally: this slot holds
-           ref="advancedFilters", which mounted() -> loadDefaults() calls .update() on.
-           Vue 2.6 `v-slot:top` compiles to a lazy scoped slot, leaving that ref
-           undefined in mounted(). Convert + rework the ref access in Stage 4. -->
-      <template slot="top">
+      <template v-slot:top>
         <div class="row full-width">
           <div class="col-3">
             <q-select
@@ -44,10 +40,10 @@
               </q-checkbox>
             </template>
             </q-select>
-            <q-checkbox v-model="filters.showCancelled" label="Show cancelled" @input="refresh"/>
-            <q-checkbox v-model="filters.showCompleted" label="Show completed" @input="refresh"><q-tooltip>Include submissions with a status of "completed"</q-tooltip></q-checkbox>
-            <q-checkbox v-if="this.lab" v-model="filters.participating" label="Participating" @input="refresh"><q-tooltip>Only show submissions in which I am a participant</q-tooltip></q-checkbox>
-            <q-checkbox v-if="this.lab" v-model="filters.mySubmissions" label="My submissions" @input="refresh"><q-tooltip>Only show submissions for which I am a submitter or PI</q-tooltip></q-checkbox>
+            <q-checkbox v-model="filters.showCancelled" label="Show cancelled" @update:model-value="refresh"/>
+            <q-checkbox v-model="filters.showCompleted" label="Show completed" @update:model-value="refresh"><q-tooltip>Include submissions with a status of "completed"</q-tooltip></q-checkbox>
+            <q-checkbox v-if="this.lab" v-model="filters.participating" label="Participating" @update:model-value="refresh"><q-tooltip>Only show submissions in which I am a participant</q-tooltip></q-checkbox>
+            <q-checkbox v-if="this.lab" v-model="filters.mySubmissions" label="My submissions" @update:model-value="refresh"><q-tooltip>Only show submissions for which I am a submitter or PI</q-tooltip></q-checkbox>
           </div>
           <div class="col-6 q-table__title text-center"><span v-if="lab && $store.getters.lab">{{$store.getters.lab.name}} Submissions <selectLabModal page="submissions"/></span><span v-else>My Submissions</span></div>
         <!-- <q-search hide-underline v-model="filters.filter" :props="props"/> -->
@@ -70,7 +66,7 @@
                     <!-- <q-item
                       v-close-popup
                       clickable
-                      @click.native="saveSettings"
+                      @click="saveSettings"
                     >
                       <q-item-section>Save search settings</q-item-section>
                     </q-item> -->
@@ -179,6 +175,7 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue'
 // import axios from 'axios'
 import _ from 'lodash'
 import selectLabModal from '../components/modals/selectLabModal.vue'
@@ -195,7 +192,7 @@ export default {
     advancedFilters,
     saveSearch,
     loadSearch,
-    Agschema: () => import('../components/agschema.vue')
+    Agschema: defineAsyncComponent(() => import('../components/agschema.vue'))
   },
   data () {
     var defaultFilters = this.getDefaultFilters()
@@ -326,13 +323,13 @@ export default {
     loadSettings (settings) {
       // const settings = this.$store.getters.getUserSettings[this.filterNamespace]
       // this.filters = _.assign(this.defaultFilters, _.clone(settings.filters))
-      this.$set(this, 'filters', _.assign(this.getDefaultFilters().filters, _.clone(settings.filters)))
-      // this.$set(this, 'filters', _.cloneDeep(settings.filters))
+      this.filters = _.assign(this.getDefaultFilters().filters, _.clone(settings.filters))
+      // this.filters = _.cloneDeep(settings.filters)
       if (settings.advancedFilters) {
         // this.advancedFilters = _.cloneDeep(settings.advancedFilters)
-        this.$refs['advancedFilters'].update(_.assign({}, _.cloneDeep(settings.advancedFilters)))
+        this.$refs['advancedFilters'] && this.$refs['advancedFilters'].update(_.assign({}, _.cloneDeep(settings.advancedFilters)))
         this.advanced = true
-        // this.$refs['advancedFilters'].update()
+        // this.$refs['advancedFilters'] && this.$refs['advancedFilters'].update()
       }
       if (settings.name) {
         this.$q.notify({message: `Loaded saved search settings '${settings.name}'.`, type: 'positive'})
