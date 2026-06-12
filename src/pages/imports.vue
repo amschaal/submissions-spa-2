@@ -62,7 +62,7 @@
               <span v-if="key+1 != props.row.submissions.length">, </span>
             </span>
           </q-td>
-          <q-td key="actions" :props="props"><q-btn :to="{name: 'create_submission', query: {import: props.row.api_url}}" label="import"/></q-td>
+          <q-td key="actions" :props="props"><q-btn :to="{name: 'create_submission', params: { lab_id: $store.getters.labId }, query: {import: props.row.api_url}}" label="import"/></q-td>
         </q-tr>
       </template>
     </q-table>

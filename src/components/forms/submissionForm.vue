@@ -627,7 +627,7 @@ export default {
           console.log('ERROR', error)
           self.$q.notify({message: `No draft was found with ID: ${id}`, type: 'negative'})
           self.draft = null
-          self.$router.push({name: 'create_submission'})
+          self.$router.push({name: 'create_submission', params: { lab_id: self.$store.getters.labId }})
         })
     },
     loadImport: function (url) {
@@ -668,7 +668,7 @@ export default {
           // Fully handled; no re-throw (would be an unhandled rejection).
           console.log('ERROR', error)
           self.$q.notify({message: `Unable to load import from url: ${self.import}`, type: 'negative'})
-          self.$router.push({name: 'create_submission'})
+          self.$router.push({name: 'create_submission', params: { lab_id: self.$store.getters.labId }})
         })
     },
     loadSubmission: function (id) {

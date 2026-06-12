@@ -64,6 +64,14 @@ export default function (ctx) {
       https: false,
       port: 8080,
       open: false,
+      client: {
+        overlay: {
+          // "ResizeObserver loop ..." is a benign browser notice (fired by
+          // AG Grid / Quasar resize handling); it is not a real error and does
+          // not occur in production. Keep it out of the dev error overlay.
+          runtimeErrors: (error) => !(error && /ResizeObserver loop/.test(error.message))
+        }
+      },
       proxy: [
         {
           context: ['/server'],

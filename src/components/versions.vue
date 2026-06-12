@@ -13,7 +13,7 @@
       <tbody>
         <tr v-for="v in versions" :key="v.id">
           <td>
-            <q-btn v-if="viewRouterName && objectId" label="View" class="q-ml-xs" @click="$router.push({name: viewRouterName, params: {id: objectId, version: v.id}})"/>
+            <q-btn v-if="viewRouterName && objectId" label="View" class="q-ml-xs" @click="$router.push({name: viewRouterName, params: {id: objectId, version: v.id, lab_id: this.$store.getters.labId}})"/>
             <q-btn v-if="useLoad" label="load" @click="load(v)"/>
             <!-- <q-btn label="revert" @click="revert(v)"/> -->
             <RevertButton :object-url="objectUrl" :version="v" :revert-url="`${versionsUrl}/${v.id}/revert/`"/>

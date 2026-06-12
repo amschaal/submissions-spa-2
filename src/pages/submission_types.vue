@@ -15,7 +15,7 @@
       <template v-slot:top>
         <div class="row full-width">
           <div class="col-2">
-            <q-btn color="primary" label="Create" class="q-mr-sm" :to="{name: 'create_submission_type'}" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')"/>
+            <q-btn color="primary" label="Create" class="q-mr-sm" :to="{name: 'create_submission_type', params: { lab_id: $store.getters.labId }}" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')"/>
           </div>
           <div class="col-5">
             <div class="col-6 q-table__title text-center"><span v-if="$store.getters.lab">{{$store.getters.lab.name}} Submissions Types <selectLabModal page="submission_types"/></span></div>
@@ -41,10 +41,10 @@
       <template v-slot:body="props">
         <q-tr :props="props" v-bind:class="{'inactive': !props.row.active}">
           <q-td key="sort_order" :props="props">{{ props.row.sort_order }}</q-td>
-          <q-td key="name" :props="props"><router-link :to="{ name: 'submission_type', params: { id: props.row.id }}">{{ props.row.name }}</router-link></q-td>
+          <q-td key="name" :props="props"><router-link :to="{ name: 'submission_type', params: { id: props.row.id, lab_id: $store.getters.labId }}">{{ props.row.name }}</router-link></q-td>
           <q-td key="description" :props="props">{{ props.row.description }}</q-td>
           <q-td key="updated" :props="props">{{ $formatDate(props.row.updated) }}</q-td>
-          <q-td key="submission_count" :props="props"><router-link :to="{ name: 'submissions', query: { search: props.row.name }}">{{ props.row.submission_count }}</router-link></q-td>
+          <q-td key="submission_count" :props="props"><router-link :to="{ name: 'submissions', params: { lab_id: $store.getters.labId }, query: { search: props.row.name }}">{{ props.row.submission_count }}</router-link></q-td>
         </q-tr>
       </template>
     </q-table>

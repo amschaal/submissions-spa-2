@@ -14,7 +14,7 @@
         <p>Before submitting samples, please check the sample requirements page: <a href="https://dnatech.genomecenter.ucdavis.edu/sample-requirements/">https://dnatech.genomecenter.ucdavis.edu/sample-requirements/</a> to plan your project accordingly. The sample shipping instructions on this page: <a href="https://dnatech.genomecenter.ucdavis.edu/sample-submission-scheduling/">https://dnatech.genomecenter.ucdavis.edu/sample-submission-scheduling/</a> Please consult our extensive FAQs first in case of questions. We do offer free consultations. Please contact us at <b>dnatech@ucdavis.edu</b> if you have further questions.</p>
         <router-link :to="{ name: 'create_submission' }">Click here</router-link> to start sample submission.
       -->
-        <q-btn :to="{ name: 'create_submission' }" label="Create Submission"></q-btn>
+        <q-btn :to="{ name: 'create_submission', params: { lab_id: $store.getters.labId } }" label="Create Submission"></q-btn>
     </q-card-section>
   </q-card>
   </q-page>

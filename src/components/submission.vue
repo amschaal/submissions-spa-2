@@ -218,7 +218,10 @@ export default {
       window.location.href = `/server/api/submissions/${this.submission.id}/download/?format=${this.downloadParams.format}&data=${this.downloadParams.data}`
     },
     copySubmission () {
-      this.$router.push({ name: 'create_submission', query: { import: window.location.href } })
+      // Vue Router 4 requires lab_id explicitly (v3 inherited it from the
+      // current route). The submission detail route has no lab_id, so source it
+      // from the submission's lab.
+      this.$router.push({ name: 'create_submission', params: { lab_id: this.submission.lab.lab_id }, query: { import: window.location.href } })
       // window.location.href = window.location.href + '?import=' + window.location.href
     },
     print () {

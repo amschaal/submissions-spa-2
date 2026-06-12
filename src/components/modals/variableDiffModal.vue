@@ -15,7 +15,7 @@
           </thead>
           <tbody>
             <tr v-for="t in filtered_types" :key="t.id">
-              <td class="text-left"><router-link :to="{ name: 'submission_type', params: { id: t.type.id }}">{{t.type.name}}</router-link></td>
+              <td class="text-left"><router-link :to="{ name: 'submission_type', params: { id: t.type.id, lab_id: $store.getters.labId }}">{{t.type.name}}</router-link></td>
               <td class="text-right">{{t.path}}</td>
               <td class="text-right">
                 <q-chip clickable @click="viewDiff(t)" v-if="t.diff" text-color="white" color="negative" icon="list">View Diff</q-chip>

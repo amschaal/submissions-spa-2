@@ -113,7 +113,7 @@
           <q-td key="internal_id" :props="props"><router-link :to="{ name: 'submission', params: { id: props.row.id }}"><span v-if="props.row.internal_id">{{props.row.internal_id}}</span><span v-else>None Assigned</span></router-link></q-td>
           <q-td key="import_internal_id" :props="props">{{ props.row.import_internal_id }}</q-td>
           <q-td key="lab" :props="props">{{ props.row.lab.name }}</q-td>
-          <q-td key="type" :props="props"><router-link v-if="lab" :to="{'name': 'submission_type', 'params': { id: props.row.type.id }}">{{ props.row.type.name }}</router-link><span v-else>{{ props.row.type.name }}</span></q-td>
+          <q-td key="type" :props="props"><router-link v-if="lab" :to="{'name': 'submission_type', 'params': { id: props.row.type.id, lab_id: props.row.lab.lab_id }}">{{ props.row.type.name }}</router-link><span v-else>{{ props.row.type.name }}</span></q-td>
           <q-td key="status" :props="props">{{ props.row.status }}</q-td>
           <q-td key="participant_names" :props="props">{{ props.row.participant_names.join(', ') }}</q-td>
           <q-td key="submitted" :props="props">{{ $formatDate(props.row.submitted) }}</q-td>
