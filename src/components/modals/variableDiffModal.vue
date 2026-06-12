@@ -39,6 +39,9 @@ import * as jsondiffpatch from 'jsondiffpatch'
 const JD = jsondiffpatch.create({})
 export default {
   props: ['variable', 'submission_types', 'type'],
+  // Required for the Quasar Dialog plugin ($q.dialog({ component })) — see the
+  // note in jsonDiffModal.vue. Prevents a double onHide / null app.unmount.
+  emits: ['ok', 'hide'],
 
   methods: {
     show () {

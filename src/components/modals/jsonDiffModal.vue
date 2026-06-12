@@ -28,6 +28,12 @@
 import jsonDiff from '../jsonDiff.vue'
 export default {
   props: ['left', 'right', 'diff', 'text', 'title', 'dismissOnly'],
+  // Required for the Quasar Dialog plugin ($q.dialog({ component })). Without
+  // declaring these, Vue 3 treats the plugin's onOk/onHide listeners as
+  // fallthrough $attrs that bind to the root <q-dialog>, so the plugin's
+  // internal onHide fires twice and the second call unmounts an already-null
+  // app ("null is not an object (evaluating 'app.unmount')").
+  emits: ['ok', 'hide'],
 
   methods: {
     show () {
