@@ -63,12 +63,14 @@ export default {
         this.$q.dialog({
           component: jsonDiffModal,
           parent: this,
-          // props forwarded to component
-          // (everything except "component" and "parent" props above):
-          text: `Showing changes that happened between ${this.v2.revision.date_created} and ${this.v1.revision.date_created}`,
-          dismissOnly: true,
-          left: this.versionDetails[this.v2.id].serialized,
-          right: this.versionDetails[this.v1.id].serialized
+          // Quasar v2: props for a custom dialog component must go under
+          // componentProps (top-level props are no longer forwarded).
+          componentProps: {
+            text: `Showing changes that happened between ${this.v2.revision.date_created} and ${this.v1.revision.date_created}`,
+            dismissOnly: true,
+            left: this.versionDetails[this.v2.id].serialized,
+            right: this.versionDetails[this.v1.id].serialized
+          }
         // }).onOk(() => {
         //   // this.$q.notify({message: `Okay.`, type: 'positive'})
         // }).onCancel(() => {

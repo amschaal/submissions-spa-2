@@ -54,11 +54,14 @@ export default {
       this.$q.dialog({
         component: jsonDiffModal,
         parent: this,
-        text: `Differences found between Settings->${this.variable.variable} and "${t.type.name}"->${t.path}.`,
-        left: this.variable.schema,
-        right: null,
-        dismissOnly: true,
-        diff: t.diff
+        // Quasar v2: custom-component props must be under componentProps.
+        componentProps: {
+          text: `Differences found between Settings->${this.variable.variable} and "${t.type.name}"->${t.path}.`,
+          left: this.variable.schema,
+          right: null,
+          dismissOnly: true,
+          diff: t.diff
+        }
       }).onOk(() => {
       }).onCancel(() => {
         console.log('Cancel')

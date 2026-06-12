@@ -216,11 +216,12 @@ export default {
         this.$q.dialog({
           component: jsonDiffModal,
           parent: this,
-          // props forwarded to component
-          // (everything except "component" and "parent" props above):
-          text: message,
-          left: this.schema.properties[v],
-          right: this.options.variables.properties[v]
+          // Quasar v2: custom-component props must be under componentProps.
+          componentProps: {
+            text: message,
+            left: this.schema.properties[v],
+            right: this.options.variables.properties[v]
+          }
         }).onOk(() => {
           this.schema.properties[v] = _.cloneDeep(this.options.variables.properties[v])
           this.$q.notify({message: `Variable "${v}" updated.`, type: 'positive'})
