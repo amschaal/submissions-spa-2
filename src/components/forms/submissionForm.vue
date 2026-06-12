@@ -726,14 +726,15 @@ export default {
     },
     flashHelpTooltip () {
       const self = this
-      // this.$refs.help_tooltip.show()
       setTimeout(function () {
-        console.log('tooltip', self.$refs.help_tooltip)
-        self.$refs.help_tooltip.show()
+        if (self.$refs.help_tooltip) {
+          self.$refs.help_tooltip.show()
+        }
       }, 250)
       setTimeout(function () {
-        console.log('tooltip', self.$refs.help_tooltip)
-        self.$refs.help_tooltip.hide()
+        if (self.$refs.help_tooltip) {
+          self.$refs.help_tooltip.hide()
+        }
       }, 5000)
     }
   },
