@@ -590,7 +590,7 @@ export default {
         })
         .catch(function (error, stuff) {
           console.log('ERROR', error.response, self.$refs.grid, self.gridApi.refreshCells)
-          if (!error.response.data || (!error.response.data.errors && !error.response.data.warnings)) {
+          if (!error.response || !error.response.data || (!error.response.data.errors && !error.response.data.warnings)) {
             self.$q.notify({message: 'A server error occurred.', type: 'negative'})
             return
           }

@@ -70,7 +70,7 @@ export default {
           this.edit = false
         })
         .catch(error => {
-          this.$q.notify({message: 'ID assignment failed: ' + error.response.data.message, type: 'negative'})
+          this.$q.notify({message: 'ID assignment failed: ' + ((error.response && error.response.data && error.response.data.message) || 'a server error occurred.'), type: 'negative'})
           this.project_id = null
           this.edit = false
         })

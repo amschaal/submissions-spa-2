@@ -52,7 +52,8 @@ export default {
           })
         .catch(
           function (error) {
-            self.errors = error.response.data
+            const data = (error.response && error.response.data) || {}
+            self.errors = { public: data.public || {}, private: data.private || {} }
             self.$q.notify({message: 'Error updating plugin.', type: 'negative'})
           }
         )

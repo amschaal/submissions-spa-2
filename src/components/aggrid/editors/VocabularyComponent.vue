@@ -8,7 +8,7 @@
         />
       </q-input> -->
       <q-select
-        :value="value"
+        :model-value="value"
         use-input
         hide-selected
         fill-input

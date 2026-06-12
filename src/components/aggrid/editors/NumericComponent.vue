@@ -31,7 +31,7 @@ export default {
   },
   mounted (foo) {
     // console.log('NumericComponent', this, foo)
-    const char = this.params.charPress
+    const char = this.params.eventKey
     nextTick(() => {
       this.number = !char || isNaN(char) ? this.params.value : parseInt(char)
       if (this.$refs.input) {

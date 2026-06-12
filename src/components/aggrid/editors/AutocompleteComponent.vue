@@ -1,7 +1,7 @@
 <template>
     <div class="autocomplete">
       <q-select
-        :value="value"
+        :model-value="value"
         use-input
         hide-selected
         fill-input

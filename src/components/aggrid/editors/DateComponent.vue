@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     getValue () {
-      return this.value.substr(0, 10)
+      return this.value ? this.value.substr(0, 10) : this.value
     },
     onInput () {
       this.$refs.qDateProxy.hide()

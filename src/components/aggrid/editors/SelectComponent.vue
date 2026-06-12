@@ -23,7 +23,7 @@ export default {
   },
   methods: {
     isDelete () {
-      return [8, 46].indexOf(this.params.keyPress) !== -1
+      return ['Backspace', 'Delete'].indexOf(this.params.eventKey) !== -1
     },
     selected (value) {
       // this.params.stopEditing()

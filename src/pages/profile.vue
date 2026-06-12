@@ -107,7 +107,7 @@ export default {
           self.claim_in_progress = true
         })
         .catch(function (error) {
-          self.$q.notify({message: error.response.data.message, type: 'negative'})
+          self.$q.notify({message: (error.response && error.response.data && error.response.data.message) || 'A server error occurred.', type: 'negative'})
         })
     },
     confirmEmail () {
@@ -125,7 +125,7 @@ export default {
           self.claim_email = null
         })
         .catch(function (error) {
-          self.$q.notify({message: error.response.data.message, type: 'negative'})
+          self.$q.notify({message: (error.response && error.response.data && error.response.data.message) || 'A server error occurred.', type: 'negative'})
         })
     }
   },
