@@ -13,16 +13,20 @@
         <q-card-section class="q-pt-none">
           <userField v-model="newUsers" :query-params="`lab=${submission.lab.lab_id}`" @update:model-value="addParticipant" :buttonProps="{ label: 'Add participants'}"/>
           <table>
-            <tr><th>User</th><th>Email</th><th>Roles</th><th></th></tr>
-            <tr v-for="p in participants" :key="p.user.id">
-              <td>{{ p.user.last_name }}</td>
-              <td>{{ p.user.email }}</td>
-              <td>
-                <q-checkbox v-model="p.roles" val="lead" label="lead" />
-                <q-checkbox v-model="p.roles" val="watcher" label="watcher"/>
-              </td>
-              <td><q-btn size="sm" color="red" @click="removeParticipant(p)" label="Remove"/></td>
-            </tr>
+            <thead>
+              <tr><th>User</th><th>Email</th><th>Roles</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr v-for="p in participants" :key="p.user.id">
+                <td>{{ p.user.last_name }}</td>
+                <td>{{ p.user.email }}</td>
+                <td>
+                  <q-checkbox v-model="p.roles" val="lead" label="lead" />
+                  <q-checkbox v-model="p.roles" val="watcher" label="watcher"/>
+                </td>
+                <td><q-btn size="sm" color="red" @click="removeParticipant(p)" label="Remove"/></td>
+              </tr>
+            </tbody>
           </table>
         </q-card-section>
 
