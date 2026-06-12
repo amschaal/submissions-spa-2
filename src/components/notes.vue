@@ -7,7 +7,7 @@
            <div class="text-subtitle3"><span v-if="note.user"><b>{{ note.user }}</b> wrote:</span> <span class="float-right" v-if="note.created">{{ $formatDate(note.created) }}</span></div>
         </q-card-section>
         <q-card-section v-if="!note.edit" class="q-pt-xs">
-          <div class="note-content" v-html="convertUrlsToLinks(removeHTMLTags(note.text))"></div>
+          <div class="note-content" v-safe-html="convertUrlsToLinks(removeHTMLTags(note.text))"></div>
         </q-card-section>
         <q-card-section v-if="note.edit">
           <form>

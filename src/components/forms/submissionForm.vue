@@ -2,7 +2,7 @@
   <div>
       <!-- <q-btn class="pull-right" color="primary" @click="show_help = true" label="Help" icon="fas fa-question-circle" v-if="type && type.submission_help"><q-tooltip>Click for help with {{type.name}}</q-tooltip></q-btn> -->
       <h5 v-if="$store.getters.lab">{{$store.getters.lab.name}} Submission Form <selectLabModal page="create_submission"/></h5>
-      <div v-html="$store.getters.lab.submission_page" v-if="$store.getters.lab && $store.getters.lab.submission_page"></div>
+      <div v-safe-html="$store.getters.lab.submission_page" v-if="$store.getters.lab && $store.getters.lab.submission_page"></div>
       <q-checkbox v-model="debug" label="Debug" v-if="$store.getters.isStaff && false" />
         <span v-if="debug">
           warnings: {{this.warnings}}
@@ -267,7 +267,7 @@
             </q-toolbar>
 
             <q-card-section>
-              <div v-html="type.submission_help" v-if="type && type.submission_help"></div>
+              <div v-safe-html="type.submission_help" v-if="type && type.submission_help"></div>
             </q-card-section>
             <q-card-actions align="right" class="text-primary">
               <q-btn
@@ -287,7 +287,7 @@
               </q-toolbar-title>
             </q-toolbar>
             <div class="layout-padding">
-              <div v-html="type.submission_help" v-if="type && type.submission_help"></div>
+              <div v-safe-html="type.submission_help" v-if="type && type.submission_help"></div>
               <q-btn
                 color="primary"
                 @click="show_help = false"

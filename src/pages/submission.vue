@@ -47,7 +47,7 @@
       <template v-for="(tab, i) in plugin_tabs" :key="i">
         <q-tab-panel :name="tab.id">
           <q-card-section>
-            <div v-html="tab.content"/>
+            <div v-safe-html="tab.content"/>
             <!-- <h1 tab-test>{{tab.id}}</h1> -->
             <component v-bind:is="$plugins.getTabComponent(tab.id)" :config="$plugins.getLabConfig(submission.lab.lab_id, tab.id)" :submission="submission"></component>
           </q-card-section>

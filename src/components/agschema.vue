@@ -178,7 +178,7 @@
         </q-toolbar>
 
         <q-card-section>
-          <div v-html="schema.help" v-if="schema && schema.help"></div>
+          <div v-safe-html="schema.help" v-if="schema && schema.help"></div>
         </q-card-section>
         <q-card-actions align="right" class="text-primary">
           <q-btn

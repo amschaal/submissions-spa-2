@@ -27,7 +27,7 @@
                 :class="{ 'bg-light-blue-1': model === child.label }"
               >
                 <q-item-section>
-                  <q-item-label v-html="child.label" class="q-ml-md" ></q-item-label>
+                  <q-item-label v-safe-html="child.label" class="q-ml-md" ></q-item-label>
                 </q-item-section>
               </q-item>
             </template>

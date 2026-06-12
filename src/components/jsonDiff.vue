@@ -2,7 +2,7 @@
   <div>
     <div v-if="renderedDiff">
       <q-checkbox v-model="showUnchanged" label="Show Unchanged"/>
-      <div v-html="renderedDiff" :class="showUnchanged ? 'show-unchanged' : 'hide-unchanged'"></div>
+      <div v-safe-html="renderedDiff" :class="showUnchanged ? 'show-unchanged' : 'hide-unchanged'"></div>
     </div>
     <div v-else>No changes have been detected</div>
   </div>
