@@ -4,10 +4,10 @@
     <th class="text-right">{{share.name}}</th>
     <th class="text-right">{{share.notes}}</th>
     <th class="text-right" v-if="is_staff">
-      <span v-for="(e, index) in sharedWithEmails">
+      <span v-for="(e, index) in sharedWithEmails" :key="`shared-${index}`">
         <span v-if="index !== 0">, </span><span style="color:green">{{ e }}</span>
       </span>
-      <span v-for="(e, index) in missingEmails">
+      <span v-for="(e, index) in missingEmails" :key="`missing-${index}`">
         <span v-if="index !== 0 || index == 0 && sharedWithEmails.length != 0">, </span><span style="color:red">{{ e }}</span>
       </span>
     </th>
@@ -35,7 +35,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                <tr v-for="p in submission.participants">
+                <tr v-for="p in submission.participants" :key="p.user.email">
                   <td class="text-left">{{p.user.first_name}} {{p.user.last_name}}</td>
                   <td class="text-right">{{p.user.email}}</td>
                   <td class="text-right"><q-icon name="check_circle" color="green" v-if="sharedWith(p.user.email)"/><q-icon name="cancel" color="red" v-else/></td>
@@ -71,7 +71,7 @@
                     <td class="text-right">{{submission.pi_email}}</td>
                     <td class="text-right"><q-icon name="check_circle" color="green" v-if="sharedWith(submission.pi_email)"/><q-icon name="cancel" color="red" v-else/></td>
                   </tr>
-                <tr v-for="c in submission.contacts">
+                <tr v-for="c in submission.contacts" :key="c.email">
                   <td class="text-left">Contact</td>
                   <td class="text-right">{{c.first_name}} {{c.last_name}}</td>
                   <td class="text-right">{{c.email}}</td>

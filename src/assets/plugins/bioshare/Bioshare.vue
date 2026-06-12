@@ -14,7 +14,7 @@
            <th class="text-right" v-if="is_staff">Action</th>
          </tr>
        </thead>
-       <tbody v-for="share in shares">
+       <tbody v-for="share in shares" :key="share.id || share.url">
          <Share :share="share" :submission="submission" :remove-share="removeShare"/>
        </tbody>
      </q-markup-table>

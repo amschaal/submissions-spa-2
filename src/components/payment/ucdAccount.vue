@@ -6,7 +6,7 @@
         :error="hasError('ppms_order_id')"
         bottom-slots :error-message="errorMessage('ppms_order_id')"
         hint="To be assigned by the core."
-        v-model="value.ppms_order_id"
+        v-model="modelValue.ppms_order_id"
         type="text"
         stack-label label="PPMS Order Ref #"
         />
@@ -16,7 +16,7 @@
         compact
         outlined
         emit-value map-options
-        v-model="value.payment_type"
+        v-model="modelValue.payment_type"
         :options="[
           {label: 'UCD Account', value: 'DaFIS'},
           {label: 'UC Chart String', value: 'UC Chart String'},
@@ -33,12 +33,12 @@
       <q-input
         :error="hasError('payment_info')"
         bottom-slots :error-message="errorMessage('payment_info')"
-        v-model="value.payment_info" type="text"
+        v-model="modelValue.payment_info" type="text"
         stack-label label="Payment Info"
-        :disable="value.payment_type === 'Credit Card'"
+        :disable="modelValue.payment_type === 'Credit Card'"
         />
     </div>
-    <q-banner class="bg-grey-3 q-mt-lg" v-if="value.payment_type == 'DaFIS'">
+    <q-banner class="bg-grey-3 q-mt-lg" v-if="modelValue.payment_type == 'DaFIS'">
       <q-icon name="info" size="md" color="blue"/>
       For Aggie Enterprise strings, you can use either the Chart of Accounts (CoA) or POET formats.  For CoA, the first 4 fields (Entity-Fund-Financial Department-Account) are required.
       For more details on CoA format, please visit <a target="_blank" rel="noopener noreferrer" href="https://financeandbusiness.ucdavis.edu/finance/chart-of-accounts/redesign">https://financeandbusiness.ucdavis.edu/finance/chart-of-accounts/redesign</a>.
@@ -54,14 +54,14 @@ import { QSelect } from 'quasar'
 
 export default {
   props: {
-    value: {type: Object, default: function () { return {} }},
+    modelValue: {type: Object, default: function () { return {} }},
     editable: Boolean,
     errors: Object,
     modify: Boolean
-  }, // ['value', 'editable', 'errors', 'modify'],
+  },
   data () {
     return {
-      payment: this.value
+      payment: this.modelValue
     }
   },
   methods: {
@@ -77,7 +77,7 @@ export default {
   },
   computed: {
     type_help () {
-      const paymentType = this.value ? this.value.payment_type : null
+      const paymentType = this.modelValue ? this.modelValue.payment_type : null
       console.log('type_help', paymentType)
       switch (paymentType) {
         case 'DaFIS':
@@ -93,9 +93,9 @@ export default {
     QSelect
   },
   watch: {
-    'value.payment_type': function (newValue, oldValue) {
-      if (this.value.payment_type === 'Credit Card') {
-        this.value.payment_info = ''
+    'modelValue.payment_type': function (newValue, oldValue) {
+      if (this.modelValue.payment_type === 'Credit Card') {
+        this.modelValue.payment_info = ''
       }
     }
   }
