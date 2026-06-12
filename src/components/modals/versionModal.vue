@@ -10,12 +10,7 @@
         <Versions ref="versions" :versions-url="versionsUrl" @on-load="load" :object-id="objectId" :view-router-name="viewRouterName" :object-url-name="objectUrlName" :object-url="objectUrl"/>
       </q-card-section>
       <q-card-actions align="right">
-        <div v-if="dismissOnly">
-          <q-btn color="primary" label="Dismiss" @click="dismiss" />
-        </div>
-        <div v-else>
-          <q-btn color="primary" label="Dismiss" @click="dismiss" />
-        </div>
+        <q-btn color="primary" label="Dismiss" @click="dismiss" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -26,10 +21,15 @@
 import Versions from '../versions.vue'
 export default {
   props: ['versionsUrl', 'onLoad', 'objectId', 'viewRouterName', 'objectUrlName', 'objectUrl'],
+  emits: ['hide', 'on-load'],
 
   methods: {
     show () {
       this.$refs.dialog.show()
+    },
+    // Forward the Versions child's on-load event to this modal's parent.
+    load (version) {
+      this.$emit('on-load', version)
     },
     hide () {
       this.$refs.dialog.hide()
