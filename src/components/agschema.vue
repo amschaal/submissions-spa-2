@@ -2,7 +2,7 @@
   <div>
     <!-- <HotTable :settings="settings"></HotTable> -->
     <!-- <q-select :value="value" :options="options" @change="handleChange" filter filter-placeholder="select"/> -->
-    <q-dialog v-model="opened" @show="onShow" :content-css="{height: '90vh', minWidth: '120vw', minHeight: '90vh'}" ref="modal" no-backdrop-dismiss no-esc-dismiss :maximized="maximized">
+    <q-dialog v-model="opened" @show="onShow" ref="modal" no-backdrop-dismiss no-esc-dismiss :maximized="maximized">
       <q-card style="min-width:90vw">
         <q-bar class="bg-primary text-white">
           <q-toolbar>

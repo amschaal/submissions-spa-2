@@ -14,7 +14,6 @@
     <q-select
         v-if="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY') && services"
         placeholder="Select a service to add"
-        filter
         v-model="select"
         :options="service_options"
         @update:model-value="add_service"

@@ -17,8 +17,8 @@
       Samples received on {{ $formatDate(modelValue.samples_received) }} by {{modelValue.received_by_name}} <a class="action" role="button" tabindex="0" @click="openModal" @keydown.enter="openModal" @keydown.space.prevent="openModal" v-if="admin">Edit</a>
     </q-banner>
 
-    <q-dialog  v-model="opened" :content-css="{width: '500px', minHeight: '40vh'}" ref="modal">
-        <q-card>
+    <q-dialog  v-model="opened" ref="modal">
+        <q-card style="width: 500px; min-height: 40vh;">
           <q-card-section>
             <q-toolbar-title>
               Samples received for {{data.internal_id}}

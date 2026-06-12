@@ -66,8 +66,8 @@
           </q-list>
         </q-btn-dropdown>
 
-    <q-dialog v-model="variable_modal" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
-      <q-card>
+    <q-dialog v-model="variable_modal" ref="modal">
+      <q-card style="min-width: 30vw; min-height: 30vh;">
         <q-bar class="bg-primary text-white">
           Add a variable
           <q-space />

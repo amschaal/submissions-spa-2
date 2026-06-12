@@ -194,7 +194,6 @@
               bottom-slots :error-message="errors.payment_type"
             >
               <q-select
-                float-label="Select"
                 v-model="submission.payment_type"
                 :options="[
                   {label: 'Credit Card', value: 'Credit Card'},

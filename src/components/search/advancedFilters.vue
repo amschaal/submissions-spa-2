@@ -3,7 +3,7 @@
         <legend>
             Advanced Filters
             <q-icon name="help" color="primary">
-                <q-tooltip content-class="tooltip">
+                <q-tooltip class="tooltip">
                     <p>When using advanced filters, it is necessary to click on update each time filters are changed in order to update the search.</p>
                 </q-tooltip>
             </q-icon>
@@ -15,7 +15,7 @@
         <q-select dense v-model="type" :options="lab_filters.custom" option-value="id" option-label="name" emit-value map-options label="Submission Type" outlined @update:model-value="clearVariables">
             <template v-slot:after>
                 <q-icon name="help" color="primary">
-                    <q-tooltip content-class="tooltip">
+                    <q-tooltip class="tooltip">
                         <p>Select a submission type to show only submissions of that type.  Once chosen, you may add additional filters specific to that submission type.</p>
                         <p>In addition to the generally available filters, you may search using any custom fields that are defined for the selected submission type.  After selecting any fields to filter on, choose the type of filter, and a value to search on.</p>
                         <p>If "ALL" is chosen for the submission type, a list of custom submission variables configured in the lab's settings page will be provided to search on.  Please note that these fields are not guaranteed to exist across submission types, and is dependent on how consistent the lab was with custom variable/field names across types.</p>
@@ -30,7 +30,7 @@
             <q-select dense v-model="variable" @filter="filterFn" use-input input-debounce="0" :options="filteredVariables" option-value="variable" :option-label="opt => opt.variable ? `${opt.variable}: ${opt.title}` : opt.title" label="Add custom field filter" @update:model-value="addVariable" borderless style="width: 250px" behavior="dialog">
                 <template v-slot:after>
                     <q-icon name="help" color="primary">
-                        <q-tooltip content-class="tooltip">
+                        <q-tooltip class="tooltip">
                             <p>You may search using any custom fields that are defined for the above submission type.  After selecting any fields to filter on, choose the type of filter, and a value to search on.</p>
                             <p>If "ALL" is chosen for the submission type, a list of custom submission variables configured in the lab's settings page will be provided to search on.  Please note that these fields are not guaranteed to exist across submission types, and is dependent on how consistent the lab was with custom variable/field names across types.</p>
                             <p>Please be aware that while some variables may have flexible search filters (like case insensitive containment, etc), variables that are used in tables can only be searched on using an exact match.</p>
@@ -63,7 +63,7 @@
                 >
                     <template v-slot:after>
                         <q-btn color="red" size="sm" icon="delete" @click="removeVariable(v)" round class="remove-button">
-                            <q-tooltip content-class="tooltip">Remove filter.  You must click update for changes to take effect.</q-tooltip>
+                            <q-tooltip class="tooltip">Remove filter.  You must click update for changes to take effect.</q-tooltip>
                         </q-btn>
                     </template>
                 </q-select>
@@ -81,14 +81,14 @@
                   </template>
                   <template v-slot:after>
                         <q-btn color="red" size="sm" icon="delete" @click="removeVariable(v)" round class="remove-button">
-                            <q-tooltip content-class="tooltip">Remove filter.  You must click update for changes to take effect.</q-tooltip>
+                            <q-tooltip class="tooltip">Remove filter.  You must click update for changes to take effect.</q-tooltip>
                         </q-btn>
                     </template>
                 </q-input>
                 <q-input v-else dense ref="filters" v-model="v.value" label="Value" class="col" outlined :rules="[ val => !!val || 'Please enter a value' ]">
                     <template v-slot:after>
                         <q-btn color="red" size="sm" icon="delete" @click="removeVariable(v)" round class="remove-button">
-                            <q-tooltip content-class="tooltip">Remove filter.  You must click update for changes to take effect.</q-tooltip>
+                            <q-tooltip class="tooltip">Remove filter.  You must click update for changes to take effect.</q-tooltip>
                         </q-btn>
                     </template>
                 </q-input>
@@ -143,7 +143,7 @@
                       <span v-if="props.row.variable">{{ props.row.variable }}: </span>
                       {{ props.row.title }}
                       <q-icon name="help" color="primary" v-if="props.row.description">
-                          <q-tooltip content-class="tooltip">
+                          <q-tooltip class="tooltip">
                               <p>{{ props.row.description }}</p>
                           </q-tooltip>
                       </q-icon>

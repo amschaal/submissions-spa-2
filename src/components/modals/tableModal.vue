@@ -8,7 +8,7 @@
           <div class="text-h6">{{title}}
               <q-btn color="primary" v-if="help">
               Help
-              <q-tooltip content-class="bg-primary" content-style="font-size: 16px" :offset="[10, 10]">
+              <q-tooltip class="bg-primary" style="font-size: 16px" :offset="[10, 10]">
                 {{help}}
               </q-tooltip>
             </q-btn>

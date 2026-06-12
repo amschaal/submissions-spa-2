@@ -1,6 +1,6 @@
 <template>
-  <q-dialog v-model="opened" :content-css="{minWidth: '30vw', minHeight: '30vh'}" ref="modal">
-    <q-card>
+  <q-dialog v-model="opened" ref="modal">
+    <q-card style="min-width: 30vw; min-height: 30vh;">
       <q-bar class="bg-primary text-white">
         {{schema.title}} options
         <q-space />

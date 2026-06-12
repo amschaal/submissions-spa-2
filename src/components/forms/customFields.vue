@@ -51,7 +51,6 @@
               :error="hasError(v.variable) || hasWarning(v.variable)"
               :label="v.schema.title ? v.schema.title : v.variable"
               stack-label
-              orientation="vertical"
               :hint="v.schema.description"
               borderless
             >
