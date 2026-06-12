@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-uploader :factory="uploadFile" :multiple="true" label="Upload files" ref="uploader" @add="filesSelected"/>
+    <q-uploader :factory="uploadFactory" field-name="file" :multiple="true" label="Upload files" ref="uploader" @added="filesSelected" @uploaded="onUploaded" @failed="onFailed"/>
     <q-table
       ref="table"
       :rows="serverData"
@@ -84,9 +84,20 @@ export default {
           this.loading = false
         })
     },
-    filesSelected (one, two) {
-      console.log('filesSelected', one, two)
+    filesSelected () {
+      // auto-start the upload as soon as files are added
       this.$refs.uploader.upload()
+    },
+    getCsrfToken () {
+      const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/)
+      return match ? decodeURIComponent(match[1]) : ''
+    },
+    onUploaded () {
+      this.$q.notify({message: 'File uploaded', type: 'positive'})
+      this.refreshTable()
+    },
+    onFailed () {
+      this.$q.notify({message: 'Error uploading file', type: 'negative'})
     },
     refreshTable () {
       this.request({
@@ -108,38 +119,21 @@ export default {
           self.$q.notify({message: 'Error deleting file', type: 'negative'})
         })
     },
-    uploadFile (files) {
-      const file = files[0]
-      // console.log('uploadFile', files, this.$refs)
-      const self = this
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('submission', this.submission.id)
-      const request = this.$axios.post('/api/submission_files/',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          onUploadProgress: function (progressEvent) {
-            // console.log('uploadProgress', this, progressEvent, self.$refs.uploader.__updateFile)
-            // var percentCompleted = progressEvent.loaded / progressEvent.total
-            self.$refs.uploader.__updateFile(file, null, progressEvent.loaded)
-            // return percentCompleted * 100.0
-          }
-        }
-      )
-        .then(function () {
-          // console.log('uploaded', self.$refs, files)
-          self.$q.notify({message: 'File uploaded', type: 'positive'})
-          self.refreshTable()
-          self.$refs.uploader.__updateFile(file, 'uploaded')
-          return new Promise((resolve, reject) => {
-            resolve(file)
-          })
-          // self.request(self.serverPagination, self.filter)
-        })
-      return request
+    uploadFactory (files) {
+      // Quasar v2 QUploader factory: return the upload config; QUploader does
+      // the XHR (progress + per-file status) itself. The previous Vue 2 code did
+      // a manual axios upload and poked the removed internal __updateFile().
+      // The file is sent as the `file` field (field-name); `submission` is an
+      // extra form field. CSRF + session cookie are needed because the axios
+      // instance (which normally adds them) is bypassed here.
+      return Promise.resolve({
+        url: '/server/api/submission_files/',
+        method: 'POST',
+        fieldName: 'file',
+        formFields: [{ name: 'submission', value: String(this.submission.id) }],
+        headers: [{ name: 'X-CSRFToken', value: this.getCsrfToken() }],
+        withCredentials: true
+      })
     }
   }
 }
