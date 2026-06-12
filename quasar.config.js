@@ -38,6 +38,12 @@ export default function (ctx) {
     build: {
       vueRouterMode: 'history', // 'hash' or 'history'
 
+      // Exposed to the app via process.env.*. AG_GRID_LICENSE_KEY suppresses the
+      // AG Grid Enterprise trial watermark; set it in the environment at build time.
+      env: {
+        AG_GRID_LICENSE_KEY: process.env.AG_GRID_LICENSE_KEY || ''
+      },
+
       // Writes public/version.json with the app version + git commit hash.
       // build.beforeBuild is still supported by @quasar/app-webpack v4.
       beforeBuild: ({ quasarConf }) => {

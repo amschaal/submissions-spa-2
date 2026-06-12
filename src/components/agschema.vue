@@ -9,7 +9,7 @@
             <q-avatar>
             </q-avatar>
 
-            <q-toolbar-title>Samplesheet: {{type ? type.name : ''}} - {{rootNode.allChildrenCount}} samples
+            <q-toolbar-title>Samplesheet: {{type ? type.name : ''}} - {{sampleCount()}} samples
               <span class="float-right">
                 <q-btn title="Maximize" dense flat icon="crop_square"  @click="maximized=true" v-if="!maximized"/>
                 <q-btn title="Minimize" dense flat icon="maximize" @click="maximized=false" v-if="maximized"/>
@@ -41,14 +41,12 @@
           </q-btn-dropdown>
             <ag-grid-vue style="width: 100%; height: 90%;" class="ag-theme-balham"
 
-              rowSelection='multiple'
-              :enableColResize='true'
-              :enableSorting='true'
               :gridOptions='gridOptions'
               :rowData='rowData'
               :columnDefs='columnDefs'
               :ref="'grid'"
               :pinnedTopRowData="getExampleRows"
+              @grid-ready="onGridReady"
               v-if="opened"
               >
             </ag-grid-vue>
@@ -206,9 +204,12 @@ import 'ag-grid-community/styles/ag-theme-balham.css'
 // AG Grid v33+ requires explicit module registration. AllEnterpriseModule
 // also bundles the community modules.
 ModuleRegistry.registerModules([AllEnterpriseModule])
-// TODO: set the enterprise license key to suppress the trial watermark/console warning:
-// LicenseManager.setLicenseKey('your-license-key')
-void LicenseManager
+// Enterprise license key. AG Grid license keys are client-side by design, so
+// this lives in the bundle. Provide it via the AG_GRID_LICENSE_KEY build env
+// var (see quasar.config.js > build.env) to suppress the trial watermark.
+if (process.env.AG_GRID_LICENSE_KEY) {
+  LicenseManager.setLicenseKey(process.env.AG_GRID_LICENSE_KEY)
+}
 import NumericComponent from './aggrid/editors/NumericComponent.vue'
 // import DateComponent from './aggrid/DateComponent.vue'
 // import AutocompleteComponent from './aggrid/editors/AutocompleteComponent.vue'
@@ -233,15 +234,22 @@ export default {
       showDescriptions: true,
       // sample_schema: Object.freeze({}),
       rowData: [], // this.modelValue,
-      rootNode: {},
+      // AG Grid v31+ no longer attaches the api to gridOptions; capture it from
+      // the grid-ready event. columnApi was also merged into the grid api in v31.
+      gridApi: null,
       // columnDefs: [],
       gridOptions: {
-        enableRangeSelection: true,
+        // Keep the v32-style balham CSS theme (ag-theme-balham.css) instead of
+        // the v33+ Theming API, so the existing .ag-theme-balham overrides in
+        // this file's <style> still apply. Avoids AG Grid error #239.
+        theme: 'legacy',
+        // was enableRangeSelection (renamed in v32.2); suppressMultiRanges
+        // replaces the old gridOption suppressMultiRangeSelection.
+        cellSelection: { suppressMultiRanges: true },
         defaultColDef: {
           editable: this.cellEditable,
-          suppressSorting: true, // deprecated
-          sortable: false, // newer version
-          suppressMenu: true // let's keep it simple
+          sortable: false,
+          suppressHeaderMenuButton: true // was suppressMenu (renamed in v31.1)
         },
         getRowStyle: function (params) {
           if (params.node.rowPinned) {
@@ -258,11 +266,18 @@ export default {
         },
         onPinnedRowDataChanged: this.expandDescriptionRow,
         onCellFocused: this.onCellFocused,
-        suppressMultiRangeSelection: true,
-        suppressRowClickSelection: true,
-        // checkboxSelection: function () { return true },
+        // Object-form selection (v32.2+). Replaces the deprecated string
+        // rowSelection='multiple' template prop, suppressRowClickSelection,
+        // and the per-column headerCheckboxSelection/checkboxSelection flags.
+        rowSelection: {
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: false
+        },
         processCellFromClipboard (params) {
-          switch (params.column.colDef.dataType) {
+          // dataType is stashed in colDef.context (it's not a native colDef prop).
+          switch (params.column.colDef.context && params.column.colDef.context.dataType) {
             case 'boolean':
               if (params.value === 'true' || params.value === 'True' || params.value === true) {
                 return true
@@ -336,7 +351,7 @@ export default {
       //   if (self.rowData.length === 0) {
       //     self.addRow()
       //   }
-      //   this.rootNode = this.gridOptions.api.getModel().rootNode
+      //   this.rootNode = this.gridApi.getModel().rootNode
       //   setTimeout(function () {
       //     self.$refs.tooltip.show()
       //   }, 1000)
@@ -345,12 +360,19 @@ export default {
       //   }, 6000)
       // })
     },
+    onGridReady (params) {
+      this.gridApi = params.api
+    },
+    sampleCount () {
+      // Method (not computed): reads the non-reactive grid api, so it must
+      // re-evaluate on each render. api.getModel() was removed in v33.
+      return this.gridApi ? this.gridApi.getDisplayedRowCount() : 0
+    },
     onShow () {
       // var self = this
       if (this.rowData.length === 0) {
         this.addRow()
       }
-      this.rootNode = this.gridOptions.api.getModel().rootNode
     },
     cellEditable (params) {
       // console.log('cellEditable', this.editable, params)
@@ -377,11 +399,12 @@ export default {
       }
     },
     sizeToFit () {
-      this.gridOptions.api.sizeColumnsToFit()
+      this.gridApi.sizeColumnsToFit()
     },
     autoSizeAll () {
-      var allColIds = this.gridOptions.columnApi.getAllColumns().map(column => column.colId)
-      this.gridOptions.columnApi.autoSizeColumns(allColIds)
+      // v31 merged columnApi into the grid api; getAllColumns -> getColumns.
+      var allColIds = this.gridApi.getColumns().map(column => column.colId)
+      this.gridApi.autoSizeColumns(allColIds)
     },
     // rowIndex (params) {
     //   return params.node.rowIndex + 1
@@ -405,11 +428,8 @@ export default {
         }
       }
 
-      if (this.editable) {
-        columnDefs[0].headerCheckboxSelection = true
-        columnDefs[0].headerCheckboxSelectionFilteredOnly = true
-        columnDefs[0].checkboxSelection = true
-      }
+      // Row/header checkboxes are configured on gridOptions.rowSelection
+      // (v32.2 object API) rather than per-column flags.
       columnDefs.push({field: '_row_type', hide: true})
       return columnDefs
     },
@@ -511,7 +531,7 @@ export default {
         // options._schema = JSON.parse(JSON.stringify(schema))
         // Object.freeze(options)
         var widget = new WidgetClass(id, options)
-        return {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: WidgetClass.component, cellEditorParams: {definition: definition, widget_options: widget.getOptions()}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned} // values: definition.enum, widget: definition.widget,
+        return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: WidgetClass.component, cellEditorParams: {definition: definition, widget_options: widget.getOptions()}, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned} // values: definition.enum, widget: definition.widget,
       }
       switch (definition.type) {
         case 'table':
@@ -520,22 +540,22 @@ export default {
           var _options = {_schema: JSON.parse(JSON.stringify(definition.schema))}
           Object.freeze(options)
           // var widget = new WidgetClass(id, options)
-          return {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: GridComponent, cellEditorParams: {definition: definition, widget_options: _options}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned}
+          return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: GridComponent, cellEditorParams: {definition: definition, widget_options: _options}, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned}
         case 'string':
           if (definition.enum) {
-            // console.log('enum', {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: SelectComponent, cellEditorParams: {definition: definition, widget_options: {multiple: definition.multiple}}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned})
-            // return {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: AutocompleteComponent, cellEditorParams: {values: definition.enum, widget: definition.widget, definition: definition}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned} // cellEditor: 'agRichSelectCellEditor', cellEditorParams: {values: definition.enum}
-            // return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: 'agRichSelectCellEditor', cellEditorParams: {values: definition.enum}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned} // cellEditor: 'agRichSelectCellEditor', cellEditorParams: {values: definition.enum} // cellEditorFramework: AutocompleteComponent
-            return {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: SelectComponent, cellEditorParams: {definition: definition, widget_options: {multiple: definition.multiple}}, cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned}
+            // console.log('enum', {headerName: header, headerTooltip: tooltip, field: id, cellEditor: SelectComponent, cellEditorParams: {definition: definition, widget_options: {multiple: definition.multiple}}, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned})
+            // return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: AutocompleteComponent, cellEditorParams: {values: definition.enum, widget: definition.widget, definition: definition}, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned} // cellEditor: 'agRichSelectCellEditor', cellEditorParams: {values: definition.enum}
+            // return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: 'agRichSelectCellEditor', cellEditorParams: {values: definition.enum}, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned} // cellEditor: 'agRichSelectCellEditor', cellEditorParams: {values: definition.enum} // cellEditor: AutocompleteComponent
+            return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: SelectComponent, cellEditorParams: {definition: definition, widget_options: {multiple: definition.multiple}}, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned}
           } else {
-            return {headerName: header, headerTooltip: tooltip, field: id, type: 'text', cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned}
+            return {headerName: header, headerTooltip: tooltip, field: id, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned}
           }
         case 'number':
-          return {headerName: header, headerTooltip: tooltip, field: id, cellEditorFramework: NumericComponent, cellClass: cellClass, tooltip: cellTooltip, dataType: 'numeric', pinned: definition.pinned}
+          return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: NumericComponent, cellClass: cellClass, tooltipValueGetter: cellTooltip, context: {dataType: 'numeric'}, pinned: definition.pinned}
         case 'boolean':
-          return {headerName: header, headerTooltip: tooltip, field: id, type: 'checkbox', cellEditorFramework: BooleanComponent, cellClass: cellClass, tooltip: cellTooltip, dataType: 'boolean', pinned: definition.pinned}
+          return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: BooleanComponent, cellClass: cellClass, tooltipValueGetter: cellTooltip, context: {dataType: 'boolean'}, pinned: definition.pinned}
         case 'array':
-          var def = {headerName: header, field: id, type: 'dropdown', cellClass: cellClass, tooltip: cellTooltip, pinned: definition.pinned}
+          var def = {headerName: header, field: id, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned}
           if (definition.items && definition.items.enum) {
             def.source = definition.items.enum
           }
@@ -561,21 +581,21 @@ export default {
           // console.log(response)
           self.errors = {}
           self.warnings = {}
-          self.gridOptions.api.redrawRows() // redrawCells({force: true})
+          self.gridApi.redrawRows() // redrawCells({force: true})
           self.$q.notify({message: 'Successfully validated.  Please hit the SUBMIT button when ready to save your changes.', type: 'positive'})
           if (save) {
             self.save()
           }
         })
         .catch(function (error, stuff) {
-          console.log('ERROR', error.response, self.$refs.grid, self.gridOptions.api.refreshCells)
+          console.log('ERROR', error.response, self.$refs.grid, self.gridApi.refreshCells)
           if (!error.response.data || (!error.response.data.errors && !error.response.data.warnings)) {
             self.$q.notify({message: 'A server error occurred.', type: 'negative'})
             return
           }
           self.errors = error.response.data.errors
           self.warnings = error.response.data.warnings
-          self.gridOptions.api.redrawRows() // redrawCells({force: true})
+          self.gridApi.redrawRows() // redrawCells({force: true})
           if (!save || !self.allowForceSave) {
             if (self.hasErrors) {
               self.$q.notify({message: 'There were errors in your data.', type: 'negative'})
@@ -609,10 +629,10 @@ export default {
     getRowData (filterAndSort) {
       var data = []
       var method = filterAndSort ? 'forEachNodeAfterFilterAndSort' : 'forEachNode'
-      if (!this.gridOptions.api) {
+      if (!this.gridApi) {
         return []
       }
-      this.gridOptions.api[method](function (node) {
+      this.gridApi[method](function (node) {
         data.push(node.data)
       })
       var self = this, cleaned = [], take = false
@@ -635,14 +655,14 @@ export default {
       for (var i = 0; i < number; i++) {
         rows.push({})
       }
-      this.gridOptions.api.updateRowData({add: rows})
+      this.gridApi.applyTransaction({add: rows})
       // console.log('addRow', this.getRowData())
     },
     removeRows () {
-      var selectedData = this.gridOptions.api.getSelectedRows()
-      this.gridOptions.api.updateRowData({remove: selectedData})
+      var selectedData = this.gridApi.getSelectedRows()
+      this.gridApi.applyTransaction({remove: selectedData})
       // this.errors = {}
-      this.gridOptions.api.redrawRows()
+      this.gridApi.redrawRows()
       // this.validate(false)
     },
     close () {
@@ -675,13 +695,6 @@ export default {
     hasWarnings () {
       // console.log('hasWarnings', this.warnings)
       return this.warnings && _.size(this.warnings) > 0
-    },
-    sampleCount () {
-      if (this.gridOptions.api) {
-        return this.gridOptions.api.getModel().rootNode.allChildrenCount
-      }
-      return 0
-      // return this.getRowData().length
     },
     hasDescriptions () {
       for (var prop in this.sample_schema.properties) {
