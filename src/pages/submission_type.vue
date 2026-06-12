@@ -22,7 +22,7 @@
         <VersionModal v-if="this.id" :versions-url="`/api/submission_types/${this.id}/versions/`" class="q-ml-sm float-right" :object-id="id" view-router-name="submission_type_version" :object-url="$router.resolve({name: 'submission_type', params: { id: id, lab_id: $store.getters.labId }}).href"/>
         <router-link v-if="type.submission_count > 0 && type.id" :to="{'name': 'submissions', 'params': { 'lab_id': $store.getters.labId }, 'query': { 'search': type.name }}" class="float-right">{{type.submission_count}} Submissions</router-link>
         <div><b><span v-if="!type.id">Create</span> Submission Type <span v-if="type.id && type.name"> - <i>{{ type.name }}</i></span><span class="inactive" v-if="type.id && !type.active"> (Inactive)</span></b></div>
-        <div v-if="version_id" class="text-primary"><b>This is a specific version of the submission type.  You may work from it and save it as the current version, or you may <router-link v-if="type.id && type.prefix" :to="{'name': 'submission_type', 'params': {'id': id, 'lab_id': $store.getters.labId}}">load the current version</router-link>.</b></div>
+        <div v-if="version" class="text-primary"><b>This is a specific version of the submission type.  You may work from it and save it as the current version, or you may <router-link v-if="type.id && type.prefix" :to="{'name': 'submission_type', 'params': {'id': id, 'lab_id': $store.getters.labId}}">load the current version</router-link>.</b></div>
         <b v-if="!can_modify"> (Viewing with read only permissions)</b>
       </q-card-section>
       <!-- <q-btn :to="{ name: 'create_submission_type', params: { lab_id: $store.getters.labId }, query: { copy_from: type.id } }" label="Copy" v-if="type.id"/> -->
@@ -305,7 +305,7 @@ export default {
     // Edit, Create, and Copy from logic is a bit convoluted.  Would be good to clean this up.
     const self = this
     this.init_lab()
-    if ((!this.id || this.id === 'create') && !this.version_id) {
+    if ((!this.id || this.id === 'create') && !this.version) {
       this.create = true
     }
     const id = this.$route.query.copy_from || this.id
@@ -370,8 +370,9 @@ export default {
     //   this.$refs.samplesheet.openSamplesheet()
     // },
     init_lab () {
-      if (this.$store.getters.lab) {
-        this.status_options = this.$store.getters.lab.statuses.map(status => ({label: status, value: status}))
+      const lab = this.$store.getters.lab
+      if (lab) {
+        this.status_options = (lab.statuses || []).map(status => ({label: status, value: status}))
         this.loadProjectIDs()
       }
     },
