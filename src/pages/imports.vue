@@ -107,13 +107,13 @@ export default {
       // we do the server data fetch, based on pagination and filter received
       // (using Axios here, but can be anything; parameters vary based on backend implementation)
       console.log(pagination, filter)
-      var sortBy = pagination.sortBy
+      let sortBy = pagination.sortBy
       if (pagination.descending) {
         sortBy = '-' + sortBy
       }
-      var search = this.filter !== '' ? `&search=${this.filter}` : ''
-      var imported = this.showImported ? '' : '&submissions__id__isnull=True'
-      var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
+      const search = this.filter !== '' ? `&search=${this.filter}` : ''
+      const imported = this.showImported ? '' : '&submissions__id__isnull=True'
+      const pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       // var type = this.$route.query.type ? `&type__name__icontains=${this.$route.query.type}` : ''
       this.$axios
         .get(`/api/imports/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${search}${imported}`)// ${pagination.descending}&filter=${filter}

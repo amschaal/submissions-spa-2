@@ -41,7 +41,7 @@ export default {
   },
   mounted: function () {
     console.log('mounted')
-    var self = this
+    const self = this
     if (this.id && this.version) {
       console.log('id', this.id)
       this.$axios
@@ -49,7 +49,7 @@ export default {
         .then(function (response) {
           console.log('response', response)
           self.version_details = response.data
-          var submission = response.data.serialized
+          const submission = response.data.serialized
           if (!submission.sample_data) {
             submission.sample_data = []
           }
@@ -72,7 +72,7 @@ export default {
   watch: {
     'id': function (id) {
       console.log('id', id)
-      var self = this
+      const self = this
       if (this.id) {
         self.$axios
           .get('/api/submissions/' + self.id)
@@ -98,7 +98,7 @@ export default {
       return !this.submission.locked || this.isAdmin
     },
     created_by () {
-      var u = this.version_details.revision.user
+      const u = this.version_details.revision.user
       return u && u.first_name ? `${u.last_name}, ${u.first_name} (${u.email})` : 'unknown'
     }
   },

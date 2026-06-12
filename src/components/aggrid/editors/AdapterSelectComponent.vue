@@ -26,7 +26,7 @@ export default {
       this.params.stopEditing()
     },
     getOptions () {
-      var self = this
+      const self = this
       this.$axios
         .get(`${this.url}?page_size=1000`)
         .then(function (response) {

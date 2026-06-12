@@ -120,8 +120,8 @@ export default {
       // this.data['samples_received'] = '2019-12-01'
       // this.$emit('input', this.data)
       // this.$refs.modal.hide()
-      var self = this
-      var data = {}
+      const self = this
+      const data = {}
       if (received) {
         data['received'] = received
       }

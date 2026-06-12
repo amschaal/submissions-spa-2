@@ -32,7 +32,7 @@ export default {
   props: {
     url: String,
     query_params: {
-      type: String
+      type: String,
       default: ''
     },
     search_param: {
@@ -48,7 +48,6 @@ export default {
       required: true
     }
   },
-  ['url','query_params','search_param', 'option_value', 'option_label'],
   // opt => Object(opt) === opt && 'id' in opt ? opt.id : null
   data () {
     return {

@@ -33,14 +33,14 @@ class Permissions {
       return false
     }
     if (operator === 'ANY') {
-      for (var i in perms) {
+      for (const i in perms) {
         if (submission.permissions.indexOf(perms[i]) !== -1) {
           return true
         }
       }
       return false
     } else {
-      for (var j in perms) {
+      for (const j in perms) {
         if (submission.permissions.indexOf(perms[j]) === -1) {
           return false
         }
@@ -49,7 +49,7 @@ class Permissions {
     }
   }
 }
-var permissions = new Permissions()
+const permissions = new Permissions()
 
 export default ({ app }) => {
   app.config.globalProperties.$perms = permissions

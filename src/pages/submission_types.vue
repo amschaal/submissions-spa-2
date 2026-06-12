@@ -89,15 +89,15 @@ export default {
 
       // we do the server data fetch, based on pagination and filter received
       // (using Axios here, but can be anything; parameters vary based on backend implementation)
-      var sortBy = pagination.sortBy
+      let sortBy = pagination.sortBy
       if (pagination.descending) {
         sortBy = '-' + sortBy
       }
       sortBy += ',name'
-      var lab = '&lab=' + this.$store.getters.labId
-      var search = this.filter !== '' ? `&search=${this.filter}` : ''
-      var inactive = !this.showInactive ? '&active=true' : ''
-      var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
+      const lab = '&lab=' + this.$store.getters.labId
+      const search = this.filter !== '' ? `&search=${this.filter}` : ''
+      const inactive = !this.showInactive ? '&active=true' : ''
+      const pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       console.log('inactive', inactive)
       this.$axios
         .get(`/api/submission_types/?ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${lab}${search}${inactive}`)// ${pagination.descending}&filter=${filter}

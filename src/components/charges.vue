@@ -55,7 +55,7 @@ export default {
     }
   },
   mounted: function () {
-    var self = this
+    const self = this
     this.$axios
       .get(`/api/billing/services/?lab=${self.$store.getters.lab.id}&ordering=code,name&page=1&page_size=1000`)// ${pagination.descending}&filter=${filter}
       .then(({ data }) => {
@@ -86,7 +86,7 @@ export default {
 
       // we do the server data fetch, based on pagination and filter received
       // (using Axios here, but can be anything; parameters vary based on backend implementation)
-      var sortBy = pagination.sortBy
+      let sortBy = pagination.sortBy
       if (pagination.descending) {
         sortBy = '-' + sortBy
       }
@@ -127,8 +127,8 @@ export default {
       // }, 1000)
     },
     deleteItem (item) {
-      var index = this.line_items.indexOf(item)
-      var self = this
+      const index = this.line_items.indexOf(item)
+      const self = this
       if (item.id) {
         this.$axios.delete(`/api/billing/line_items/${item.id}/`)
           .then(function (response) {
@@ -148,12 +148,12 @@ export default {
       // this.$q.notify(`Charge for "${item.service.name}" deleted.`)
     },
     saveItem (item) {
-      var self = this
-      var method = item.id ? 'put' : 'post'
-      var url = item.id ? `/api/billing/line_items/${item.id}/` : '/api/billing/line_items/'
+      const self = this
+      const method = item.id ? 'put' : 'post'
+      const url = item.id ? `/api/billing/line_items/${item.id}/` : '/api/billing/line_items/'
       this.$axios[method](url, item)
         .then(function (response) {
-          var index = self.line_items.indexOf(item)
+          const index = self.line_items.indexOf(item)
           self.line_items.splice(index, 1, response.data)
           self.$q.notify({message: `Charge for "${item.service.name}" saved.`, type: 'positive'})
         })
@@ -166,13 +166,13 @@ export default {
       console.log('selected', service)
     },
     add_service (service) {
-      for (var i in this.line_items) {
+      for (const i in this.line_items) {
         if (this.line_items[i].service.id === service.id) {
           this.$q.notify({message: `Service, "${service.name}" already listed.`, type: 'negative'})
           return
         }
       }
-      this.line_items.push({service: service, quantity: 0, notes: '', submission: this.submission.id})
+      this.line_items.push({service, quantity: 0, notes: '', submission: this.submission.id})
       this.select = null
     }
   },

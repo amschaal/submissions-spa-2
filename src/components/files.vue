@@ -65,7 +65,7 @@ export default {
 
       // we do the server data fetch, based on pagination and filter received
       // (using Axios here, but can be anything; parameters vary based on backend implementation)
-      var sortBy = pagination.sortBy
+      let sortBy = pagination.sortBy
       if (pagination.descending) {
         sortBy = '-' + sortBy
       }
@@ -98,7 +98,7 @@ export default {
       if (!confirm(`Are you sure you want to delete this file: '${file.filename}'?`)) {
         return
       }
-      var self = this
+      const self = this
       this.$axios.delete(`/api/submission_files/${file.id}/?submission=${this.submission.id}`)
         .then(function () {
           self.$q.notify({message: 'File deleted', type: 'positive'})
@@ -109,13 +109,13 @@ export default {
         })
     },
     uploadFile (files) {
-      var file = files[0]
+      const file = files[0]
       // console.log('uploadFile', files, this.$refs)
-      var self = this
-      var formData = new FormData()
+      const self = this
+      const formData = new FormData()
       formData.append('file', file)
       formData.append('submission', this.submission.id)
-      var request = this.$axios.post('/api/submission_files/',
+      const request = this.$axios.post('/api/submission_files/',
         formData,
         {
           headers: {

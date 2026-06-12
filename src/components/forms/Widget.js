@@ -72,7 +72,7 @@ export class WidgetFactory {
     this.type_lookup = {}
     this.defaults = {}
     this.lookup = {}
-    var self = this
+    const self = this
     widgets.forEach(function (widget, index) {
       if (!self.type_lookup[widget.type]) {
         self.type_lookup[widget.type] = []

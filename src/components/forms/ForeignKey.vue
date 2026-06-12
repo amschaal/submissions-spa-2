@@ -66,7 +66,7 @@ export default {
       return scope.opt.children.some(c => c.label === this.model)
     },
     getOptions () {
-      var options = [], self = this
+      const options = [], self = this
       // {
       //   label: 'American cars',
       //   children: [
@@ -82,7 +82,7 @@ export default {
       //   ]
       // },
       this.$schema.getTableSchemas(this.schema).forEach(function (table) {
-        var tableOptions = { label: table.table }
+        const tableOptions = { label: table.table }
         tableOptions['children'] = self.$schema.getNonTables(table.schema).map(function (v) {
           return { label: v }
         })

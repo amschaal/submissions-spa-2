@@ -29,7 +29,7 @@ export default {
     }
   },
   mounted () {
-    var self = this
+    const self = this
     this.$axios.get(this.formUrl)
       .then(
         function (response) {
@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     updateConfig () {
-      var self = this
+      const self = this
       this.$axios.post(this.updateUrl, {plugin: this.plugin, config: this.config})
         .then(
           function (response) {

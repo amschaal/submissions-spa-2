@@ -41,16 +41,16 @@ export default {
     },
     save (note) {
       // console.log('save', note.submission, note)
-      var self = this
-      var method = note.id ? 'put' : 'post'
-      var url = note.id ? `/api/notes/${note.id}/?submission=${note.submission}` : '/api/notes/'
+      const self = this
+      const method = note.id ? 'put' : 'post'
+      const url = note.id ? `/api/notes/${note.id}/?submission=${note.submission}` : '/api/notes/'
       if (!note.id && !note.public) {
         note.send_email = false
       }
       this.$axios[method](url, note)
         .then(function (response) {
           // console.log(response, self.noteHash[note.parent].indexOf(note))
-          var index = self.noteHash[note.parent].indexOf(note)
+          const index = self.noteHash[note.parent].indexOf(note)
           self.noteHash[note.parent].splice(index, 1, response.data)
           self.$q.notify({message: 'Note saved', type: 'positive'})
         })
@@ -60,7 +60,7 @@ export default {
         })
     },
     reply (parent) {
-      var note = {
+      const note = {
         type: 'NOTE',
         submission: parent.submission,
         send_email: true,

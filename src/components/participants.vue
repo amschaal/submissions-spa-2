@@ -61,7 +61,7 @@ export default {
       // console.log(this.newUsers, newUsers)
       newUsers.forEach(user => {
         if (!this.participants.some(obj => obj.user.id === user.id)) {
-          this.participants.push({user: user, roles: [], submission_id: this.submission.id})
+          this.participants.push({user, roles: [], submission_id: this.submission.id})
         }
       })
     },

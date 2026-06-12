@@ -25,7 +25,7 @@ export default {
       this.params.stopEditing()
     },
     getOptions () {
-      var self = this
+      const self = this
       this.$axios
         .get(`${this.url}?${this.query_params}`)
         .then(function (response) {
@@ -45,7 +45,7 @@ export default {
   created () {
     this.value = this.params.value
     console.log('select params', this.params)
-    var options = this.params.widget_options ? this.params.widget_options : {}
+    const options = this.params.widget_options ? this.params.widget_options : {}
     this.url = options.url
     this.query_params = options.params
     this.value_property = options.value_property

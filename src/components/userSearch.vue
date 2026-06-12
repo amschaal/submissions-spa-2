@@ -30,9 +30,9 @@
 export default {
   props: {
     queryParams: {
-        type: String
-        default: ''
-      }
+      type: String,
+      default: ''
+    }
   },
   // props: {
   //   url: String,

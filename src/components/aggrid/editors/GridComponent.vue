@@ -21,8 +21,7 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue'
-import { nextTick } from 'vue'
+import { defineAsyncComponent, nextTick } from 'vue'
 // import _ from 'lodash'
 // import Agschema from '../../agschema.vue'
 export default {
@@ -34,7 +33,7 @@ export default {
   },
   methods: {
     filterFn (val, update, abort) {
-      var self = this
+      const self = this
       this.$axios
         .get(`/api/terms/${this.vocabulary}/?search=${val}`)
         .then(function (response) {

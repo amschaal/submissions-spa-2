@@ -215,7 +215,7 @@ export default {
     }
   },
   mounted () {
-    var self = this
+    const self = this
     this.$axios
       .get('/api/users/?show=true')
       .then(function (response) {
@@ -236,7 +236,7 @@ export default {
   },
   methods: {
     save () {
-      var self = this
+      const self = this
       if (this.$store.getters.labId) {
         this.$axios
           .put(`/api/labs/${this.$store.getters.labId}/`, this.lab)
@@ -264,8 +264,8 @@ export default {
         // props forwarded to component
         // (everything except "component" and "parent" props above):
         submission_types: this.$store.getters.types,
-        variable: variable,
-        type: type
+        variable,
+        type
       }).onOk(() => {
       }).onCancel(() => {
       }).onDismiss(() => {

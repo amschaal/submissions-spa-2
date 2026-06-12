@@ -47,9 +47,9 @@ export default {
             this.value = [this.value]
           }
         }
-        var filtered = []
+        const filtered = []
         // filter bad values here
-        for (var i in this.options) {
+        for (const i in this.options) {
           if (this.value.indexOf(this.options[i]) >= 0) {
             filtered.push(this.options[i])
           }

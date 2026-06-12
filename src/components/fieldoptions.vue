@@ -57,11 +57,13 @@
                 <q-icon name="add_circle" @click="addChoice" class="cursor-pointer" />
               </template>
             </q-input>
-            <draggable :list="data.enum">
-              <div v-for="choice in data.enum" :key="choice" class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white draggable">
-                <div class="q-chip-main ellipsis draggable">{{choice}}</div>
-                <div class="q-chip-side q-chip-close q-chip-right row flex-center" @click="deleteChoice(choice)"><i aria-hidden="true" class="q-icon cursor-pointer material-icons">cancel</i></div>
-              </div>
+            <draggable :list="data.enum" :item-key="el => el">
+              <template #item="{ element: choice }">
+                <div class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white draggable">
+                  <div class="q-chip-main ellipsis draggable">{{choice}}</div>
+                  <div class="q-chip-side q-chip-close q-chip-right row flex-center" @click="deleteChoice(choice)"><i aria-hidden="true" class="q-icon cursor-pointer material-icons">cancel</i></div>
+                </div>
+              </template>
             </draggable>
           <q-checkbox
             dense
@@ -226,9 +228,9 @@ export default {
       }
     },
     validatorsByType (type) {
-      var validators = {}
+      const validators = {}
       console.log('validators', this.$store.getters.validatorDict)
-      for (var v in this.$store.getters.validatorDict) {
+      for (const v in this.$store.getters.validatorDict) {
         console.log('supported', type, this.$store.getters.validatorDict[v].supported_types)
         if (this.$store.getters.validatorDict[v].supported_types && this.$store.getters.validatorDict[v].supported_types.indexOf(type) !== -1) {
           validators[v] = this.$store.getters.validatorDict[v]
@@ -241,7 +243,7 @@ export default {
       // this.local_data = this.hst.table.getSourceData()
       // this.data = this.hst.table.getSourceData() // this.local_data
       // this.modelValue = this.options
-      var val = _.cloneDeep(this.data)
+      const val = _.cloneDeep(this.data)
       if (val.enum.length < 1) {
         val.enum = undefined
       }
@@ -254,7 +256,7 @@ export default {
       this.$refs.modal.hide()
     },
     addValidator (id) {
-      this.data.validators.push({id: id, options: {}})
+      this.data.validators.push({id, options: {}})
       console.log(id, this.data.validators)
     },
     removeValidator (index) {
@@ -267,7 +269,7 @@ export default {
     },
     addChoice () {
       if (this.option) {
-        var option = this.option.trim()
+        const option = this.option.trim()
         if (!this.data.enum) {
           this.data.enum = []
         }
@@ -278,7 +280,7 @@ export default {
       }
     },
     widgetSchema (id) {
-      var factory = this.type === 'submission' ? submissionWidgetFactory : tableWidgetFactory
+      const factory = this.type === 'submission' ? submissionWidgetFactory : tableWidgetFactory
       return factory.getWidgetSchema(id)
     },
     hasWidgetOptions (id) {
@@ -289,7 +291,7 @@ export default {
       return this.widgetFactory.getWidget(id)
     },
     validator_schema (validator) {
-      var schema = { order: [], properties: {}, layout: {}, title: validator.name, description: validator.description }
+      const schema = { order: [], properties: {}, layout: {}, title: validator.name, description: validator.description }
       validator.schema.forEach(function (v) {
         schema.order.push(v.variable)
         schema.properties[v.variable] = v
@@ -298,11 +300,11 @@ export default {
       return schema
     },
     widget_schema (id) {
-      var factory = this.type === 'submission' ? submissionWidgetFactory : tableWidgetFactory
-      var widgetSchema = factory.getWidgetSchema(id, this.schema, this)
-      var widget = factory.getWidget(id)
+      const factory = this.type === 'submission' ? submissionWidgetFactory : tableWidgetFactory
+      const widgetSchema = factory.getWidgetSchema(id, this.schema, this)
+      const widget = factory.getWidget(id)
       console.log('widget_schema', widget, widgetSchema)
-      var schema = { order: [], properties: {}, layout: {}, title: widget.name, description: widget.description }
+      const schema = { order: [], properties: {}, layout: {}, title: widget.name, description: widget.description }
       widgetSchema.forEach(function (v) {
         schema.order.push(v.variable)
         schema.properties[v.variable] = v

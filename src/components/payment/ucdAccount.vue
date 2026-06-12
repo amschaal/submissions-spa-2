@@ -77,7 +77,7 @@ export default {
   },
   computed: {
     type_help () {
-      var paymentType = this.value ? this.value.payment_type : null
+      const paymentType = this.value ? this.value.payment_type : null
       console.log('type_help', paymentType)
       switch (paymentType) {
         case 'DaFIS':

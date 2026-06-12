@@ -53,7 +53,7 @@ export default {
     //     // })
     // },
     filterFn (val, update, abort) {
-      var self = this
+      const self = this
       this.$axios
         .get(`${this.url}?search=${val}&${this.query_params}`)
         .then(function (response) {
@@ -77,7 +77,7 @@ export default {
   created () {
     this.value = this.params.value
     console.log('autocomplete params', this.params)
-    var options = this.params.widget_options ? this.params.widget_options : {}
+    const options = this.params.widget_options ? this.params.widget_options : {}
     this.url = options.url
     this.query_params = options.params
     this.value_property = options.value_property

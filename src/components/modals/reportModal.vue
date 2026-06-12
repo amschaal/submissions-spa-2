@@ -75,9 +75,9 @@ export default {
         return null
       } else {
         const columns = []
-        for (var c in this.report.headers) {
+        for (const c in this.report.headers) {
           const label = this.report.headers[c]
-          columns.push({ name: c, label: label, field: c, sortable: true})
+          columns.push({ name: c, label, field: c, sortable: true})
         }
         return columns
       }

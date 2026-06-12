@@ -15,7 +15,7 @@ export default {
     }
   },
   mounted: function () {
-    var self = this
+    const self = this
     this.$axios
       .get(`/api/submissions/${self.id}/`)
       .then(function (response) {

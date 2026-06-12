@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     filterFn (val, update, abort) {
-      var self = this
+      const self = this
       this.$axios
         .get(`/api/terms/${this.vocabulary}/?search=${val}`)
         .then(function (response) {

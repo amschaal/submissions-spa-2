@@ -133,11 +133,13 @@
             @update:model-value="add_status"
             map-options emit-value
           />
-          <draggable :list="type.statuses">
-            <div v-for="status in type.statuses" :key="status" class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white draggable">
-              <div class="q-chip-main ellipsis draggable">{{status}}</div>
-              <div class="q-chip-side q-chip-close q-chip-right row flex-center" @click="delete_status(status)"><i aria-hidden="true" class="q-icon cursor-pointer material-icons">cancel</i></div>
-            </div>
+          <draggable :list="type.statuses" :item-key="el => el">
+            <template #item="{ element: status }">
+              <div class="q-chip row no-wrap inline items-center q-chip-small bg-primary text-white draggable">
+                <div class="q-chip-main ellipsis draggable">{{status}}</div>
+                <div class="q-chip-side q-chip-close q-chip-right row flex-center" @click="delete_status(status)"><i aria-hidden="true" class="q-icon cursor-pointer material-icons">cancel</i></div>
+              </div>
+            </template>
           </draggable>
         </q-field>
         <q-field
@@ -299,12 +301,12 @@ export default {
   },
   mounted: function () {
     // Edit, Create, and Copy from logic is a bit convoluted.  Would be good to clean this up.
-    var self = this
+    const self = this
     this.init_lab()
     if ((!this.id || this.id === 'create') && !this.version_id) {
       this.create = true
     }
-    var id = this.$route.query.copy_from || this.id
+    const id = this.$route.query.copy_from || this.id
     console.log('mounted', this.id, this.create, id, this.$route.query.copy_from)
     // if (this.create) {
     //   this.notify_autosave()
@@ -372,10 +374,10 @@ export default {
       }
     },
     submit () {
-      var self = this
-      var id = this.id
-      var action = !this.create ? 'put' : 'post'
-      var url = !this.create ? '/api/submission_types/' + id + '/' : '/api/submission_types/'
+      const self = this
+      const id = this.id
+      const action = !this.create ? 'put' : 'post'
+      const url = !this.create ? '/api/submission_types/' + id + '/' : '/api/submission_types/'
       if (this.create) {
         this.type.lab = this.$store.getters.lab.id
       }
@@ -404,7 +406,7 @@ export default {
       }
     },
     loadProjectIDs () {
-      var self = this
+      const self = this
       this.$axios.get(`/api/project_ids/?lab_id=${this.$store.getters.lab.id}`)
         .then(
           function (response) {
@@ -423,7 +425,7 @@ export default {
       this.status_option = null
     },
     delete_type () {
-      var self = this
+      const self = this
       if (this.type.id && this.type.submission_count === 0) {
         this.$axios.delete(`/api/submission_types/${this.type.id}/`)
           .then(function (response) {
@@ -443,7 +445,7 @@ export default {
       window.localStorage.removeItem(this.type_key)
     },
     get_autosave () {
-      var jsonified = window.localStorage.getItem(this.type_key)
+      const jsonified = window.localStorage.getItem(this.type_key)
       return jsonified ? window.JSON.parse(jsonified) : null
     },
     autosave () {
@@ -452,14 +454,14 @@ export default {
       window.localStorage.setItem(this.type_key, window.JSON.stringify(this.type))
     },
     load_autosave () {
-      var saved = this.get_autosave()
+      const saved = this.get_autosave()
       if (saved) {
         this.type = this.get_autosave()
       }
     },
     notify_autosave () {
-      var autosave = this.get_autosave()
-      var self = this
+      const autosave = this.get_autosave()
+      const self = this
       if (autosave) {
         if (!this.create && this.type.updated && Date.parse(this.type.updated) > autosave.updated) {
           return
@@ -504,7 +506,7 @@ export default {
     },
     importSchema (url) {
       if (confirm('Are you sure you want to import a schema from another submission or submission type?  This will overwrite your current schema.')) {
-        var self = this
+        const self = this
         this.$axios
           .get(`/api/submission_types/get_submission_schema/?url=${url}`)
           .then(function (response) {
@@ -519,15 +521,15 @@ export default {
   },
   computed: {
     next_internal_id () {
-      var n = this.type.next_id + ''
-      var suffix = n.length >= 4 ? n : new Array(4 - n.length + 1).join('0') + n
+      const n = this.type.next_id + ''
+      const suffix = n.length >= 4 ? n : new Array(4 - n.length + 1).join('0') + n
       return this.type.prefix + suffix
     },
     error_message (field) {
       return this.errors[field]
     },
     next_id_error () {
-      var error = ''
+      let error = ''
       if (this.errors['next_id']) {
         error += this.errors['next_id'].join(', ')
       }
@@ -543,7 +545,7 @@ export default {
       return this.$perms.hasLabPerm('MEMBER') || this.$perms.hasLabPerm('ADMIN')
     },
     created_by () {
-      var u = this.version_details.revision.user
+      const u = this.version_details.revision.user
       return u && u.first_name ? `${u.last_name}, ${u.first_name} (${u.email})` : 'unknown'
     }
   },
@@ -563,7 +565,7 @@ export default {
         if (this.save_message) {
           return
         }
-        var self = this
+        const self = this
         this.save_message = this.$q.notify({
           message: `Changes have been detected.  Please save to keep your work.`,
           timeout: 0, // in milliseconds; 0 means no timeout

@@ -31,8 +31,8 @@ class PluginManager {
     // Return the tab's component object for dynamic <component :is="...">.
     // Replaces Vue 2 global Vue.component() registration, which is
     // incompatible with Vue 3's register-before-mount requirement.
-    for (var pluginId in this.plugins) {
-      var tab = this.plugins[pluginId].tabs.find(t => t.id === tabId)
+    for (const pluginId in this.plugins) {
+      const tab = this.plugins[pluginId].tabs.find(t => t.id === tabId)
       if (tab) {
         return tab.component
       }
@@ -40,16 +40,16 @@ class PluginManager {
   }
   initLab (labId, plugins) {
     console.log('initLab', labId, plugins)
-    var labPlugins = plugins != null ? plugins : {}
-    var promises = []
+    const labPlugins = plugins != null ? plugins : {}
+    const promises = []
     if (!this.labs[labId]) {
       this.labs[labId] = {'tabs': [], 'plugins': labPlugins}
-      var pluginIds = _.keys(labPlugins)
+      const pluginIds = _.keys(labPlugins)
       // console.log('pluginIds', pluginIds)
       pluginIds.forEach((pluginId) => {
-        var manager = this
+        const manager = this
         if (!this.plugins[pluginId]) { // Plugin is not yet loaded.  Load it, then add to the lab config.
-          var promise = manager.initPlugin(pluginId).then(() => {
+          const promise = manager.initPlugin(pluginId).then(() => {
             // console.log('initPlugin', pluginId, Object.keys(manager.plugins))
             manager.labs[labId].tabs = manager.labs[labId].tabs.concat(manager.plugins[pluginId].tabs)
           })
@@ -68,12 +68,12 @@ class PluginManager {
         console.log('set plugin', pluginId)
         // markRaw the component objects so Vue 3 doesn't try to make them
         // reactive when they're stored here / passed to <component :is="...">.
-        var tabs = (module.config.submission_tabs || []).map(t => Object.assign({}, t, { component: markRaw(t.component) }))
-        var payment = module.config.payment ? markRaw(module.config.payment) : module.config.payment
-        this.plugins[pluginId] = {'config': module.config, 'tabs': tabs, 'payment': payment}
+        const tabs = (module.config.submission_tabs || []).map(t => Object.assign({}, t, { component: markRaw(t.component) }))
+        const payment = module.config.payment ? markRaw(module.config.payment) : module.config.payment
+        this.plugins[pluginId] = {'config': module.config, tabs, payment}
         // Tab components are rendered via <component :is="getTabComponent(id)">
         // rather than global registration (see getTabComponent).
-        for (var j in tabs) {
+        for (const j in tabs) {
           this.permissions[tabs[j].id] = tabs[j].permissions
         }
         // module.loadPageInto(main);
@@ -114,7 +114,7 @@ class PluginManager {
   }
 }
 // console.log('plugins', this)
-var pluginManager = new PluginManager([])
+const pluginManager = new PluginManager([])
 
 export default ({ app }) => {
   app.config.globalProperties.$plugins = pluginManager

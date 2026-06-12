@@ -7,7 +7,7 @@ export default {
   props: ['submission'],
   methods: {
     lock () {
-      var self = this
+      const self = this
       this.$axios.post(`/api/submissions/${this.submission.id}/lock/`)
         .then(
           function (response) {
@@ -21,7 +21,7 @@ export default {
         )
     },
     unlock () {
-      var self = this
+      const self = this
       this.$axios.post(`/api/submissions/${this.submission.id}/unlock/`)
         .then(
           function (response) {

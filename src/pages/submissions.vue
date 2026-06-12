@@ -195,7 +195,7 @@ export default {
     Agschema: defineAsyncComponent(() => import('../components/agschema.vue'))
   },
   data () {
-    var defaultFilters = this.getDefaultFilters()
+    const defaultFilters = this.getDefaultFilters()
     return {
       // defaultFilters: _.cloneDeep(defaultFilters),
       filters: defaultFilters.filters,
@@ -230,26 +230,26 @@ export default {
   methods: {
     getSearchQuery ({ pagination, filter}) {
       console.log(pagination, filter)
-      var sortBy = pagination.sortBy
+      let sortBy = pagination.sortBy
       if (pagination.descending) {
         sortBy = '-' + sortBy
       }
       // var type = this.$route.query.type ? `&type__name__icontains=${this.$route.query.type}` : ''
-      var qs = this.$refs['advancedFilters'] ? this.$refs['advancedFilters'].qs : ''
-      var lab = this.$store.getters.labId && this.lab ? '&lab=' + this.$store.getters.labId : ''
-      var search = this.filters.filter !== '' ? `&search=${this.filters.filter}` : ''
-      var cancelled = !this.filters.showCancelled ? '&cancelled__isnull=true' : ''
-      var completed = !this.filters.showCompleted ? '&exclude_status=completed' : ''
-      var participating = this.filters.participating && this.lab ? '&participating' : ''
-      var mySubmissions = this.filters.mySubmissions || !this.lab ? '&my_submissions' : ''
-      var pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
+      const qs = this.$refs['advancedFilters'] ? this.$refs['advancedFilters'].qs : ''
+      const lab = this.$store.getters.labId && this.lab ? '&lab=' + this.$store.getters.labId : ''
+      const search = this.filters.filter !== '' ? `&search=${this.filters.filter}` : ''
+      const cancelled = !this.filters.showCancelled ? '&cancelled__isnull=true' : ''
+      const completed = !this.filters.showCompleted ? '&exclude_status=completed' : ''
+      const participating = this.filters.participating && this.lab ? '&participating' : ''
+      const mySubmissions = this.filters.mySubmissions || !this.lab ? '&my_submissions' : ''
+      const pageSize = pagination.rowsPerPage ? pagination.rowsPerPage : 1000000 // HACKY
       return `ordering=${sortBy}&page=${pagination.page}&page_size=${pageSize}${lab}${search}${cancelled}${completed}${participating}${mySubmissions}${qs}`
     },
     exportSubmissions (format) {
-      var pagination = _.clone(this.filters.serverPagination)
+      const pagination = _.clone(this.filters.serverPagination)
       pagination.rowsPerPage = 10000
-      var qs = this.getSearchQuery({
-        pagination: pagination,
+      const qs = this.getSearchQuery({
+        pagination,
         filter: this.filters.filter
       })
       if (format === 'json') {
@@ -259,10 +259,10 @@ export default {
       }
     },
     createReport (format) {
-      var pagination = _.clone(this.filters.serverPagination)
+      const pagination = _.clone(this.filters.serverPagination)
       pagination.rowsPerPage = 10000
-      var qs = this.getSearchQuery({
-        pagination: pagination,
+      const qs = this.getSearchQuery({
+        pagination,
         filter: this.filters.filter
       })
       console.log('createReport', this.$refs, qs)
@@ -274,7 +274,7 @@ export default {
       this.loading = true
       // we do the server data fetch, based on pagination and filter received
       // (using Axios here, but can be anything; parameters vary based on backend implementation)
-      var qs = this.getSearchQuery({ pagination, filter})
+      const qs = this.getSearchQuery({ pagination, filter})
       this.$axios
         .get(`/api/submissions/?${qs}`)// ${pagination.descending}&filter=${filter}
         .then(({ data }) => {

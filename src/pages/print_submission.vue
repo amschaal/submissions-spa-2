@@ -54,13 +54,13 @@ export default {
     }
   },
   mounted: function () {
-    var self = this
-    var url = this.version ? `/api/submissions/${self.id}/versions/${self.version}` : `/api/submissions/${self.id}/`
+    const self = this
+    const url = this.version ? `/api/submissions/${self.id}/versions/${self.version}` : `/api/submissions/${self.id}/`
     this.$axios
       .get(url)
       .then(function (response) {
         // console.log('response', response)
-        var submission = self.version ? response.data.serialized : response.data
+        const submission = self.version ? response.data.serialized : response.data
         if (self.version && response.data.revision) {
           self.version_details = response.data
         }
@@ -89,7 +89,7 @@ export default {
         return true
       }
       // The location of the printing configuration is a little bit inconsistant between table or other variable types....
-      var printing = schema.properties[variable].schema ? schema.properties[variable].schema.printing : schema.properties[variable].printing
+      const printing = schema.properties[variable].schema ? schema.properties[variable].schema.printing : schema.properties[variable].printing
       return printing && printing.hidden
     },
     getDate (timeStamp) {
@@ -99,23 +99,23 @@ export default {
       return _.chunk(arr, chunkSize)
     },
     submission_field_data_array (flatten = true) {
-      var self = this
-      var fields = this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type !== 'table' && !this.hidden(self.submission.submission_schema, v))
-      var arr = fields.map(v => [self.getTitle(self.submission.submission_schema, v), self.truncate(self.submission.submission_schema, v, self.submission.submission_data[v])])
+      const self = this
+      const fields = this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type !== 'table' && !this.hidden(self.submission.submission_schema, v))
+      const arr = fields.map(v => [self.getTitle(self.submission.submission_schema, v), self.truncate(self.submission.submission_schema, v, self.submission.submission_data[v])])
       return flatten ? _.flatten(arr) : arr
     },
     table_fields () {
-      var self = this
+      const self = this
       return this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type === 'table' && !self.hidden(self.submission.submission_schema, v))
     },
     payment_array (flatten = true) {
-      var arr = _.toPairs(this.submission.payment.display)
+      const arr = _.toPairs(this.submission.payment.display)
       return flatten ? _.flatten(arr) : arr
     }
   },
   computed: {
     created_by () {
-      var u = this.version_details.revision.user
+      const u = this.version_details.revision.user
       return u && u.first_name ? `${u.last_name}, ${u.first_name} (${u.email})` : 'unknown'
     }
   },

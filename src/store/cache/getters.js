@@ -3,16 +3,16 @@ export const validators = (state) => {
   return state.validators
 }
 export const validatorDict = (state) => {
-  var validators = {}
-  for (var i in state.validators) {
+  const validators = {}
+  for (const i in state.validators) {
     validators[state.validators[i].id] = state.validators[i]
   }
   return validators
 }
 function createDict (objs, idField) {
-  var dict = {}
-  var id = idField || 'id'
-  for (var i in objs) {
+  const dict = {}
+  const id = idField || 'id'
+  for (const i in objs) {
     dict[objs[i][id]] = objs[i]
   }
   return dict

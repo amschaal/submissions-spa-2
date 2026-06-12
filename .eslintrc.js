@@ -1,72 +1,55 @@
 module.exports = {
   root: true,
 
+  // vue-eslint-parser handles <template>; it delegates <script> to @babel/eslint-parser.
+  parser: 'vue-eslint-parser',
   parserOptions: {
-    parser: 'babel-eslint',
+    parser: '@babel/eslint-parser',
+    requireConfigFile: false,
+    babelOptions: {
+      presets: ['@quasar/babel-preset-app']
+    },
     sourceType: 'module'
   },
 
   env: {
-    browser: true
+    browser: true,
+    node: true
   },
 
   extends: [
     'standard',
-    // Uncomment any of the lines below to choose desired strictness,
-    // but leave only one uncommented!
-    // See https://eslint.vuejs.org/rules/#available-rules
-    'plugin:vue/essential', // Priority A: Essential (Error Prevention)
-    // 'plugin:vue/strongly-recommended' // Priority B: Strongly Recommended (Improving Readability)
-    // 'plugin:vue/recommended' // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
-    'plugin:quasar/legacy'
+    'plugin:vue/vue3-essential' // Priority A: Essential (Error Prevention)
   ],
 
   // required to lint *.vue files
   plugins: [
-    'vue',
-    'quasar'
+    'vue'
   ],
 
   globals: {
-    'ga': true, // Google Analytics
-    'cordova': true,
-    '__statics': true,
-    'process': true,
-    'Capacitor': true,
-    'chrome': true
+    ga: true, // Google Analytics
+    cordova: true,
+    __statics: true,
+    process: true,
+    Capacitor: true,
+    chrome: true
   },
 
-  // add your custom rules here
-  // rules: {
-  //   // allow async-await
-  //   'generator-star-spacing': 'off',
-  //   // allow paren-less arrow functions
-  //   'arrow-parens': 'off',
-  //   'one-var': 'off',
-  //
-  //   'import/first': 'off',
-  //   'import/named': 'error',
-  //   'import/namespace': 'error',
-  //   'import/default': 'error',
-  //   'import/export': 'error',
-  //   'import/extensions': 'off',
-  //   'import/no-unresolved': 'off',
-  //   'import/no-extraneous-dependencies': 'off',
-  //   'prefer-promise-reject-errors': 'off',
-  //
-  //   // allow debugger during development only
-  //   'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-  //
-  //   'quasar/no-legacy-components': 'warn',
-  //   'quasar/no-legacy-css': 'warn',
-  //   'quasar/no-legacy-directives': 'warn',
-  //   'quasar/no-legacy-properties': 'warn'
-  // }
   rules: {
-    // allow async-await
-    'generator-star-spacing': 'off',
+    // This codebase uses many intentional single-word component names
+    // (submission, settings, imports, ...); the Vue 3 multi-word convention
+    // is not worth a mass rename.
+    'vue/multi-word-component-names': 'off',
 
-    // allow paren-less arrow functions
+    // Pre-existing pattern: components mutate nested fields of object/array
+    // props (e.g. submission, config). This works in Vue 3 (same object ref)
+    // and reworking it to an emit-based flow is out of scope for the upgrade.
+    // Kept as a warning so new violations are still visible.
+    'vue/no-mutating-props': 'warn',
+    'vue/no-v-text-v-html-on-component': 'warn',
+
+    'generator-star-spacing': 'off',
     'arrow-parens': 0,
     'one-var': 0,
 
@@ -82,14 +65,9 @@ module.exports = {
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
 
-    'quasar/no-legacy-components': 'warn',
-    'quasar/no-legacy-css': 'warn',
-    'quasar/no-legacy-directives': 'warn',
-    'quasar/no-legacy-properties': 'warn',
-
     'object-curly-spacing': 'off',
     'dot-notation': 'off',
-    'quotes': 'off',
+    quotes: 'off',
     'quote-props': 'off',
     'lines-between-class-members': 'off',
     'no-prototype-builtins': 'off'

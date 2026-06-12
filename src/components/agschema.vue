@@ -310,7 +310,7 @@ export default {
       if (typeof validation === 'object' && !Array.isArray(validation)) {
         return validation
       } else if (Array.isArray(validation)) {
-        for (var i in validation) {
+        for (const i in validation) {
           if (typeof validation[i] === 'object' && !Array.isArray(validation[i])) {
             return validation[i]
           }
@@ -387,11 +387,11 @@ export default {
         this.dismiss()
       }
       if (params.column) {
-        var errors = this.getCellErrors(params.rowIndex, params.column.colDef.field)
+        const errors = this.getCellErrors(params.rowIndex, params.column.colDef.field)
         if (errors) {
           this.dismiss = this.$q.notify({position: 'top', message: `Error at Row ${params.rowIndex + 1}, Column "${params.column.colDef.headerName}": ` + errors.join(', ')})
         } else {
-          var warnings = this.getCellWarnings(params.rowIndex, params.column.colDef.field)
+          const warnings = this.getCellWarnings(params.rowIndex, params.column.colDef.field)
           if (warnings) {
             this.dismiss = this.$q.notify({position: 'top', color: 'warning', message: `Warning at Row ${params.rowIndex + 1}, Column "${params.column.colDef.headerName}": ` + warnings.join(', ')})
           }
@@ -403,24 +403,25 @@ export default {
     },
     autoSizeAll () {
       // v31 merged columnApi into the grid api; getAllColumns -> getColumns.
-      var allColIds = this.gridApi.getColumns().map(column => column.colId)
+      const allColIds = this.gridApi.getColumns().map(column => column.colId)
       this.gridApi.autoSizeColumns(allColIds)
     },
     // rowIndex (params) {
     //   return params.node.rowIndex + 1
     // },
     schema2Columns (schema) {
-      var columnDefs = [], col
+      const columnDefs = []
+      let col
       // var columnDefs = [{ headerName: '', lockPosition: true, valueGetter: this.rowIndex, cellClass: 'locked-col', width: 60, suppressNavigable: true, pinned: 'left' }]
       if (schema.order) {
-        for (var i in schema.order) {
+        for (const i in schema.order) {
           if (!this.editable || this.$store.getters.isStaff || !schema.properties[schema.order[i]].internal) {
             col = this.getColDef(schema.order[i], schema.properties[schema.order[i]], schema)
             columnDefs.push(col)
           }
         }
       } else {
-        for (var prop in schema.properties) {
+        for (const prop in schema.properties) {
           if (schema.properties.hasOwnProperty(prop) && (!this.editable || this.$store.getters.isStaff || !schema.properties[prop].internal)) {
             col = this.getColDef(prop, schema.properties[prop], schema)
             columnDefs.push(col)
@@ -435,8 +436,8 @@ export default {
     },
     getColDescriptions (schema) {
       // console.log('getColDescriptions', schema)
-      var descriptions = {}
-      for (var prop in schema.properties) {
+      const descriptions = {}
+      for (const prop in schema.properties) {
         if (schema.properties.hasOwnProperty(prop)) {
           descriptions[prop] = schema.properties[prop].description
         }
@@ -468,7 +469,7 @@ export default {
     },
     getColDef (id, definition, schema) {
       console.log('getColDef', definition, schema)
-      var self = this
+      const self = this
       function cellClass (params) {
         // console.log('cellClass', params, self.errors)
         if (params.node.rowPinned) {
@@ -484,7 +485,7 @@ export default {
         }
         return []
       }
-      var header = id
+      let header = id
       if (definition.title) {
         header = definition.title
       }
@@ -496,9 +497,9 @@ export default {
         if (params.data._row_type === 'description' || params.data._row_type === 'example') {
           return 'Descriptions and examples cannot be modified.  Please use blank rows for user data.' // params.value
         }
-        var errors = self.getCellErrors(params.rowIndex, params.colDef.field)
-        var warnings = self.getCellWarnings(params.rowIndex, params.colDef.field)
-        var text = `row ${params.rowIndex + 1}, ${header}`
+        const errors = self.getCellErrors(params.rowIndex, params.colDef.field)
+        const warnings = self.getCellWarnings(params.rowIndex, params.colDef.field)
+        const text = `row ${params.rowIndex + 1}, ${header}`
         if (errors) {
           return text + ': ' + errors.join(', ')
         } else if (warnings) {
@@ -508,7 +509,7 @@ export default {
       }
       // console.log('definition', id, definition, schema)
       // var header = id
-      var tooltip = null
+      let tooltip = null
       // if (definition.title) {
       //   header = definition.title
       // }
@@ -518,7 +519,7 @@ export default {
       if (definition.description) {
         tooltip = definition.description
       }
-      var WidgetClass = null
+      let WidgetClass = null
       if (definition.widget && definition.widget.type) {
         // console.log('getcolwidget', definition.widget, definition.widget.type)
         WidgetClass = sampleWidgetFactory.getWidget(definition.widget.type)
@@ -530,8 +531,8 @@ export default {
         var options = definition.widget.options
         // options._schema = JSON.parse(JSON.stringify(schema))
         // Object.freeze(options)
-        var widget = new WidgetClass(id, options)
-        return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: WidgetClass.component, cellEditorParams: {definition: definition, widget_options: widget.getOptions()}, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned} // values: definition.enum, widget: definition.widget,
+        const widget = new WidgetClass(id, options)
+        return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: WidgetClass.component, cellEditorParams: {definition, widget_options: widget.getOptions()}, cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned} // values: definition.enum, widget: definition.widget,
       }
       switch (definition.type) {
         case 'table':
@@ -540,22 +541,22 @@ export default {
           var _options = {_schema: JSON.parse(JSON.stringify(definition.schema))}
           Object.freeze(options)
           // var widget = new WidgetClass(id, options)
-          return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: GridComponent, cellEditorParams: {definition: definition, widget_options: _options}, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned}
+          return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: GridComponent, cellEditorParams: {definition, widget_options: _options}, cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned}
         case 'string':
           if (definition.enum) {
             // console.log('enum', {headerName: header, headerTooltip: tooltip, field: id, cellEditor: SelectComponent, cellEditorParams: {definition: definition, widget_options: {multiple: definition.multiple}}, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned})
             // return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: AutocompleteComponent, cellEditorParams: {values: definition.enum, widget: definition.widget, definition: definition}, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned} // cellEditor: 'agRichSelectCellEditor', cellEditorParams: {values: definition.enum}
             // return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: 'agRichSelectCellEditor', cellEditorParams: {values: definition.enum}, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned} // cellEditor: 'agRichSelectCellEditor', cellEditorParams: {values: definition.enum} // cellEditor: AutocompleteComponent
-            return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: SelectComponent, cellEditorParams: {definition: definition, widget_options: {multiple: definition.multiple}}, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned}
+            return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: SelectComponent, cellEditorParams: {definition, widget_options: {multiple: definition.multiple}}, cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned}
           } else {
-            return {headerName: header, headerTooltip: tooltip, field: id, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned}
+            return {headerName: header, headerTooltip: tooltip, field: id, cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned}
           }
         case 'number':
-          return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: NumericComponent, cellClass: cellClass, tooltipValueGetter: cellTooltip, context: {dataType: 'numeric'}, pinned: definition.pinned}
+          return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: NumericComponent, cellClass, tooltipValueGetter: cellTooltip, context: {dataType: 'numeric'}, pinned: definition.pinned}
         case 'boolean':
-          return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: BooleanComponent, cellClass: cellClass, tooltipValueGetter: cellTooltip, context: {dataType: 'boolean'}, pinned: definition.pinned}
+          return {headerName: header, headerTooltip: tooltip, field: id, cellEditor: BooleanComponent, cellClass, tooltipValueGetter: cellTooltip, context: {dataType: 'boolean'}, pinned: definition.pinned}
         case 'array':
-          var def = {headerName: header, field: id, cellClass: cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned}
+          var def = {headerName: header, field: id, cellClass, tooltipValueGetter: cellTooltip, pinned: definition.pinned}
           if (definition.items && definition.items.enum) {
             def.source = definition.items.enum
           }
@@ -574,7 +575,7 @@ export default {
     validate (save) {
       // this.hst.validateTable(true)
       console.log('validate', this.type, this.sample_schema, save)
-      var self = this
+      const self = this
       // this.$axios.post('/api/submission_types/' + this.type.id + '/validate_data/', {data: this.getRowData(true)})
       this.$axios.post('/api/validate/', {sample_schema: this.sample_schema, data: this.getRowData(true)})
         .then(function (response) {
@@ -604,9 +605,9 @@ export default {
               self.$q.notify({message: 'There were warnings in your data.', type: 'warning'})
             }
           } else {
-            var message = self.hasErrors ? 'There were errors.  Any errors will need to be corrected before completing submission.  You may choose to "save anyway" and then save this submission as a draft in order not to lose your work.' : 'There were warnings.  To ignore the warnings, click "save anyway".'
+            const message = self.hasErrors ? 'There were errors.  Any errors will need to be corrected before completing submission.  You may choose to "save anyway" and then save this submission as a draft in order not to lose your work.' : 'There were warnings.  To ignore the warnings, click "save anyway".'
             self.$q.notify({
-              message: message,
+              message,
               timeout: 10000, // in milliseconds; 0 means no timeout
               type: self.hasErrors ? 'negative' : 'warning',
               // position: 'bottom', // 'top', 'left', 'bottom-left' etc.
@@ -627,15 +628,17 @@ export default {
         })
     },
     getRowData (filterAndSort) {
-      var data = []
-      var method = filterAndSort ? 'forEachNodeAfterFilterAndSort' : 'forEachNode'
+      const data = []
+      const method = filterAndSort ? 'forEachNodeAfterFilterAndSort' : 'forEachNode'
       if (!this.gridApi) {
         return []
       }
       this.gridApi[method](function (node) {
         data.push(node.data)
       })
-      var self = this, cleaned = [], take = false
+      const self = this
+      const cleaned = []
+      let take = false
       _.forEachRight(data, function (row) {
         if (take) {
           cleaned.unshift(row)
@@ -651,15 +654,15 @@ export default {
       return !_.values(row).some(x => x !== undefined && x !== '')
     },
     addRow (number) {
-      var rows = []
-      for (var i = 0; i < number; i++) {
+      const rows = []
+      for (let i = 0; i < number; i++) {
         rows.push({})
       }
       this.gridApi.applyTransaction({add: rows})
       // console.log('addRow', this.getRowData())
     },
     removeRows () {
-      var selectedData = this.gridApi.getSelectedRows()
+      const selectedData = this.gridApi.getSelectedRows()
       this.gridApi.applyTransaction({remove: selectedData})
       // this.errors = {}
       this.gridApi.redrawRows()
@@ -697,7 +700,7 @@ export default {
       return this.warnings && _.size(this.warnings) > 0
     },
     hasDescriptions () {
-      for (var prop in this.sample_schema.properties) {
+      for (const prop in this.sample_schema.properties) {
         if (this.sample_schema.properties.hasOwnProperty(prop)) {
           if (this.sample_schema.properties[prop].description) {
             return true
@@ -707,15 +710,15 @@ export default {
       return false
     },
     getExampleRows () {
-      var examples = []
+      const examples = []
       if (this.showDescriptions && this.hasDescriptions) {
-        var descriptions = this.getColDescriptions(this.sample_schema)
+        const descriptions = this.getColDescriptions(this.sample_schema)
         descriptions._row_type = 'description'
         examples.push(descriptions)
       }
       if (this.showExamples) {
-        for (var i in this.sample_schema.examples) {
-          var example = this.sample_schema.examples[i]
+        for (const i in this.sample_schema.examples) {
+          const example = this.sample_schema.examples[i]
           example['_row_type'] = 'example'
           examples.push(example)
         }

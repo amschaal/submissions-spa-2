@@ -89,7 +89,7 @@ export default {
   },
   mounted: function () {
     console.log('mounted')
-    var self = this
+    const self = this
 
     // if (!this.id || this.id === 'create') {
     //   this.create = true
@@ -135,7 +135,7 @@ export default {
       }
     },
     hasPluginPermission (submission, tabId) {
-      var permissions = this.$plugins.getPermissions(tabId)
+      const permissions = this.$plugins.getPermissions(tabId)
       console.log('permissions', tabId, permissions)
       if (!permissions) {
         return true
@@ -155,7 +155,7 @@ export default {
       // if (!id || id === 'create') {
       //   this.create = true
       // }
-      var self = this
+      const self = this
       if (this.id) {
         self.$axios
           .get('/api/submissions/' + self.id)
