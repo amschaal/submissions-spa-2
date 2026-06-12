@@ -534,13 +534,15 @@ export default {
           self.$router.push({name: 'submission', params: {id: response.data.id}, query: {created: self.create}})
           // }
         })
-        .catch(function (error, stuff) {
-          // raise different exception if due to invalid credentials
+        .catch(function (error) {
+          // The error is fully handled here (notification + field errors);
+          // do NOT re-throw, or it becomes an unhandled promise rejection.
           self.submitting = false
-          console.log('ERROR', error.response)
-          const message = error.response.data.detail || 'There were errors saving your submission.'
+          console.log('ERROR', error.response || error)
+          const data = error.response && error.response.data ? error.response.data : null
+          const message = (data && data.detail) || 'There were errors saving your submission.'
           self.$q.notify({message, type: 'negative'})
-          if (error.response.data.warnings && !self.submission.ignore_warnings) {
+          if (data && data.warnings && !self.submission.ignore_warnings) {
             self.$q.notify({
               message: 'There are warnings in your submission.',
               timeout: 10000, // in milliseconds; 0 means no timeout
@@ -556,12 +558,10 @@ export default {
               ]
             })
           }
-          if (error.response) {
-            // self.errors = error.response.data
-            self.errors = error.response.data
-            self.errors.payment = error.response.data.payment || {}
+          if (data) {
+            self.errors = data
+            self.errors.payment = data.payment || {}
           }
-          throw error
         })
     },
     loadDraftMessage () {
@@ -604,11 +604,10 @@ export default {
           // self.$router.push({name: 'submission', params: {id: response.data.id}, query: {created: self.create}})
           // }
         })
-        .catch(function (error, stuff) {
-          // raise different exception if due to invalid credentials
+        .catch(function (error) {
+          // Fully handled; no re-throw (would be an unhandled rejection).
           console.log('ERROR', error)
           self.$q.notify({message: 'There were errors saving your draft.', type: 'negative'})
-          throw error
         })
     },
     loadDraft: function (id) {
@@ -623,11 +622,12 @@ export default {
           self.submission = response.data.data
           self.loadDraftMessage()
           // self.submission.type = response.data.type.id
-        }).catch(function (error, stuff) {
+        }).catch(function (error) {
+          // Fully handled; no re-throw (would be an unhandled rejection).
+          console.log('ERROR', error)
           self.$q.notify({message: `No draft was found with ID: ${id}`, type: 'negative'})
           self.draft = null
           self.$router.push({name: 'create_submission'})
-          throw error
         })
     },
     loadImport: function (url) {
@@ -664,10 +664,11 @@ export default {
           self.$q.notify({message: `Submission information from submission "${internalID}: ${type.name}" loaded.  Please select the target type and attempt saving the import.`, type: 'positive', timeout: 15000})
           // self.loadDraftMessage()
           // self.submission.type = response.data.type.id
-        }).catch(function (error, stuff) {
+        }).catch(function (error) {
+          // Fully handled; no re-throw (would be an unhandled rejection).
+          console.log('ERROR', error)
           self.$q.notify({message: `Unable to load import from url: ${self.import}`, type: 'negative'})
           self.$router.push({name: 'create_submission'})
-          throw error
         })
     },
     loadSubmission: function (id) {
