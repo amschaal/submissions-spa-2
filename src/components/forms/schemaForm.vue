@@ -30,6 +30,7 @@
                 <q-select
                   dense options-dense
                   map-options emit-value
+                  :model-value="null"
                   :options="width_options"
                   v-if="!schema.layout[variable.variable]"
                   @update:model-value="setNested(`schema.layout.${variable.variable}.width`,$event)"
