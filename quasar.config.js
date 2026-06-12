@@ -12,6 +12,7 @@ export default function (ctx) {
     // NOTE: 'store' is first — the router guard and auth boot rely on the
     // Vuex store being installed (the CLI no longer wires it automatically).
     boot: [
+      'errorhandler',
       'store',
       'i18n',
       'axios',
