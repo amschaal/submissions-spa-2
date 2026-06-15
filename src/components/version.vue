@@ -5,11 +5,6 @@
 <script>
 import axios from 'axios'
 export default {
-  data () {
-    return {
-      version: null
-    }
-  },
   methods: {
     checkVersion () {
       axios
@@ -27,10 +22,9 @@ export default {
           }
         )
         .then((response) => {
-          if (!this.version) {
-            this.version = response.data.version
-            this.poll()
-          } else if (this.version !== response.data.version) {
+          // Compare the deployed build id to the one baked into this bundle.
+          const deployed = response.data && (response.data.commit || response.data.builtAt)
+          if (deployed && deployed !== process.env.APP_BUILD_ID) {
             this.outOfDate()
           } else {
             this.poll()
@@ -51,13 +45,20 @@ export default {
         color: "negative",
         timeout: 0,
         onDismiss () {
-          location.reload(true)
+          location.reload()
         }
       })
     }
   },
   mounted () {
-    this.poll()
+    // Only run in production builds that have a baked-in build id; skip in dev
+    // (quasar dev doesn't run beforeBuild, so there is no meaningful version.json).
+    if (!process.env.PROD || !process.env.APP_BUILD_ID) {
+      return
+    }
+    // First check shortly after load (so an already-newer deploy is caught
+    // quickly), then poll on the interval.
+    setTimeout(this.checkVersion, 5000)
   }
 }
 

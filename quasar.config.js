@@ -3,7 +3,28 @@
 // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js
 // NOTE: compiled as ESM by the CLI — use imports, not require().
 import fs from 'node:fs'
-import { exec } from 'node:child_process'
+import { execSync } from 'node:child_process'
+
+// Build identity for the "new version, please refresh" prompt (see
+// src/components/version.vue). Resolved ONCE per build so the value baked into
+// the bundle (build.env.APP_BUILD_ID) matches what beforeBuild writes to
+// public/version.json. Precedence: explicit env (set by CI/Docker via
+// --build-arg APP_COMMIT) -> local git short hash -> a per-build timestamp.
+// The timestamp fallback guarantees version.json is always written with a
+// value that changes every build, even where git is unavailable (e.g. the
+// Docker build of the spa submodule on node:alpine).
+function resolveBuildId () {
+  if (process.env.APP_COMMIT) {
+    return process.env.APP_COMMIT.trim()
+  }
+  try {
+    return execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim()
+  } catch (e) {
+    return 'build-' + Date.now()
+  }
+}
+const BUILD_ID = resolveBuildId()
+const APP_VERSION = JSON.parse(fs.readFileSync('./package.json', 'utf-8')).version
 
 export default function (ctx) {
   return {
@@ -42,20 +63,22 @@ export default function (ctx) {
       // Exposed to the app via process.env.*. AG_GRID_LICENSE_KEY suppresses the
       // AG Grid Enterprise trial watermark; set it in the environment at build time.
       env: {
-        AG_GRID_LICENSE_KEY: process.env.AG_GRID_LICENSE_KEY || ''
+        AG_GRID_LICENSE_KEY: process.env.AG_GRID_LICENSE_KEY || '',
+        // Baked into the bundle so the running app knows its own build identity
+        // and can compare it against the deployed public/version.json.
+        APP_BUILD_ID: BUILD_ID
       },
 
-      // Writes public/version.json with the app version + git commit hash.
+      // Writes public/version.json with the build identity. Synchronous and
+      // unconditional (BUILD_ID is already resolved above) so the file is always
+      // present and matches the baked APP_BUILD_ID.
       // build.beforeBuild is still supported by @quasar/app-webpack v4.
-      beforeBuild: ({ quasarConf }) => {
-        exec('git rev-parse --short HEAD', function (err, stdout) {
-          if (err) {
-            console.warn('Could not read git commit hash for version.json:', err.message)
-            return
-          }
-          const version = JSON.parse(fs.readFileSync('./package.json', 'utf-8')).version
-          fs.writeFileSync('./public/version.json', JSON.stringify({ version: version, commit: stdout.trim() }), 'utf-8')
-        })
+      beforeBuild: () => {
+        fs.writeFileSync(
+          './public/version.json',
+          JSON.stringify({ version: APP_VERSION, commit: BUILD_ID, builtAt: new Date().toISOString() }),
+          'utf-8'
+        )
       }
     },
 
