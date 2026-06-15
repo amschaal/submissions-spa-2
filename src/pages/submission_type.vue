@@ -151,7 +151,7 @@
           :error-message="errorMessage('submission_help')"
           borderless
         >
-          <q-editor v-model="type.submission_help"
+          <q-editor v-editor-a11y v-model="type.submission_help"
             :toolbar="toolbar"
             :fonts="fonts"
           />
@@ -190,7 +190,7 @@
           :error-message="errorMessage('sample_help')"
           borderless
         >
-          <q-editor v-model="type.sample_help"
+          <q-editor v-editor-a11y v-model="type.sample_help"
             :toolbar="toolbar"
             :fonts="fonts"
           />

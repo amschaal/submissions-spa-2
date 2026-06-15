@@ -17,7 +17,7 @@
             label="Home Page"
             stack-label
           >
-            <q-editor v-model="institution.home_page"
+            <q-editor v-editor-a11y v-model="institution.home_page"
             :toolbar="toolbar"
             />
           </q-field>

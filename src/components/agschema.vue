@@ -25,7 +25,7 @@
               v-if="schema && schema.help"
             ><q-tooltip ref="tooltip">Please click "Help" button for important information on sample requirements!</q-tooltip></q-btn> <!-- icon="fas fa-question-circle" -->
             <q-checkbox v-model="showDescriptions" label="Show descriptions" class="show_descriptions" v-if="hasDescriptions"/> <q-checkbox v-model="showExamples" label="Show examples" v-if="allowExamples && this.sample_schema.examples && sample_schema.examples.length"  class="show_examples"/>
-            <q-btn-dropdown label="Resize Columns">
+            <q-btn-dropdown label="Resize Columns" color="primary">
             <q-list>
               <q-item @click="sizeToFit" clickable>
                 <q-item-label>

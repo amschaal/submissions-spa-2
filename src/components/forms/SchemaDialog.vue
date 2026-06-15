@@ -35,7 +35,7 @@
                 stack-label
                 borderless
               >
-                <q-editor v-model="schema.help"
+                <q-editor v-editor-a11y v-model="schema.help"
                   :toolbar="toolbar"
                   :fonts="fonts"
                 />

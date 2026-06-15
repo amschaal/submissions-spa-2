@@ -4,14 +4,15 @@
           <div class="row"><div class="col-1"></div><div class="col-1" title="Should the field only be available to staff?">Internal</div><div class="col-1">Required</div><div class="col-2">Variable</div><div class="col-2">Name</div><div class="col-2">Type</div><div class="col-1" v-if="options.showWidth">Column Width</div><div class="col-2"></div></div>
           <div v-for="variable in fields_sorted" :key="variable.variable">
             <div class="row">
-              <div class="col-1"><q-btn flat dense round icon="arrow_upward" color="primary" @click="move(variable.variable, -1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != 0"/> <q-btn flat dense round icon="arrow_downward" color="primary" @click="move(variable.variable, 1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != schema.order.length - 1"/></div>
-              <div class="col-1"><q-checkbox dense v-if="variable.schema" v-model="variable.schema.internal" @update:model-value="toggleRequired(variable)"/></div>
-              <div class="col-1"><q-checkbox dense v-model="schema.required" :val="variable.variable" :disable="variable.schema && variable.schema.internal"/></div>
+              <div class="col-1"><q-btn flat dense round icon="arrow_upward" color="primary" :aria-label="`Move ${variable.variable} up`" @click="move(variable.variable, -1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != 0"/> <q-btn flat dense round icon="arrow_downward" color="primary" :aria-label="`Move ${variable.variable} down`" @click="move(variable.variable, 1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != schema.order.length - 1"/></div>
+              <div class="col-1"><q-checkbox dense v-if="variable.schema" :aria-label="`${variable.variable} internal`" v-model="variable.schema.internal" @update:model-value="toggleRequired(variable)"/></div>
+              <div class="col-1"><q-checkbox dense :aria-label="`${variable.variable} required`" v-model="schema.required" :val="variable.variable" :disable="variable.schema && variable.schema.internal"/></div>
               <div class="col-2">{{variable.variable}}</div>
-              <div class="col-2"><q-input dense v-model="variable.schema.title" /></div>
+              <div class="col-2"><q-input dense :aria-label="`${variable.variable} name`" v-model="variable.schema.title" /></div>
               <div class="col-2">
                 <q-select
                   dense options-dense
+                  :aria-label="`${variable.variable} type`"
                   v-model="variable.schema.type"
                   :options="type_options"
                   map-options emit-value
@@ -21,6 +22,7 @@
                 <!-- v-bind:value="getNested(`schema.layout.${variable.variable}.width`)" -->
                 <q-select
                   dense options-dense
+                  :aria-label="`${variable.variable} column width`"
                   map-options emit-value
                   v-model="schema.layout[variable.variable].width"
                   :options="width_options"
@@ -29,6 +31,7 @@
                 />
                 <q-select
                   dense options-dense
+                  :aria-label="`${variable.variable} column width`"
                   map-options emit-value
                   :model-value="null"
                   :options="width_options"

@@ -11,7 +11,13 @@ stack-imposed exceptions that remain.
   tabs, main (q-page-container), contentinfo (q-footer); skip-to-content link.
 - Logo link and images have accessible names / alt text.
 - Form controls labelled; icon-only buttons have `aria-label`; decorative
-  icons are `aria-hidden`.
+  icons are `aria-hidden`. This includes the schema-builder "Custom Fields"
+  table (`schemaForm.vue`): each field's reorder buttons, Internal/Required
+  checkboxes, and name/type/width selects carry per-field `aria-label`s.
+- QEditor toolbar buttons (bold, italic, undo, …) render icon-only with no
+  accessible name; the `v-editor-a11y` directive (`utils/a11y.js`, registered
+  in `boot/filters.js`) labels them from their icon. Applied to every
+  `<q-editor>`.
 - Status conveyed by color is reinforced with text/aria (see submissions list
   lock/cancelled/received indicators).
 - Brand colors adjusted where needed to meet 4.5:1 text contrast.
@@ -34,4 +40,12 @@ zero serious/critical violations except the documented exception below.
   non-tablist nav primitive.
 - **AG Grid Enterprise watermark / internal DOM.** The samplesheet relies on AG
   Grid's own (generally strong) ARIA; its internal nodes are not under our
-  control. A licence key removes the watermark overlay.
+  control. A licence key removes the watermark overlay. axe also reports the
+  balham theme's column-header text at 4.48:1 (vs 4.5:1) — a vendor theme value
+  we don't set; effectively at threshold.
+- **axe color-contrast false positives on Quasar colored buttons.** axe reports
+  the samplesheet Add row / Remove / Save / Discard buttons as white-on-#999999
+  (2.84:1). The buttons actually render dark green (#2E7D32) / red (#C10015)
+  with white text (≈5.6–5.9:1, passing) — confirmed by computed style and
+  screenshot. axe mis-resolves Quasar's button background layering (it also
+  marks ~17 such nodes "incomplete"). Not a real failure.

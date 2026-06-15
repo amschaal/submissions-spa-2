@@ -6,7 +6,7 @@
       <q-tabs
         v-model="tab"
         dense
-        class="bg-primary text-grey shadow-2"
+        class="bg-primary text-grey-4 shadow-2"
         active-color="white"
         narrow-indicator
       >
@@ -23,7 +23,7 @@
             </div>
               <button slot="header">Add</button>
           </draggable> -->
-          <q-list bordered class="rounded-borders">
+          <q-list bordered role="presentation" class="rounded-borders">
             <!-- <q-expansion-item
               expand-separator
               label="Users"
@@ -42,7 +42,7 @@
                 label="Home Page"
                 stack-label
               >
-                <q-editor v-model="lab.home_page"
+                <q-editor v-editor-a11y v-model="lab.home_page"
                 :toolbar="toolbar"
                 />
               </q-field>
@@ -51,7 +51,7 @@
                 stack-label
                 hint="Enter custom content to be shown at the top of the submission page."
               >
-                <q-editor v-model="lab.submission_page"
+                <q-editor v-editor-a11y v-model="lab.submission_page"
                 :toolbar="toolbar"
                 />
               </q-field>
@@ -140,7 +140,7 @@
           <q-tabs
               v-model="plugin_tab"
               dense
-              class="bg-primary text-grey shadow-2"
+              class="bg-primary text-grey-4 shadow-2"
               active-color="white"
               narrow-indicator
             >
