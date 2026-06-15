@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-banner dense rounded class="text-white bg-warning" v-if="!modelValue.samples_received">
+    <q-banner dense rounded class="text-dark bg-warning" v-if="!modelValue.samples_received">
       <template v-slot:avatar>
         <q-icon name="warning" size="sm"/>
       </template>
@@ -158,7 +158,7 @@ export default {
 <style>
 a.action {
   text-decoration: underline;
-  color: white;
+  color: inherit;
   cursor: pointer;
 }
 </style>

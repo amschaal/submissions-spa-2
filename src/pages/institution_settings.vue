@@ -78,7 +78,7 @@
           <q-tabs
               v-model="plugin_tab"
               dense
-              class="bg-primary text-grey shadow-2"
+              class="bg-primary text-grey-4 shadow-2"
               active-color="white"
               narrow-indicator
             >

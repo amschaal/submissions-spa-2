@@ -2,8 +2,8 @@
   <div>
         <div class="row">
           <div class="field col-12 q-mt-xs q-mb-xs" v-if="submission.import_data && !version">
-            <q-banner dense class="text-white bg-light-blue" rounded>
-              Imported from <a target="_blank" rel="noopener noreferrer" :href="submission.import_data.url">{{submission.import_data.internal_id}}: {{submission.import_data.type.name}}</a>
+            <q-banner dense class="text-white bg-blue-9" rounded>
+              Imported from <a class="text-white" target="_blank" rel="noopener noreferrer" :href="submission.import_data.url">{{submission.import_data.internal_id}}: {{submission.import_data.type.name}}</a>
             </q-banner>
           </div>
           <div class="field col-12 q-mt-xs q-mb-xs" v-if="!version">
@@ -12,7 +12,7 @@
             <SamplesReceived v-if="submission.id" :model-value="submission" @update:model-value="d => Object.assign(submission, d)" :admin="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')"/>
           </div>
           <div class="field col-12 q-mt-xs q-mb-xs" v-if="hasWarnings">
-          <q-banner dense class="text-white bg-warning" rounded>
+          <q-banner dense class="text-dark bg-warning" rounded>
               There are warnings associated with this submission.
           </q-banner>
           </div>
