@@ -144,6 +144,7 @@
         <!-- <q-btn :label="'Samples ('+submission.sample_data.length+')'"  @click="openSamplesheet"/> -->
         <div class="row" v-if="submission.id && !version">
           <div class="col-lg-12">
+            <q-btn label="Print" class="float-right" @click="print()"/>
             <q-btn class="float-right" label="Create copy" description="Create a new submission using data from this submission." @click="copySubmission"/>
             <q-btn label="Download" @click="download()"  class="float-right"/>
               <q-select
