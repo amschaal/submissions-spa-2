@@ -28,6 +28,8 @@
                   :allow-examples="true"
                   :allow-force-save="true"
                   :ref="v.variable"
+                  :variable="v.variable"
+                  :submission="submission"
                   :table-warnings="getTableWarnings(v)"
                   :table-errors="getTableErrors(v)"
                   />
@@ -110,7 +112,7 @@ import { QSelect, QOptionGroup, QCheckbox } from 'quasar'
 // import _ from 'lodash'
 
 export default {
-  props: ['modelValue', 'schema', 'editable', 'errors', 'warnings', 'modify'],
+  props: ['modelValue', 'schema', 'editable', 'errors', 'warnings', 'modify', 'submission'],
   data () {
     return {
       data: this.modelValue ? this.modelValue : {}

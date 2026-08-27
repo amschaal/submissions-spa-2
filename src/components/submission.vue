@@ -137,7 +137,7 @@
             <q-icon size="18px" name="check_circle" color="green"/> Bioinformatics Core to analyze data
           </div>
         </div>
-        <CustomFields v-model="submission.submission_data" :schema="submission_schema" ref="submission_fields" :warnings="submission.warnings ? submission.warnings.submission_data : {}" v-if="submission_schema" :modify="false"/>
+        <CustomFields v-model="submission.submission_data" :schema="submission_schema" ref="submission_fields" :warnings="submission.warnings ? submission.warnings.submission_data : {}" v-if="submission_schema" :modify="false" :submission="submission"/>
           <!-- <Samplesheet v-model="submission.sample_data" :type="type"/> -->
         <!-- <Agschema v-model="submission.sample_data" :type="submission_type" :editable="false" ref="samplesheet" v-if="submission_type && submission_type.sample_schema" :submission="submission"/> -->
         <!-- <q-icon size="25px" name="warning" v-if="hasWarnings" color="warning" title="Samples contain warnings."/> -->
