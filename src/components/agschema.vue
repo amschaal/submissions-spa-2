@@ -39,6 +39,28 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
+            <q-btn
+              color="primary"
+              icon="download"
+              label="Export xlsx"
+              :loading="exporting"
+              @click="exportXlsx"
+            ><q-tooltip>Download an Excel template populated with the current rows.</q-tooltip></q-btn>
+            <q-btn
+              v-if="editable"
+              color="primary"
+              icon="upload"
+              label="Import xlsx"
+              :loading="importing"
+              @click="$refs.importInput.click()"
+            ><q-tooltip>Import rows from an Excel file. Replaces the current rows.</q-tooltip></q-btn>
+            <input
+              ref="importInput"
+              type="file"
+              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              style="display:none"
+              @change="importXlsx"
+            >
             <ag-grid-vue style="width: 100%; height: 90%;" class="ag-theme-balham"
 
               :gridOptions='gridOptions'
@@ -292,7 +314,9 @@ export default {
       },
       errors: {},
       warnings: {},
-      maximized: true
+      maximized: true,
+      exporting: false,
+      importing: false
     }
   },
   mounted () {
@@ -564,6 +588,85 @@ export default {
         default:
           // console.log(id,definition);
           throw new Error('Unsupported type ' + definition.type)
+      }
+    },
+    exportXlsx () {
+      const self = this
+      this.exporting = true
+      this.$axios.post('/api/tables/template/',
+        {schema: this.sample_schema, data: this.getRowData(false)},
+        {responseType: 'blob'})
+        .then(function (response) {
+          const filename = (self.type && self.type.name ? self.type.name : 'table').replace(/[^\w.-]+/g, '_') + '.xlsx'
+          const url = window.URL.createObjectURL(response.data)
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', filename)
+          document.body.appendChild(link)
+          link.click()
+          link.remove()
+          window.URL.revokeObjectURL(url)
+        })
+        .catch(function () {
+          self.$q.notify({message: 'Could not generate the Excel file.', type: 'negative'})
+        })
+        .then(function () {
+          self.exporting = false
+        })
+    },
+    importXlsx (event) {
+      const self = this
+      const input = event.target
+      const file = input.files && input.files[0]
+      // Reset so re-selecting the same file still fires @change.
+      input.value = ''
+      if (!file) {
+        return
+      }
+      const hasRows = this.getRowData(false).length > 0
+      const doImport = function () {
+        self.importing = true
+        const form = new FormData()
+        form.append('file', file)
+        form.append('schema', JSON.stringify(self.sample_schema))
+        self.$axios.post('/api/tables/parse/', form)
+          .then(function (response) {
+            const rows = response.data.data || []
+            self.rowData = rows
+            self.gridApi.setGridOption('rowData', rows)
+            self.errors = response.data.errors || {}
+            self.warnings = response.data.warnings || {}
+            self.gridApi.redrawRows()
+            const errorCount = _.size(self.errors)
+            const warningCount = _.size(self.warnings)
+            let message = `Imported ${rows.length} row${rows.length === 1 ? '' : 's'}.`
+            let type = 'positive'
+            if (errorCount) {
+              message += ` ${errorCount} row${errorCount === 1 ? '' : 's'} have errors that must be corrected.`
+              type = 'negative'
+            } else if (warningCount) {
+              message += ` ${warningCount} row${warningCount === 1 ? '' : 's'} have warnings.`
+              type = 'warning'
+            }
+            self.$q.notify({message, type})
+          })
+          .catch(function (error) {
+            const detail = error.response && error.response.data && error.response.data.detail
+            self.$q.notify({message: detail || 'Could not import the Excel file.', type: 'negative'})
+          })
+          .then(function () {
+            self.importing = false
+          })
+      }
+      if (hasRows) {
+        this.$q.dialog({
+          title: 'Replace rows?',
+          message: 'Importing will replace all current rows with the contents of the file. Continue?',
+          cancel: true,
+          persistent: true
+        }).onOk(doImport)
+      } else {
+        doImport()
       }
     },
     save () {
