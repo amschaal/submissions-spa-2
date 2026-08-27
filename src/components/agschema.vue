@@ -240,6 +240,7 @@ import SelectComponent from './aggrid/editors/SelectComponent.vue'
 import GridComponent from './aggrid/editors/GridComponent.vue'
 import _ from 'lodash'
 import sampleWidgetFactory from './aggrid/widgets.js'
+import { tableExportFilename, downloadBlob } from '../utils/tableExport.js'
 // import { ClipboardService } from '../../node_modules/ag-grid-enterprise/dist/lib/clipboardService.js'
 // import axios from 'axios'
 // var clipboardService = null
@@ -590,27 +591,6 @@ export default {
           throw new Error('Unsupported type ' + definition.type)
       }
     },
-    exportFilename () {
-      // table_<SUBMISSION_ID>_<PROJECT_ID>_<TABLE_VARIABLE>_<TIMESTAMP>.xlsx
-      // Any of submission id / project id (submission.internal_id) may be
-      // absent (e.g. an unsaved draft, or a project id not yet assigned) --
-      // those parts are simply omitted.
-      const sanitize = s => String(s).replace(/[^\w.-]+/g, '_').replace(/^_+|_+$/g, '')
-      // Leave null when we have no real name -- the 'table' prefix already
-      // covers it, so we avoid a redundant "table_table_...".
-      const tableName = this.variable || (this.sample_schema && this.sample_schema.title) || (this.type && this.type.name) || null
-      const d = new Date()
-      const pad = n => String(n).padStart(2, '0')
-      const timestamp = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
-      const parts = [
-        'table',
-        this.submission && this.submission.id,
-        this.submission && this.submission.internal_id,
-        tableName,
-        timestamp
-      ]
-      return parts.filter(Boolean).map(sanitize).join('_') + '.xlsx'
-    },
     exportXlsx () {
       const self = this
       this.exporting = true
@@ -618,15 +598,13 @@ export default {
         {schema: this.sample_schema, data: this.getRowData(false)},
         {responseType: 'blob'})
         .then(function (response) {
-          const filename = self.exportFilename()
-          const url = window.URL.createObjectURL(response.data)
-          const link = document.createElement('a')
-          link.href = url
-          link.setAttribute('download', filename)
-          document.body.appendChild(link)
-          link.click()
-          link.remove()
-          window.URL.revokeObjectURL(url)
+          const filename = tableExportFilename({
+            submission: self.submission,
+            variable: self.variable,
+            title: self.sample_schema && self.sample_schema.title,
+            typeName: self.type && self.type.name
+          })
+          downloadBlob(response.data, filename)
         })
         .catch(function () {
           self.$q.notify({message: 'Could not generate the Excel file.', type: 'negative'})
