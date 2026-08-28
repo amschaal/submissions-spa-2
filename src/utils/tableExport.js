@@ -14,12 +14,14 @@ function timestamp () {
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
 }
 
-// table_<SUBMISSION_ID>_<PROJECT_ID>_<TABLE_VARIABLE>_<TIMESTAMP>.xlsx
+const EXTENSIONS = { xlsx: 'xlsx', csv: 'csv', tsv: 'tsv' }
+
+// table_<SUBMISSION_ID>_<PROJECT_ID>_<TABLE_VARIABLE>_<TIMESTAMP>.<ext>
 // Submission id and project id (internal_id) are omitted when absent (an
 // unsaved draft, or a project id not yet assigned). The table name falls back
 // through variable -> schema title -> type name; when none is known it is
 // dropped so the name never degrades to "table_table_...".
-export function tableExportFilename ({ submission, variable, title, typeName } = {}) {
+export function tableExportFilename ({ submission, variable, title, typeName, format } = {}) {
   const tableName = variable || title || typeName || null
   const parts = [
     'table',
@@ -28,8 +30,15 @@ export function tableExportFilename ({ submission, variable, title, typeName } =
     tableName,
     timestamp()
   ]
-  return parts.filter(Boolean).map(sanitize).join('_') + '.xlsx'
+  return parts.filter(Boolean).map(sanitize).join('_') + '.' + (EXTENSIONS[format] || 'xlsx')
 }
+
+// The three supported formats, for building menu items in the UI.
+export const TABLE_FORMATS = [
+  { format: 'xlsx', label: 'Excel (.xlsx)', accept: '.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+  { format: 'csv', label: 'CSV (.csv)', accept: '.csv,text/csv' },
+  { format: 'tsv', label: 'TSV (.tsv)', accept: '.tsv,text/tab-separated-values,text/plain' }
+]
 
 // Trigger a browser download of a Blob under the given filename.
 export function downloadBlob (blob, filename) {

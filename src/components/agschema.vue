@@ -39,27 +39,25 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-            <q-btn
-              color="primary"
-              icon="download"
-              label="Export xlsx"
-              :loading="exporting"
-              @click="exportXlsx"
-            ><q-tooltip>Download an Excel template populated with the current rows.</q-tooltip></q-btn>
-            <q-btn
-              v-if="editable"
-              color="primary"
-              icon="upload"
-              label="Import xlsx"
-              :loading="importing"
-              @click="$refs.importInput.click()"
-            ><q-tooltip>Import rows from an Excel file. Replaces the current rows.</q-tooltip></q-btn>
+            <q-btn-dropdown color="primary" icon="download" label="Export" :loading="exporting">
+              <q-list>
+                <q-item v-for="f in tableFormats" :key="f.format" clickable v-close-popup @click="exportTable(f.format)">
+                  <q-item-section>{{f.label}}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+            <q-btn-dropdown v-if="editable" color="primary" icon="upload" label="Import" :loading="importing">
+              <q-list>
+                <q-item v-for="f in tableFormats" :key="f.format" clickable v-close-popup @click="triggerImport(f.format, f.accept)">
+                  <q-item-section>{{f.label}}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
             <input
               ref="importInput"
               type="file"
-              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               style="display:none"
-              @change="importXlsx"
+              @change="importFile"
             >
             <ag-grid-vue style="width: 100%; height: 90%;" class="ag-theme-balham"
 
@@ -240,7 +238,7 @@ import SelectComponent from './aggrid/editors/SelectComponent.vue'
 import GridComponent from './aggrid/editors/GridComponent.vue'
 import _ from 'lodash'
 import sampleWidgetFactory from './aggrid/widgets.js'
-import { tableExportFilename, downloadBlob } from '../utils/tableExport.js'
+import { tableExportFilename, downloadBlob, TABLE_FORMATS } from '../utils/tableExport.js'
 // import { ClipboardService } from '../../node_modules/ag-grid-enterprise/dist/lib/clipboardService.js'
 // import axios from 'axios'
 // var clipboardService = null
@@ -317,7 +315,9 @@ export default {
       warnings: {},
       maximized: true,
       exporting: false,
-      importing: false
+      importing: false,
+      importFormat: 'xlsx',
+      tableFormats: TABLE_FORMATS
     }
   },
   mounted () {
@@ -591,32 +591,39 @@ export default {
           throw new Error('Unsupported type ' + definition.type)
       }
     },
-    exportXlsx () {
+    exportTable (format) {
       const self = this
       this.exporting = true
       this.$axios.post('/api/tables/template/',
-        {schema: this.sample_schema, data: this.getRowData(false)},
+        {schema: this.sample_schema, data: this.getRowData(false), format},
         {responseType: 'blob'})
         .then(function (response) {
           const filename = tableExportFilename({
             submission: self.submission,
             variable: self.variable,
             title: self.sample_schema && self.sample_schema.title,
-            typeName: self.type && self.type.name
+            typeName: self.type && self.type.name,
+            format
           })
           downloadBlob(response.data, filename)
         })
         .catch(function () {
-          self.$q.notify({message: 'Could not generate the Excel file.', type: 'negative'})
+          self.$q.notify({message: 'Could not generate the export file.', type: 'negative'})
         })
         .then(function () {
           self.exporting = false
         })
     },
-    importXlsx (event) {
+    triggerImport (format, accept) {
+      this.importFormat = format
+      this.$refs.importInput.accept = accept || ''
+      this.$refs.importInput.click()
+    },
+    importFile (event) {
       const self = this
       const input = event.target
       const file = input.files && input.files[0]
+      const format = this.importFormat
       // Reset so re-selecting the same file still fires @change.
       input.value = ''
       if (!file) {
@@ -628,6 +635,7 @@ export default {
         const form = new FormData()
         form.append('file', file)
         form.append('schema', JSON.stringify(self.sample_schema))
+        form.append('format', format)
         self.$axios.post('/api/tables/parse/', form)
           .then(function (response) {
             const rows = response.data.data || []
@@ -651,7 +659,7 @@ export default {
           })
           .catch(function (error) {
             const detail = error.response && error.response.data && error.response.data.detail
-            self.$q.notify({message: detail || 'Could not import the Excel file.', type: 'negative'})
+            self.$q.notify({message: detail || 'Could not import the file.', type: 'negative'})
           })
           .then(function () {
             self.importing = false
