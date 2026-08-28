@@ -28,10 +28,29 @@
                   :allow-examples="true"
                   :allow-force-save="true"
                   :ref="v.variable"
+                  :variable="v.variable"
+                  :submission="submission"
                   :table-warnings="getTableWarnings(v)"
                   :table-errors="getTableErrors(v)"
                   />
                 <q-btn :label="table_button_label(v)"  @click="openTable(v)" />
+                <q-btn-dropdown
+                  v-if="!modify && submission && submission.id"
+                  flat
+                  dense
+                  round
+                  color="primary"
+                  icon="download"
+                  :loading="exporting[v.variable]"
+                  class="q-ml-xs"
+                >
+                  <q-tooltip>Export this table</q-tooltip>
+                  <q-list>
+                    <q-item v-for="f in tableFormats" :key="f.format" clickable v-close-popup @click="exportTable(v, f.format)">
+                      <q-item-section>{{f.label}}</q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-btn-dropdown>
               </template>
               <template v-slot:error>
                 <div v-if="hasError(v.variable)">{{getError(v)}}</div>
@@ -107,13 +126,16 @@
 import { defineAsyncComponent } from 'vue'
 import widgetFactory from '../forms/widgets.js'
 import { QSelect, QOptionGroup, QCheckbox } from 'quasar'
+import { tableExportFilename, downloadBlob, TABLE_FORMATS } from '../../utils/tableExport.js'
 // import _ from 'lodash'
 
 export default {
-  props: ['modelValue', 'schema', 'editable', 'errors', 'warnings', 'modify'],
+  props: ['modelValue', 'schema', 'editable', 'errors', 'warnings', 'modify', 'submission'],
   data () {
     return {
-      data: this.modelValue ? this.modelValue : {}
+      data: this.modelValue ? this.modelValue : {},
+      exporting: {},
+      tableFormats: TABLE_FORMATS
     }
   },
   mounted () {
@@ -171,6 +193,30 @@ export default {
     openTable (v) {
       console.log('refs', this.$refs, v, this.$refs[v.variable][0])
       this.$refs[v.variable][0].openSamplesheet()
+    },
+    exportTable (v, format) {
+      // Standalone export for the view (non-edit) mode: send just the
+      // submission id + table variable and let the server use the saved rows.
+      const self = this
+      this.exporting = {...this.exporting, [v.variable]: true}
+      this.$axios.post('/api/tables/template/',
+        {submission: this.submission.id, table: v.variable, format},
+        {responseType: 'blob'})
+        .then(function (response) {
+          const filename = tableExportFilename({
+            submission: self.submission,
+            variable: v.variable,
+            title: v.schema && v.schema.title,
+            format
+          })
+          downloadBlob(response.data, filename)
+        })
+        .catch(function () {
+          self.$q.notify({message: 'Could not export the table.', type: 'negative'})
+        })
+        .then(function () {
+          self.exporting = {...self.exporting, [v.variable]: false}
+        })
     },
     table_button_label (v) {
       console.log('table_button_label', v, v.variable, this.modelValue, this.modelValue[v.variable])

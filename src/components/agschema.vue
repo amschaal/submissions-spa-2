@@ -39,6 +39,26 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
+            <q-btn-dropdown color="primary" icon="download" label="Export" :loading="exporting">
+              <q-list>
+                <q-item v-for="f in tableFormats" :key="f.format" clickable v-close-popup @click="exportTable(f.format)">
+                  <q-item-section>{{f.label}}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+            <q-btn-dropdown v-if="editable" color="primary" icon="upload" label="Import" :loading="importing">
+              <q-list>
+                <q-item v-for="f in tableFormats" :key="f.format" clickable v-close-popup @click="triggerImport(f.format, f.accept)">
+                  <q-item-section>{{f.label}}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+            <input
+              ref="importInput"
+              type="file"
+              style="display:none"
+              @change="importFile"
+            >
             <ag-grid-vue style="width: 100%; height: 90%;" class="ag-theme-balham"
 
               :gridOptions='gridOptions'
@@ -218,13 +238,14 @@ import SelectComponent from './aggrid/editors/SelectComponent.vue'
 import GridComponent from './aggrid/editors/GridComponent.vue'
 import _ from 'lodash'
 import sampleWidgetFactory from './aggrid/widgets.js'
+import { tableExportFilename, downloadBlob, TABLE_FORMATS } from '../utils/tableExport.js'
 // import { ClipboardService } from '../../node_modules/ag-grid-enterprise/dist/lib/clipboardService.js'
 // import axios from 'axios'
 // var clipboardService = null
 
 export default {
   name: 'Agschema',
-  props: ['modelValue', 'type', 'schema', 'editable', 'allowExamples', 'allowForceSave', 'submission', 'tableWarnings', 'tableErrors'],
+  props: ['modelValue', 'type', 'schema', 'editable', 'allowExamples', 'allowForceSave', 'submission', 'variable', 'tableWarnings', 'tableErrors'],
   emits: ['update:modelValue'],
   data () {
     return {
@@ -292,7 +313,11 @@ export default {
       },
       errors: {},
       warnings: {},
-      maximized: true
+      maximized: true,
+      exporting: false,
+      importing: false,
+      importFormat: 'xlsx',
+      tableFormats: TABLE_FORMATS
     }
   },
   mounted () {
@@ -564,6 +589,91 @@ export default {
         default:
           // console.log(id,definition);
           throw new Error('Unsupported type ' + definition.type)
+      }
+    },
+    exportTable (format) {
+      const self = this
+      this.exporting = true
+      this.$axios.post('/api/tables/template/',
+        {schema: this.sample_schema, data: this.getRowData(false), format},
+        {responseType: 'blob'})
+        .then(function (response) {
+          const filename = tableExportFilename({
+            submission: self.submission,
+            variable: self.variable,
+            title: self.sample_schema && self.sample_schema.title,
+            typeName: self.type && self.type.name,
+            format
+          })
+          downloadBlob(response.data, filename)
+        })
+        .catch(function () {
+          self.$q.notify({message: 'Could not generate the export file.', type: 'negative'})
+        })
+        .then(function () {
+          self.exporting = false
+        })
+    },
+    triggerImport (format, accept) {
+      this.importFormat = format
+      this.$refs.importInput.accept = accept || ''
+      this.$refs.importInput.click()
+    },
+    importFile (event) {
+      const self = this
+      const input = event.target
+      const file = input.files && input.files[0]
+      const format = this.importFormat
+      // Reset so re-selecting the same file still fires @change.
+      input.value = ''
+      if (!file) {
+        return
+      }
+      const hasRows = this.getRowData(false).length > 0
+      const doImport = function () {
+        self.importing = true
+        const form = new FormData()
+        form.append('file', file)
+        form.append('schema', JSON.stringify(self.sample_schema))
+        form.append('format', format)
+        self.$axios.post('/api/tables/parse/', form)
+          .then(function (response) {
+            const rows = response.data.data || []
+            self.rowData = rows
+            self.gridApi.setGridOption('rowData', rows)
+            self.errors = response.data.errors || {}
+            self.warnings = response.data.warnings || {}
+            self.gridApi.redrawRows()
+            const errorCount = _.size(self.errors)
+            const warningCount = _.size(self.warnings)
+            let message = `Imported ${rows.length} row${rows.length === 1 ? '' : 's'}.`
+            let type = 'positive'
+            if (errorCount) {
+              message += ` ${errorCount} row${errorCount === 1 ? '' : 's'} have errors that must be corrected.`
+              type = 'negative'
+            } else if (warningCount) {
+              message += ` ${warningCount} row${warningCount === 1 ? '' : 's'} have warnings.`
+              type = 'warning'
+            }
+            self.$q.notify({message, type})
+          })
+          .catch(function (error) {
+            const detail = error.response && error.response.data && error.response.data.detail
+            self.$q.notify({message: detail || 'Could not import the file.', type: 'negative'})
+          })
+          .then(function () {
+            self.importing = false
+          })
+      }
+      if (hasRows) {
+        this.$q.dialog({
+          title: 'Replace rows?',
+          message: 'Importing will replace all current rows with the contents of the file. Continue?',
+          cancel: true,
+          persistent: true
+        }).onOk(doImport)
+      } else {
+        doImport()
       }
     },
     save () {
