@@ -216,7 +216,7 @@ export default {
     //   }
     // },
     download () {
-      window.location.href = `/server/api/submissions/${this.submission.id}/download/?format=${this.downloadParams.format}&data=${this.downloadParams.data}`
+      window.location.href = `/server/api/submissions/${this.submission.id}/download/?export_format=${this.downloadParams.format}&data=${this.downloadParams.data}`
     },
     copySubmission () {
       // Vue Router 4 requires lab_id explicitly (v3 inherited it from the
