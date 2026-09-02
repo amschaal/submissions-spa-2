@@ -214,7 +214,7 @@ export default {
         { name: 'type', label: 'Type', field: 'type' },
         { name: 'status', label: 'Status', field: 'status', sortable: true },
         { name: 'participant_names', label: 'Participants', field: 'participant_names', sortable: false },
-        { name: 'submitted', label: 'Submitted', field: 'submitted', sortable: true },
+        { name: 'submitted', label: 'Created', field: 'submitted', sortable: true },
         { name: 'updated', label: 'Updated', field: 'updated', sortable: true },
         { name: 'name', label: 'Name', field: 'name' },
         { name: 'email', label: 'Email', field: 'email', sortable: true },

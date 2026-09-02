@@ -49,7 +49,7 @@
             {{submission_type.name}}
           </div>
           <div class="field col-sm-12 col-md-6">
-            <p class="caption">Submitted</p>
+            <p class="caption">Submission Created</p>
             {{ $formatDate(submission.submitted) }}
           </div>
           <div class="field col-sm-12 col-md-12" v-if="isAdmin">

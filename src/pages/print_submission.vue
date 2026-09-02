@@ -5,7 +5,7 @@
     <p class="heading" v-if="submission.import_data">(Imported from {{submission.import_data.internal_id}}: {{submission.import_data.type.name}})</p>
     <table class="full bordered compact submission">
     <tbody>
-      <!-- <tr><th>Submitted</th><td>{{getDate(submission.submitted)}}</td><th>ID</th><td>{{submission.internal_id}}</td><th>Type</th><td colspan="3">{{submission.type.name}}</td></tr> -->
+      <!-- <tr><th>Created</th><td>{{getDate(submission.submitted)}}</td><th>ID</th><td>{{submission.internal_id}}</td><th>Type</th><td colspan="3">{{submission.type.name}}</td></tr> -->
       <tr><th>ID</th><td>{{submission.internal_id}}</td><th>Date Samples Received</th><td>{{ $formatDate(submission.samples_received) }}</td><th>Received by</th><td>{{submission.received_by_name}}</td></tr>
       <tr><th>PI</th><td>{{submission.pi_first_name}} {{submission.pi_last_name}}</td><th>PI email</th><td>{{submission.pi_email}}</td><th>PI Phone</th><td>{{submission.pi_phone}}</td></tr>
       <tr><th>Submitter</th><td>{{submission.first_name}} {{submission.last_name}}</td><th>Email</th><td>{{submission.email}}</td><th>Phone</th><td>{{submission.phone}}</td></tr>
