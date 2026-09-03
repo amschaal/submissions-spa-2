@@ -44,6 +44,7 @@
                   <q-item-label>
                     <span v-if="scope.opt.active">{{scope.opt.label}}</span>
                     <span v-else style="color:red">{{scope.opt.label}} (inactive)</span>
+                    <span v-if="scope.opt.internal" style="color:#1976d2"> (internal)</span>
                   </q-item-label>
                 </q-item-section>
               </q-item>

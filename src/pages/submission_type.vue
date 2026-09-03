@@ -21,23 +21,37 @@
           </div>
         <VersionModal v-if="this.id" :versions-url="`/api/submission_types/${this.id}/versions/`" class="q-ml-sm float-right" :object-id="id" view-router-name="submission_type_version" :object-url="$router.resolve({name: 'submission_type', params: { id: id, lab_id: $store.getters.labId }}).href"/>
         <router-link v-if="type.submission_count > 0 && type.id" :to="{'name': 'submissions', 'params': { 'lab_id': $store.getters.labId }, 'query': { 'search': type.name }}" class="float-right">{{type.submission_count}} Submissions</router-link>
-        <div><b><span v-if="!type.id">Create</span> Submission Type <span v-if="type.id && type.name"> - <i>{{ type.name }}</i></span><span class="inactive" v-if="type.id && !type.active"> (Inactive)</span></b></div>
+        <div><b><span v-if="!type.id">Create</span> Submission Type <span v-if="type.id && type.name"> - <i>{{ type.name }}</i></span><span class="inactive" v-if="type.id && !type.active"> (Inactive)</span><span class="internal-type" v-if="type.id && type.internal"> (Internal)</span></b></div>
         <div v-if="version" class="text-primary"><b>This is a specific version of the submission type.  You may work from it and save it as the current version, or you may <router-link v-if="type.id && type.prefix" :to="{'name': 'submission_type', 'params': {'id': id, 'lab_id': $store.getters.labId}}">load the current version</router-link>.</b></div>
         <b v-if="!can_modify"> (Viewing with read only permissions)</b>
       </q-card-section>
       <!-- <q-btn :to="{ name: 'create_submission_type', params: { lab_id: $store.getters.labId }, query: { copy_from: type.id } }" label="Copy" v-if="type.id"/> -->
       <q-separator />
       <q-card-section>
-        <q-field
-          dense
-          label="Active"
-          stack-label
-          :error="hasError('active')"
-          :error-message="errorMessage('active')"
-          borderless
-        >
-          <q-checkbox v-model="type.active" label="Should this type be available for submission?"/>
-        </q-field>
+        <div class="row">
+          <q-field
+            dense
+            label="Active"
+            stack-label
+            :error="hasError('active')"
+            :error-message="errorMessage('active')"
+            borderless
+            class="col"
+          >
+            <q-checkbox v-model="type.active" label="Should this type be available for submission?"/>
+          </q-field>
+          <q-field
+            dense
+            label="Internal"
+            stack-label
+            :error="hasError('internal')"
+            :error-message="errorMessage('internal')"
+            borderless
+            class="col"
+          >
+            <q-checkbox v-model="type.internal" label="Internal only?  Clients will not see this type, and only lab members may create or update its submissions."/>
+          </q-field>
+        </div>
         <div class="row">
           <q-input
             dense
@@ -217,7 +231,7 @@ export default {
   props: ['id', 'version'],
   data () {
     return {
-      type: {active: true, submission_help: '', help: '', statuses: [], default_participants: [], submission_schema: {properties: {}, order: [], required: [], layout: {}, printing: {}}, sample_schema: {properties: {}, order: [], required: [], printing: {}, examples: []}},
+      type: {active: true, internal: false, submission_help: '', help: '', statuses: [], default_participants: [], submission_schema: {properties: {}, order: [], required: [], layout: {}, printing: {}}, sample_schema: {properties: {}, order: [], required: [], printing: {}, examples: []}},
       version_details: null,
       errors: {},
       import_url: null,
@@ -608,5 +622,8 @@ export default {
 <style>
 .inactive {
   color: red;
+}
+.internal-type {
+  color: #1976d2;
 }
 </style>

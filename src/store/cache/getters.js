@@ -25,7 +25,7 @@ export const typesDict = (state) => {
 }
 export const typeOptions = (state) => {
   console.log('typeOptions', state)
-  return state.types.map(opt => ({label: opt.name, value: opt.id, active: opt.active}))
+  return state.types.map(opt => ({label: opt.name, value: opt.id, active: opt.active, internal: opt.internal}))
 }
 export const statuses = (state) => {
   return state.statuses
