@@ -45,6 +45,7 @@
                     <span v-if="scope.opt.active">{{scope.opt.label}}</span>
                     <span v-else style="color:red">{{scope.opt.label}} (inactive)</span>
                     <span v-if="scope.opt.internal" style="color:#1976d2"> (internal)</span>
+                    <span v-if="scope.opt.payment_required === false" style="color:#757575"> (no payment)</span>
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -181,7 +182,7 @@
           </div>
         </div>
       </fieldset>
-      <fieldset>
+      <fieldset v-if="paymentRequired">
         <legend>Payment</legend>
         <!-- <UCDAccount v-model="submission.payment" :errors="errors.payment"/> -->
         <!-- <PPMS v-model="submission.payment" :errors="errors.payment"/> -->
@@ -813,6 +814,14 @@ export default {
     },
     isAdmin () {
       return this.submission.permissions && this.submission.permissions.indexOf('ADMIN') !== -1
+    },
+    // Payment is snapshotted onto the submission when it is created, so an
+    // existing submission follows its own flag; a new one follows its type.
+    paymentRequired () {
+      if (this.submission.id) {
+        return this.submission.payment_required !== false
+      }
+      return !this.type || this.type.payment_required !== false
     },
     isStaff () {
       return this.submission.permissions && this.submission.permissions.indexOf('STAFF') !== -1

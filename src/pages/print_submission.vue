@@ -13,7 +13,7 @@
       <tr><th>Institute</th><td colspan="5">{{submission.institute}}</td></tr>
       <tr v-if="submission.notes"><th>Notes</th><td colspan="7">{{submission.notes}}</td></tr>
     </tbody>
-    <KeyValueTable :arr="chunk_arr(payment_array(true), 6)"/>
+    <KeyValueTable :arr="chunk_arr(payment_array(true), 6)" v-if="payment_array(true).length"/>
   </table>
     <table class="full bordered compact submission">
     <KeyValueTable :arr="chunk_arr(submission_field_data_array(true), 6)"/>

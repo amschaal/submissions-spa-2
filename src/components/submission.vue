@@ -118,8 +118,9 @@
             {{c.email}}
           </div>
         </div>
-        <p class="caption">Payment</p>
-        <div class="row">
+        <!-- Submissions created without a payment requirement have no payment data. -->
+        <p class="caption" v-if="hasPayment">Payment</p>
+        <div class="row" v-if="hasPayment">
           <div class="field col-sm-12 col-md-6" v-for="(value, label) in submission.payment.display" :key="label">
             <p class="caption">{{label}}</p>
             {{value}}
@@ -253,6 +254,9 @@ export default {
     },
     hasWarnings () {
       return this.submission && this.submission.warnings && _.size(this.submission.warnings) > 0
+    },
+    hasPayment () {
+      return !!(this.submission && this.submission.payment && _.size(this.submission.payment.display) > 0)
     },
     formatOptions () {
       const options = [

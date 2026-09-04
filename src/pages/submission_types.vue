@@ -41,7 +41,7 @@
       <template v-slot:body="props">
         <q-tr :props="props" v-bind:class="{'inactive': !props.row.active}">
           <q-td key="sort_order" :props="props">{{ props.row.sort_order }}</q-td>
-          <q-td key="name" :props="props"><router-link :to="{ name: 'submission_type', params: { id: props.row.id, lab_id: $store.getters.labId }}">{{ props.row.name }}</router-link><span class="internal-type" v-if="props.row.internal"> (internal)</span></q-td>
+          <q-td key="name" :props="props"><router-link :to="{ name: 'submission_type', params: { id: props.row.id, lab_id: $store.getters.labId }}">{{ props.row.name }}</router-link><span class="internal-type" v-if="props.row.internal"> (internal)</span><span class="no-payment" v-if="props.row.payment_required === false"> (no payment)</span></q-td>
           <q-td key="description" :props="props">{{ props.row.description }}</q-td>
           <q-td key="updated" :props="props">{{ $formatDate(props.row.updated) }}</q-td>
           <q-td key="submission_count" :props="props"><router-link :to="{ name: 'submissions', params: { lab_id: $store.getters.labId }, query: { search: props.row.name }}">{{ props.row.submission_count }}</router-link></q-td>
@@ -148,6 +148,9 @@ export default {
 <style>
 .internal-type {
   color: #1976d2;
+}
+.no-payment {
+  color: #757575;
 }
 tr.inactive td, tr.inactive td a, .inactive {
   color: red;
