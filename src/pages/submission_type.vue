@@ -60,7 +60,7 @@
             borderless
             class="col"
           >
-            <q-checkbox v-model="type.payment_required" label="Require payment information?  When unchecked, the payment section is hidden from the form and nothing is validated or stored.  Existing submissions keep the arrangement they were submitted with."/>
+            <q-checkbox v-model="type.payment_required" label="Require payment information?  When unchecked, the payment section is hidden from the form and nothing is validated or stored.  Submissions that already have payment information keep it and stay editable."/>
           </q-field>
         </div>
         <div class="row">

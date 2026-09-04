@@ -815,8 +815,9 @@ export default {
     isAdmin () {
       return this.submission.permissions && this.submission.permissions.indexOf('ADMIN') !== -1
     },
-    // Payment is snapshotted onto the submission when it is created, so an
-    // existing submission follows its own flag; a new one follows its type.
+    // The API reports whether an existing submission needs payment (payment
+    // already captured is always kept and editable, otherwise its type decides);
+    // a new submission follows its type.
     paymentRequired () {
       if (this.submission.id) {
         return this.submission.payment_required !== false
