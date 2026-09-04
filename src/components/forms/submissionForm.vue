@@ -186,7 +186,37 @@
         <legend>Payment</legend>
         <!-- <UCDAccount v-model="submission.payment" :errors="errors.payment"/> -->
         <!-- <PPMS v-model="submission.payment" :errors="errors.payment"/> -->
-        <component v-if="payment_type" v-bind:is="payment_type" v-model="submission.payment" :errors="errors.payment"></component>
+        <!-- Stored payment was validated when it was entered; the API keeps it
+             untouched unless it changes, so show it read-only until the user
+             explicitly asks to change it. -->
+        <div v-if="payment_locked" class="row">
+          <div class="col-sm-12 col-md-6 q-pa-sm" v-for="(value, label) in submission.payment.display" :key="label">
+            <q-field :label="label" stack-label readonly borderless dense>
+              <template v-slot:control>
+                <div class="self-center full-width no-outline" tabindex="0">{{value || '(none)'}}</div>
+              </template>
+            </q-field>
+          </div>
+          <div class="col-12 q-pa-sm">
+            <q-banner dense rounded class="bg-grey-3">
+              <template v-slot:avatar><q-icon name="lock" color="primary"/></template>
+              These payment details were validated when they were entered and will be kept exactly as they are.
+              <template v-slot:action>
+                <q-btn flat color="primary" label="Change payment" @click="unlockPayment"/>
+              </template>
+            </q-banner>
+          </div>
+        </div>
+        <div v-else>
+          <q-banner dense rounded class="bg-grey-3 q-mb-sm" v-if="original_payment">
+            <template v-slot:avatar><q-icon name="edit" color="primary"/></template>
+            The new payment details will be validated when you save.
+            <template v-slot:action>
+              <q-btn flat color="primary" label="Keep original payment" @click="relockPayment"/>
+            </template>
+          </q-banner>
+          <component v-if="payment_type" v-bind:is="payment_type" v-model="submission.payment" :errors="errors.payment"></component>
+        </div>
         <!-- <component v-bind:is="$plugins.componentName(tab.id)" :config="$plugins.getLabConfig(submission.lab.lab_id, tab.id)" :submission="submission"></component> -->
         <!-- <Account v-model="submission.payment" :errors="errors.payment || {}"/> -->
         <!-- <div class="row">
@@ -335,6 +365,8 @@ export default {
       imported: null,
       import_url: '',
       payment_type: null,
+      payment_locked: false, // stored payment shown read-only until "Change payment"
+      original_payment: null, // copy of the stored payment, for "Keep original payment"
       inactive: false,
       submitting: false
       // create: false
@@ -497,6 +529,21 @@ export default {
     removeCached () {
       window.localStorage.removeItem('submission')
     },
+    lockPayment () {
+      // An existing submission's stored payment is kept as it is by the API
+      // unless it changes; show it read-only until the user asks to change it.
+      const stored = !!this.submission.id && !_.isEmpty(this.submission.payment && this.submission.payment.display)
+      this.original_payment = stored ? _.cloneDeep(this.submission.payment) : null
+      this.payment_locked = stored
+    },
+    unlockPayment () {
+      this.payment_locked = false
+    },
+    relockPayment () {
+      this.submission.payment = _.cloneDeep(this.original_payment)
+      this.errors.payment = {}
+      this.payment_locked = true
+    },
     updatePaymentForm () {
       if (this.submission.id) {
         this.$plugins.getSubmissionPayment(this.submission).then((paymentComponent) => {
@@ -564,6 +611,9 @@ export default {
           if (data) {
             self.errors = data
             self.errors.payment = data.payment || {}
+            if (!_.isEmpty(self.errors.payment)) {
+              self.payment_locked = false // surface the errors in the payment form
+            }
           }
         })
     },
@@ -685,6 +735,7 @@ export default {
           // self.warnings = response.data.warnings || {}
           self.submission.type = self.submission.type.id
           self.updatePaymentForm()
+          self.lockPayment()
         })
     },
     addContact () {
