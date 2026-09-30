@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { getCsrfToken } from '../utils/csrf.js'
 
 export default {
   props: ['submission'],
@@ -88,10 +89,6 @@ export default {
       // auto-start the upload as soon as files are added
       this.$refs.uploader.upload()
     },
-    getCsrfToken () {
-      const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/)
-      return match ? decodeURIComponent(match[1]) : ''
-    },
     onUploaded () {
       this.$q.notify({message: 'File uploaded', type: 'positive'})
       this.refreshTable()
@@ -131,7 +128,7 @@ export default {
         method: 'POST',
         fieldName: 'file',
         formFields: [{ name: 'submission', value: String(this.submission.id) }],
-        headers: [{ name: 'X-CSRFToken', value: this.getCsrfToken() }],
+        headers: [{ name: 'X-CSRFToken', value: getCsrfToken() }],
         withCredentials: true
       })
     }

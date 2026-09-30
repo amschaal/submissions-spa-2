@@ -1,9 +1,29 @@
 import { Notify } from 'quasar'
 import auth from '../store/auth/index.js'
 import { axiosInstance } from './axios.js'
+import { getCsrfToken } from '../utils/csrf.js'
 
+// social-auth-app-django >= 6 only starts a login on POST, behind Django's
+// CSRF check, so submit a form to it rather than navigating there.  The
+// csrftoken cookie normally exists already (App.vue calls /api/get_user/ on
+// boot); if Login is clicked before that returns, fetch it first -- the 403
+// an anonymous user gets still sets the cookie.
 function login () {
-  window.location.href = '/server/accounts/login/'
+  const ready = getCsrfToken()
+    ? Promise.resolve()
+    : axiosInstance.get('/api/get_user/').catch(() => {})
+  return ready.then(function () {
+    const form = document.createElement('form')
+    form.method = 'post'
+    form.action = '/server/social/login/keycloak/'
+    const token = document.createElement('input')
+    token.type = 'hidden'
+    token.name = 'csrfmiddlewaretoken'
+    token.value = getCsrfToken()
+    form.appendChild(token)
+    document.body.appendChild(form)
+    form.submit()
+  })
 }
 // Django 5 dropped GET support from LogoutView, so navigating the browser to
 // /server/accounts/logout/ just returns a 405.  POST to the API endpoint
