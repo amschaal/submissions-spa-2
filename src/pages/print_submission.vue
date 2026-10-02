@@ -16,13 +16,18 @@
     <KeyValueTable :arr="chunk_arr(payment_array(true), 6)" v-if="payment_array(true).length"/>
   </table>
     <table class="full bordered compact submission">
-    <KeyValueTable :arr="chunk_arr(submission_field_data_array(true), 6)"/>
+    <template v-for="section in field_sections()" :key="section.key">
+      <tbody v-if="section.title">
+        <tr><th colspan="6" class="group-heading">{{section.title}}</th></tr>
+      </tbody>
+      <KeyValueTable :arr="chunk_arr(section.data, 6)"/>
+    </template>
     <tbody v-if="submission.comments">
       <tr ><th>Special Instructions / Comments</th><td colspan="7">{{submission.comments}}</td></tr>
     </tbody>
     </table>
   <div v-for="(v, index) in table_fields()" :key="index">
-    <p class="heading">{{getTitle(submission.submission_schema,v)}}: {{submission.submission_data[v] ? submission.submission_data[v].length : 0}}</p>
+    <p class="heading"><span v-if="group_titles[v]">{{group_titles[v]}} - </span>{{getTitle(submission.submission_schema,v)}}: {{submission.submission_data[v] ? submission.submission_data[v].length : 0}}</p>
     <table class="horizontal full bordered compact" v-if="submission.submission_data[v] && submission.submission_data[v].length > 0">
       <thead>
         <tr>
@@ -42,6 +47,7 @@
 <script>
 import { date } from 'quasar'
 import KeyValueTable from '../components/keyValueTable.vue'
+import { layoutItems } from '../utils/schemaGroups.js'
 import _ from 'lodash'
 const { formatDate } = date
 export default {
@@ -98,15 +104,32 @@ export default {
     chunk_arr (arr, chunkSize = 8) {
       return _.chunk(arr, chunkSize)
     },
-    submission_field_data_array (flatten = true) {
+    submission_field_data_array (flatten = true, variables = null) {
       const self = this
-      const fields = this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type !== 'table' && !this.hidden(self.submission.submission_schema, v))
+      const fields = (variables || this.submission.submission_schema.order).filter(v => self.submission.submission_schema.properties[v].type !== 'table' && !this.hidden(self.submission.submission_schema, v))
       const arr = fields.map(v => [self.getTitle(self.submission.submission_schema, v), self.truncate(self.submission.submission_schema, v, self.submission.submission_data[v])])
       return flatten ? _.flatten(arr) : arr
     },
+    // Runs of ungrouped fields, and each group under its own heading, in display order
+    field_sections () {
+      const sections = []
+      this.print_layout.forEach(item => {
+        const last = sections[sections.length - 1]
+        if (item.type === 'group') {
+          sections.push({key: item.key, title: item.title, variables: item.fields.map(f => f.variable)})
+        } else if (last && !last.title) {
+          last.variables.push(item.variable)
+        } else {
+          sections.push({key: item.key, title: null, variables: [item.variable]})
+        }
+      })
+      return sections.map(section => ({...section, data: this.submission_field_data_array(true, section.variables)}))
+        .filter(section => section.data.length)
+    },
     table_fields () {
       const self = this
-      return this.submission.submission_schema.order.filter(v => self.submission.submission_schema.properties[v].type === 'table' && !self.hidden(self.submission.submission_schema, v))
+      const variables = _.flatMap(this.print_layout, item => item.type === 'group' ? item.fields.map(f => f.variable) : [item.variable])
+      return variables.filter(v => self.submission.submission_schema.properties[v].type === 'table' && !self.hidden(self.submission.submission_schema, v))
     },
     payment_array (flatten = true) {
       const arr = _.toPairs(this.submission.payment.display)
@@ -114,6 +137,19 @@ export default {
     }
   },
   computed: {
+    // Field groups hidden from printing are left out entirely, tables included
+    print_layout () {
+      return layoutItems(this.submission.submission_schema)
+        .filter(item => item.type !== 'group' || !(item.group.printing && item.group.printing.hidden))
+        .map(item => item.type === 'group' ? {...item, title: (item.group.printing && item.group.printing.label) || item.group.title} : item)
+    },
+    group_titles () {
+      const titles = {}
+      this.print_layout.filter(item => item.type === 'group').forEach(item => {
+        item.fields.forEach(f => { titles[f.variable] = item.title })
+      })
+      return titles
+    },
     created_by () {
       const u = this.version_details.revision.user
       return u && u.first_name ? `${u.last_name}, ${u.first_name} (${u.email})` : 'unknown'
@@ -150,6 +186,10 @@ td,th{
 }
 table.submission td {
   min-width: 5em;
+}
+th.group-heading {
+  font-size: 10pt;
+  background-color: #eee;
 }
 .heading{
   text-align:center;

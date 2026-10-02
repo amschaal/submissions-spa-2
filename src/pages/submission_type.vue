@@ -199,7 +199,8 @@
           <q-btn label="Import" @click="importSchema(import_url)"/>
         </template>
         </q-input>
-        <schemaForm v-model="type.submission_schema" :root-schema="type.submission_schema" :options="{variables: $store.getters.lab.submission_variables, showWidth: true}" type="submission"/>
+        <div v-if="hasError('submission_schema')" class="text-negative q-my-sm" role="alert">{{errorMessage('submission_schema')}}</div>
+        <schemaForm v-model="type.submission_schema" :root-schema="type.submission_schema" :options="{variables: $store.getters.lab.submission_variables, showWidth: true, groups: true}" type="submission"/>
 <!--
         <h5>Samplesheet definition</h5>
         <h6>Column Definitions</h6>

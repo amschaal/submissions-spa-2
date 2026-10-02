@@ -1,7 +1,11 @@
 <template>
   <div class="row">
       <!-- <q-editor ng-model="foo" v-if="false"/> -->
-      <div v-for="v in fields" :key="v.variable" class="field q-mb-md q-pb-lg q-pl-sm q-pr-sm" v-bind:class="colWidth(v.variable)">
+      <!-- Ungrouped fields and field groups (see utils/schemaGroups.js), in display order -->
+      <div v-for="item in items" :key="item.key" v-bind:class="itemWidth(item)">
+      <CustomFieldGroup :group="item.group">
+      <div class="row">
+      <div v-for="v in item.type == 'group' ? item.fields : [item]" :key="v.variable" class="field q-mb-md q-pb-lg q-pl-sm q-pr-sm" v-bind:class="item.type == 'group' ? colWidth(v.variable) : 'col-12'">
         <div v-if="$store.getters.isStaff || !v.schema.internal">
           <span v-if="v.schema.type=='table'">
             <!-- :error="sample_data_error"
@@ -99,13 +103,18 @@
             <!-- {{widget(v).getOptions()}}|{{widgetClass(v).component}}|{{value}}|{{v.variable}}|{{modelValue[v.variable]}}|{{widget(v).getDefault()}} -->
           </span>
         </div>
-    </div>
+      </div>
+      </div>
+      </CustomFieldGroup>
+      </div>
   </div>
 </template>
 
 <script>
 import { defineAsyncComponent } from 'vue'
 import widgetFactory from '../forms/widgets.js'
+import { layoutItems } from '../../utils/schemaGroups.js'
+import CustomFieldGroup from './customFieldGroup.vue'
 import { QSelect, QOptionGroup, QCheckbox } from 'quasar'
 // import _ from 'lodash'
 
@@ -135,6 +144,12 @@ export default {
       //   return 'col-4'
       // }
       return this.schema.layout[variable] && this.schema.layout[variable].width ? [this.schema.layout[variable].width] : ['col-12']
+    },
+    itemWidth (item) {
+      if (item.type === 'group') {
+        return item.group.layout && item.group.layout.width ? [item.group.layout.width] : ['col-12']
+      }
+      return this.colWidth(item.variable)
     },
     getError (v) {
       // console.log('getError1', v.schema, v.schema.error_message, this.errors, v.variable)
@@ -185,23 +200,17 @@ export default {
     }
   },
   computed: {
-    fields () {
-      if (!this.schema) {
-        return []
-      }
-      const self = this
-      if (self.schema.order) {
-        return self.schema.order.map(function (variable) {
-          return {variable, 'schema': self.schema.properties[variable]}
-        })
-      }
-      return []
+    items () {
+      // Groups with nothing the user may see (no fields, or only internal ones for non-staff) are left out
+      return layoutItems(this.schema).filter(item => item.type !== 'group' ||
+        item.fields.some(v => this.$store.getters.isStaff || !v.schema.internal))
     }
   },
   components: {
     QSelect,
     QOptionGroup,
     QCheckbox,
+    CustomFieldGroup,
     Agschema: defineAsyncComponent(() => import('../agschema.vue'))
   },
   watch: {
