@@ -23,10 +23,15 @@ function resolveBuildId () {
     return 'build-' + Date.now()
   }
 }
-const BUILD_ID = resolveBuildId()
+
 const APP_VERSION = JSON.parse(fs.readFileSync('./package.json', 'utf-8')).version
 
 export default function (ctx) {
+  // In dev, keep this constant: the CLI re-reads this file whenever its stat
+  // info changes (on Docker Desktop the reported owner flips between the uids of
+  // containers sharing the mount), and a changing build.env forces a full
+  // webpack restart + browser reload. version.vue skips the check in dev anyway.
+  const BUILD_ID = ctx.dev ? 'dev' : resolveBuildId()
   return {
     // app boot file (/src/boot)
     // https://v2.quasar.dev/quasar-cli-webpack/boot-files
