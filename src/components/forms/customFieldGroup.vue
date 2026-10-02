@@ -1,7 +1,7 @@
 <template>
   <slot v-if="!group"></slot>
   <div v-else class="custom-field-group q-mb-md" :class="{'custom-field-group--box': box}" role="group" :aria-label="group.title">
-    <q-expansion-item v-if="group.collapsible" :default-opened="!group.collapsed" header-class="q-px-sm">
+    <q-expansion-item v-if="group.collapsible" v-model="opened" header-class="q-px-sm">
       <template v-slot:header>
         <q-item-section>
           <div class="text-subtitle1 text-weight-medium">{{group.title}}<span v-if="group.description" class="q-ml-xs" tabindex="0" role="img" :aria-label="group.description"><q-icon name="info" size="xs" color="grey-7"/><q-tooltip>{{group.description}}</q-tooltip></span></div>
@@ -22,7 +22,23 @@
 // Wraps a group of custom fields in a box or under a header (optionally
 // collapsible).  Without a group the content is rendered as is.
 export default {
-  props: ['group'],
+  props: ['group', 'hasErrors'],
+  data () {
+    return {
+      opened: !(this.group && this.group.collapsed)
+    }
+  },
+  watch: {
+    // A collapsed group would hide its fields' errors and warnings
+    hasErrors: {
+      handler (val) {
+        if (val) {
+          this.opened = true
+        }
+      },
+      immediate: true
+    }
+  },
   computed: {
     box () {
       return this.group.display !== 'header'

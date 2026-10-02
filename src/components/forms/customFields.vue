@@ -3,7 +3,7 @@
       <!-- <q-editor ng-model="foo" v-if="false"/> -->
       <!-- Ungrouped fields and field groups (see utils/schemaGroups.js), in display order -->
       <div v-for="item in items" :key="item.key" v-bind:class="itemWidth(item)">
-      <CustomFieldGroup :group="item.group">
+      <CustomFieldGroup :group="item.group" :has-errors="groupHasErrors(item)">
       <div class="row">
       <div v-for="v in item.type == 'group' ? item.fields : [item]" :key="v.variable" class="field q-mb-md q-pb-lg q-pl-sm q-pr-sm" v-bind:class="item.type == 'group' ? colWidth(v.variable) : 'col-12'">
         <div v-if="$store.getters.isStaff || !v.schema.internal">
@@ -18,6 +18,7 @@
               class="q-pb-xl q-mb-xl"
               borderless
               bottom-slots
+              hide-bottom-space
               :error="hasError(v.variable) || hasWarning(v.variable)"
             >
               <!-- <Samplesheet v-model="submission.sample_data" :type="type"/> -->
@@ -52,6 +53,7 @@
             <q-field
               v-if="['q-input', 'q-select', 'q-file'].indexOf(widgetClass(v).component) == -1"
               bottom-slots
+              hide-bottom-space
               :error="hasError(v.variable) || hasWarning(v.variable)"
               :label="v.schema.title ? v.schema.title : v.variable"
               stack-label
@@ -89,6 +91,7 @@
               v-bind="widget(v).getOptions()"
               v-else
               bottom-slots
+              hide-bottom-space
               :error="hasError(v.variable) || hasWarning(v.variable)"
               :label="v.schema.title ? v.schema.title : v.variable"
               stack-label
@@ -144,6 +147,9 @@ export default {
       //   return 'col-4'
       // }
       return this.schema.layout[variable] && this.schema.layout[variable].width ? [this.schema.layout[variable].width] : ['col-12']
+    },
+    groupHasErrors (item) {
+      return item.type === 'group' && item.fields.some(v => this.hasError(v.variable) || this.hasWarning(v.variable))
     },
     itemWidth (item) {
       if (item.type === 'group') {

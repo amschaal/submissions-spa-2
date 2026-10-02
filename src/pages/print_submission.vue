@@ -16,12 +16,15 @@
     <KeyValueTable :arr="chunk_arr(payment_array(true), 6)" v-if="payment_array(true).length"/>
   </table>
     <table class="full bordered compact submission">
-    <template v-for="section in field_sections()" :key="section.key">
+    <template v-for="(section, i) in field_sections()" :key="section.key">
+      <!-- Close off the previous section so ungrouped fields don't read as part of a group -->
+      <tbody v-if="i > 0" class="section-break"><tr><td colspan="6"></td></tr></tbody>
       <tbody v-if="section.title">
         <tr><th colspan="6" class="group-heading">{{section.title}}</th></tr>
       </tbody>
       <KeyValueTable :arr="chunk_arr(section.data, 6)"/>
     </template>
+    <tbody v-if="submission.comments && last_section_is_group()" class="section-break"><tr><td colspan="6"></td></tr></tbody>
     <tbody v-if="submission.comments">
       <tr ><th>Special Instructions / Comments</th><td colspan="7">{{submission.comments}}</td></tr>
     </tbody>
@@ -126,6 +129,10 @@ export default {
       return sections.map(section => ({...section, data: this.submission_field_data_array(true, section.variables)}))
         .filter(section => section.data.length)
     },
+    last_section_is_group () {
+      const sections = this.field_sections()
+      return sections.length > 0 && !!sections[sections.length - 1].title
+    },
     table_fields () {
       const self = this
       const variables = _.flatMap(this.print_layout, item => item.type === 'group' ? item.fields.map(f => f.variable) : [item.variable])
@@ -186,6 +193,11 @@ td,th{
 }
 table.submission td {
   min-width: 5em;
+}
+.bordered tbody.section-break td {
+  border: none;
+  height: 8px;
+  padding: 0;
 }
 th.group-heading {
   font-size: 10pt;
