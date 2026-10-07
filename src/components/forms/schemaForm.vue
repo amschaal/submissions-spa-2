@@ -2,54 +2,80 @@
   <div>
         <div v-if="schema" style="width:100%">
           <div class="row"><div class="col-1"></div><div class="col-1" title="Should the field only be available to staff?">Internal</div><div class="col-1">Required</div><div class="col-2">Variable</div><div class="col-2">Name</div><div class="col-2">Type</div><div class="col-1" v-if="options.showWidth">Column Width</div><div class="col-2"></div></div>
-          <div v-for="variable in fields_sorted" :key="variable.variable">
-            <div class="row">
-              <div class="col-1"><q-btn flat dense round icon="arrow_upward" color="primary" :aria-label="`Move ${variable.variable} up`" @click="move(variable.variable, -1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != 0"/> <q-btn flat dense round icon="arrow_downward" color="primary" :aria-label="`Move ${variable.variable} down`" @click="move(variable.variable, 1, 'submission_schema')" v-if="schema.order && schema.order.indexOf(variable.variable) != schema.order.length - 1"/></div>
-              <div class="col-1"><q-checkbox dense v-if="variable.schema" :aria-label="`${variable.variable} internal`" v-model="variable.schema.internal" @update:model-value="toggleRequired(variable)"/></div>
-              <div class="col-1"><q-checkbox dense :aria-label="`${variable.variable} required`" v-model="schema.required" :val="variable.variable" :disable="variable.schema && variable.schema.internal"/></div>
-              <div class="col-2">{{variable.variable}}</div>
-              <div class="col-2"><q-input dense :aria-label="`${variable.variable} name`" v-model="variable.schema.title" /></div>
-              <div class="col-2">
-                <q-select
-                  dense options-dense
-                  :aria-label="`${variable.variable} type`"
-                  v-model="variable.schema.type"
-                  :options="type_options"
-                  map-options emit-value
-                />
+          <!-- Grouped layout: layout_order holds ungrouped fields and group ids, each group holds its own fields -->
+          <draggable v-if="groupsEnabled" :list="schema.layout_order" :item-key="id => id" :group="{ name: 'schema-layout' }" handle=".drag-handle" @end="syncLayout">
+            <template #item="{ element: id }">
+              <div :data-layout-group="isGroup(id) ? id : null">
+                <q-card v-if="isGroup(id)" flat bordered class="q-my-sm">
+                  <div class="row items-center bg-grey-2 q-py-xs">
+                    <div class="col-1">
+                      <q-icon name="drag_indicator" size="sm" class="drag-handle cursor-move" aria-hidden="true"/>
+                      <q-btn flat dense round icon="arrow_upward" color="primary" :aria-label="`Move group ${schema.groups[id].title} up`" @click="moveItem(id, -1)" v-if="canMove(id, -1)"/>
+                      <q-btn flat dense round icon="arrow_downward" color="primary" :aria-label="`Move group ${schema.groups[id].title} down`" @click="moveItem(id, 1)" v-if="canMove(id, 1)"/>
+                    </div>
+                    <div class="col-4 q-pr-md"><q-input dense :aria-label="`Group ${id} title`" placeholder="Group title" v-model="schema.groups[id].title"/></div>
+                    <div class="col-2 q-pr-md">
+                      <q-select dense options-dense :aria-label="`Group ${id} display`" :options="groupDisplayOptions" map-options emit-value
+                        :model-value="schema.groups[id].display || 'box'" @update:model-value="val => { schema.groups[id].display = val }"/>
+                    </div>
+                    <div class="col-2">
+                      <q-btn dense flat icon="settings" label="Options" :aria-label="`Group ${id} options`">
+                        <q-menu>
+                          <q-card style="min-width: 300px">
+                            <q-card-section class="q-gutter-sm">
+                              <q-input dense autogrow label="Description" v-model="schema.groups[id].description"/>
+                              <q-checkbox dense label="Collapsible" :model-value="!!schema.groups[id].collapsible" @update:model-value="val => { schema.groups[id].collapsible = val }"/>
+                              <q-checkbox dense label="Start collapsed" :disable="!schema.groups[id].collapsible" :model-value="!!schema.groups[id].collapsed" @update:model-value="val => { schema.groups[id].collapsed = val }"/>
+                              <div class="text-subtitle2">Printing</div>
+                              <q-input dense label="Print label" :model-value="groupPrinting(id).label" @update:model-value="val => setGroupPrinting(id, 'label', val)"/>
+                              <q-checkbox dense label="Hidden" :model-value="!!groupPrinting(id).hidden" @update:model-value="val => setGroupPrinting(id, 'hidden', val)"/>
+                            </q-card-section>
+                          </q-card>
+                        </q-menu>
+                      </q-btn>
+                    </div>
+                    <div class="col-1" v-if="options.showWidth">
+                      <q-select dense options-dense :aria-label="`Group ${id} width`" :options="width_options" map-options emit-value
+                        :model-value="schema.groups[id].layout ? schema.groups[id].layout.width : null" @update:model-value="val => setGroupWidth(id, val)"/>
+                    </div>
+                    <div class="col-2"><q-btn label="Delete group" color="negative" @click="deleteGroup(id)"/></div>
+                  </div>
+                  <draggable class="schema-group-fields" :list="schema.groups[id].fields" :item-key="v => v" :group="{ name: 'schema-layout', put: canDropInGroup }" handle=".drag-handle" @end="syncLayout">
+                    <template #item="{ element: variable }">
+                      <schemaFieldRow class="q-pl-lg" :schema="schema" :variable="variable" :options="options" :type="type" :root-schema="rootSchema" @delete="deleteVariable">
+                        <template #controls>
+                          <q-icon name="drag_indicator" size="sm" class="drag-handle cursor-move" aria-hidden="true"/>
+                          <q-btn flat dense round icon="arrow_upward" color="primary" :aria-label="`Move ${variable} up`" @click="moveItem(variable, -1)" v-if="canMove(variable, -1)"/>
+                          <q-btn flat dense round icon="arrow_downward" color="primary" :aria-label="`Move ${variable} down`" @click="moveItem(variable, 1)" v-if="canMove(variable, 1)"/>
+                        </template>
+                      </schemaFieldRow>
+                    </template>
+                  </draggable>
+                </q-card>
+                <schemaFieldRow v-else :schema="schema" :variable="id" :options="options" :type="type" :root-schema="rootSchema" @delete="deleteVariable">
+                  <template #controls>
+                    <q-icon name="drag_indicator" size="sm" class="drag-handle cursor-move" aria-hidden="true"/>
+                    <q-btn flat dense round icon="arrow_upward" color="primary" :aria-label="`Move ${id} up`" @click="moveItem(id, -1)" v-if="canMove(id, -1)"/>
+                    <q-btn flat dense round icon="arrow_downward" color="primary" :aria-label="`Move ${id} down`" @click="moveItem(id, 1)" v-if="canMove(id, 1)"/>
+                  </template>
+                </schemaFieldRow>
               </div>
-              <div class="col-1" v-if="options.showWidth">
-                <!-- v-bind:value="getNested(`schema.layout.${variable.variable}.width`)" -->
-                <q-select
-                  dense options-dense
-                  :aria-label="`${variable.variable} column width`"
-                  map-options emit-value
-                  v-model="schema.layout[variable.variable].width"
-                  :options="width_options"
-                  v-if="schema.layout[variable.variable]"
-                  @update:model-value="setNested(`schema.layout.${variable.variable}.width`,$event)"
-                />
-                <q-select
-                  dense options-dense
-                  :aria-label="`${variable.variable} column width`"
-                  map-options emit-value
-                  :model-value="null"
-                  :options="width_options"
-                  v-if="!schema.layout[variable.variable]"
-                  @update:model-value="setNested(`schema.layout.${variable.variable}.width`,$event)"
-                />
-                <!-- @update:model-value="$set(item,'prop',$event.target.value)" -->
-
-              </div>
-              <div class="col-2">
-                <SchemaDialog v-if="variable.schema.type == 'table'" v-model="variable.schema.schema" :root-schema="rootSchema" :variable="variable"/>
-                <fieldoptions v-else style="display:inline-block" :schema="schema" v-model="schema.properties[variable.variable]" :variable="variable.variable" :type="type" :root-schema="rootSchema"/>
-                <q-btn label="Delete" color="negative" @click="deleteVariable(variable.variable, 'submission_schema')"></q-btn>
-                <slot name="variable-buttons-after" v-bind:variable="variable" v-bind:rootSchema="rootSchema"></slot>
-              </div>
+            </template>
+          </draggable>
+          <template v-else>
+            <div v-for="variable in fields_sorted" :key="variable.variable">
+              <schemaFieldRow :schema="schema" :variable="variable.variable" :options="options" :type="type" :root-schema="rootSchema" @delete="deleteVariable">
+                <template #controls>
+                  <q-btn flat dense round icon="arrow_upward" color="primary" :aria-label="`Move ${variable.variable} up`" @click="move(variable.variable, -1)" v-if="schema.order && schema.order.indexOf(variable.variable) != 0"/> <q-btn flat dense round icon="arrow_downward" color="primary" :aria-label="`Move ${variable.variable} down`" @click="move(variable.variable, 1)" v-if="schema.order && schema.order.indexOf(variable.variable) != schema.order.length - 1"/>
+                </template>
+                <template #buttons-after>
+                  <slot name="variable-buttons-after" v-bind:variable="variable" v-bind:rootSchema="rootSchema"></slot>
+                </template>
+              </schemaFieldRow>
             </div>
-          </div>
+          </template>
         </div>
+        <q-btn v-if="groupsEnabled" color="primary" label="Add group" class="q-mr-sm" @click="promptAddGroup"/>
         <q-btn-dropdown
         color="positive"
         label="Add field"
@@ -116,10 +142,11 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue'
 // import axios from 'axios'
 import _ from 'lodash'
-import Fieldoptions from '../fieldoptions.vue'
+import draggable from 'vuedraggable'
+import schemaFieldRow, { TYPE_OPTIONS, WIDTH_OPTIONS } from './schemaFieldRow.vue'
+import { GROUP_DISPLAY_OPTIONS, addGroup, canMoveLayoutItem, isGroup, moveLayoutItem, normalizeLayout, removeGroup } from '../../utils/schemaGroups.js'
 // import Formatoptions from '../components/formatoptions.vue'
 import jsonDiffModal from '../modals/jsonDiffModal.vue'
 // import Agschema from '../agschema.vue'
@@ -147,8 +174,9 @@ export default {
     return {
       schema: this.modelValue,
       errors: {},
-      type_options: [{ 'label': 'Text', 'value': 'string' }, { 'label': 'Number', 'value': 'number' }, { 'label': 'True / False', 'value': 'boolean' }, { 'label': 'Table', 'value': 'table' }],
-      width_options: [{ 'label': '100%', 'value': 'col-md-12 col-sm-12 col-xs-auto' }, { 'label': '5/6', 'value': 'col-md-10 col-sm-12 col-xs-auto' }, { 'label': '3/4', 'value': 'col-md-9 col-sm-12 col-xs-auto' }, { 'label': '2/3', 'value': 'col-md-8 col-sm-12 col-xs-auto' }, { 'label': '1/2', 'value': 'col-md-6 col-sm-12 col-xs-auto' }, { 'label': '1/3', 'value': 'col-md-4 col-sm-6 col-xs-auto' }, { 'label': '1/4', 'value': 'col-md-3 col-sm-6 col-xs-auto' }, { 'label': '1/6', 'value': 'col-md-2 col-sm-4 col-xs-auto' }],
+      type_options: TYPE_OPTIONS,
+      width_options: WIDTH_OPTIONS,
+      groupDisplayOptions: GROUP_DISPLAY_OPTIONS,
       new_variable: {},
       variable_modal: false,
       variable_re: /^[a-z0-9_]+$/
@@ -180,6 +208,9 @@ export default {
       if (!this.schema.required) {
         this.schema.required = []
       }
+      if (this.groupsEnabled) {
+        normalizeLayout(this.schema)
+      }
     },
     openModal () {
       this.new_variable = {schema: this.schema}
@@ -198,6 +229,9 @@ export default {
             return 'That variable name exists'
           }
         }
+        if (this.schema.groups && this.schema.groups[name]) {
+          return 'That name is used by a group'
+        }
       }
       return null
     },
@@ -209,6 +243,7 @@ export default {
       }
 
       this.schema.order.push(this.new_variable.name)
+      this.syncLayout()
       // // this.schema.properties['VARIABLE_NAME'] = {added: true}
       // console.log(this.schema.properties)
       this.variable_modal = false
@@ -236,30 +271,14 @@ export default {
       } else {
         this.schema.properties[v] = _.cloneDeep(this.options.variables.properties[v])
         this.schema.order.push(v)
+        this.syncLayout()
         this.$q.notify({message: `Variable "${v}" added.`, type: 'positive'})
       }
     },
-    move (variable, displacement, schema) {
+    move (variable, displacement) {
       console.log('moveUp', variable)
       const index = this.schema.order.indexOf(variable)
       this.schema.order.splice(index + displacement, 0, this.schema.order.splice(index, 1)[0])
-    },
-    setNested (path, value) {
-      const props = path.split('.')
-      console.log('setNested', props, value)
-      let last = this
-
-      props.forEach(function (prop, index) {
-        if (!last[prop] && index < props.length - 1) {
-          console.log('set blank', last, prop)
-          last[prop] = {}
-        }
-        if (index === props.length - 1) {
-          console.log('set value', last, prop, value)
-          last[prop] = value
-        }
-        last = last[prop]
-      })
     },
     getNested (path) {
       const props = path.split('.')
@@ -274,7 +293,7 @@ export default {
         last = last[prop]
       })
     },
-    deleteVariable (variable, schema) {
+    deleteVariable (variable) {
       const self = this
       this.$q.dialog({
         title: 'Confirm variable deletion',
@@ -289,15 +308,62 @@ export default {
           }
         }
         delete this.schema.properties[variable]
+        const required = self.schema.required.indexOf(variable)
+        if (required >= 0) {
+          self.schema.required.splice(required, 1)
+        }
+        delete self.schema.layout[variable]
+        self.syncLayout()
         self.$q.notify({message: 'Variable "' + variable + '" deleted.', type: 'negative'})
       })
     },
-    toggleRequired (variable) {
-      console.log('toggleRequired', variable)
-      const index = this.schema.required.indexOf(variable.variable)
-      if (variable.schema && variable.schema.internal && index >= 0) {
-        this.schema.required.splice(index, 1)
+    // Field groups (submission schemas only), see utils/schemaGroups.js
+    syncLayout () {
+      if (this.groupsEnabled) {
+        normalizeLayout(this.schema)
       }
+    },
+    isGroup (id) {
+      return isGroup(this.schema, id)
+    },
+    canMove (id, displacement) {
+      return canMoveLayoutItem(this.schema, id, displacement)
+    },
+    moveItem (id, displacement) {
+      moveLayoutItem(this.schema, id, displacement)
+    },
+    canDropInGroup (to, from, dragEl) {
+      // Groups can't be nested
+      return !dragEl.dataset.layoutGroup
+    },
+    groupPrinting (id) {
+      return this.schema.groups[id].printing || {}
+    },
+    setGroupPrinting (id, key, value) {
+      this.schema.groups[id].printing = { ...this.groupPrinting(id), [key]: value }
+    },
+    setGroupWidth (id, width) {
+      this.schema.groups[id].layout = { ...(this.schema.groups[id].layout || {}), width }
+    },
+    promptAddGroup () {
+      this.$q.dialog({
+        title: 'Add group',
+        message: 'Fields can be dragged into the group once it is added.',
+        prompt: { model: '', type: 'text', label: 'Group title', isValid: val => !!val.trim() },
+        cancel: true
+      }).onOk(title => {
+        addGroup(this.schema, title.trim())
+      })
+    },
+    deleteGroup (id) {
+      this.$q.dialog({
+        title: 'Confirm group deletion',
+        message: `Are you sure you want to delete the group "${this.schema.groups[id].title}"?  Its fields will be kept, ungrouped.`,
+        ok: 'Okay',
+        cancel: 'Cancel'
+      }).onOk(() => {
+        removeGroup(this.schema, id)
+      })
     },
     fields_sorted_method () {
       console.log('field_sorted', this.schema)
@@ -329,6 +395,9 @@ export default {
   //   }
   // },
   computed: {
+    groupsEnabled () {
+      return !!(this.options && this.options.groups)
+    },
     fields_sorted () {
       // console.log('field_sorted', this.schema)
       // var sorted = []
@@ -384,8 +453,8 @@ export default {
     }
   },
   components: {
-    Fieldoptions,
-    SchemaDialog: defineAsyncComponent(() => import('./SchemaDialog.vue'))
+    draggable,
+    schemaFieldRow
     // Formatoptions,
     // Agschema
   }
@@ -394,5 +463,14 @@ export default {
 <style>
 .inactive {
   color: red;
+}
+.schema-group-fields {
+  min-height: 2.5em;
+}
+.schema-group-fields:empty::before {
+  content: 'Drag fields here';
+  display: block;
+  padding: 0.5em 0 0.5em 4em;
+  color: #757575;
 }
 </style>
