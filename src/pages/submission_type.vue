@@ -190,6 +190,9 @@
           v-model="type.confirmation_text"
           autogrow
           />
+        <q-expansion-item v-if="type.id && !version && $perms.hasLabPerm('ADMIN')" label="Webhook" caption="Override the lab's webhook for this submission type" class="q-mt-md">
+          <webhookSettings :lab="$store.getters.lab" :submission-type="type.id" class="q-pa-md"/>
+        </q-expansion-item>
         <h6>Custom Fields</h6>
         <q-input
         :label-width="12"
@@ -238,6 +241,7 @@ import SchemaForm from '../components/forms/schemaForm.vue'
 import draggable from 'vuedraggable'
 import VersionModal from '../components/modals/versionModal.vue'
 import RevertButton from '../components/revertButton.vue'
+import webhookSettings from '../components/webhookSettings.vue'
 export default {
   name: 'submission_type',
   props: ['id', 'version'],
@@ -627,7 +631,8 @@ export default {
     // Agschema,
     draggable,
     VersionModal,
-    RevertButton
+    RevertButton,
+    webhookSettings
   }
 }
 </script>
