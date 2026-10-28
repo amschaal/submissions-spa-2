@@ -17,7 +17,7 @@
       </template> -->
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td key="file" :props="props"><q-btn v-if="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')" class="float-left" color="red" label="Delete" @click="deleteFile(props.row)"/><a :href="props.row.file" target="_blank" rel="noopener noreferrer">{{ props.row.filename }}</a></q-td>
+          <q-td key="file" :props="props"><q-btn v-if="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')" class="float-left" color="red" label="Delete" @click="deleteFile(props.row)"/><a :href="`${$axios.defaults.baseURL}/api/submission_files/${props.row.id}/download/`">{{ props.row.filename }}</a></q-td>
           <q-td key="uploaded_at" :props="props">{{ $formatDate(props.row.uploaded_at) }}</q-td>
         </q-tr>
       </template>
