@@ -15,6 +15,7 @@
         <q-tab name="permissions_tab" label="Permissions" v-if="$perms.hasLabPerm('ADMIN')"/>
         <q-tab name="plugins_tab" label="Plugins" v-if="$perms.hasLabPerm('ADMIN')"/>
         <q-tab name="webhook_tab" label="Webhook" v-if="$perms.hasLabPerm('ADMIN')"/>
+        <q-tab name="files_tab" label="Files" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')"/>
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="settings_tab" v-if="$perms.hasLabPerm('ADMIN')">
@@ -160,6 +161,9 @@
         <q-tab-panel name="webhook_tab" v-if="$perms.hasLabPerm('ADMIN')">
           <webhookSettings :lab="lab"/>
         </q-tab-panel>
+        <q-tab-panel name="files_tab" v-if="$perms.hasLabPerm('MEMBER') || $perms.hasLabPerm('ADMIN')">
+          <labFiles :lab="lab"/>
+        </q-tab-panel>
       </q-tab-panels>
     </q-card>
     </div>
@@ -173,6 +177,7 @@ import projectIds from '../components/projectIds.vue'
 import permissions from '../components/permissions.vue'
 import pluginSettings from '../components/pluginSettings.vue'
 import webhookSettings from '../components/webhookSettings.vue'
+import labFiles from '../components/labFiles.vue'
 import variableDiffModal from '../components/modals/variableDiffModal.vue'
 import _ from 'lodash'
 // import draggable from 'vuedraggable'
@@ -305,7 +310,8 @@ export default {
     // userField,
     permissions,
     pluginSettings,
-    webhookSettings
+    webhookSettings,
+    labFiles
   }
 }
 </script>
