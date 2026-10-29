@@ -47,7 +47,9 @@
           <span v-else-if="!modify" v-bind:class="{'warning': warnings && warnings[v.variable]}">
             <p class="caption">{{v.schema.title ? v.schema.title : v.variable}}</p>
 
-            <span><q-tooltip v-if="warnings && warnings[v.variable]">{{warnings ? getWarning(v) : ''}}</q-tooltip><q-icon v-if="warnings && warnings[v.variable]" size="14px" name="warning" color="orange"/> {{widget(v).formatValue(modelValue[v.variable],'None')}}</span>
+            <span><q-tooltip v-if="warnings && warnings[v.variable]">{{warnings ? getWarning(v) : ''}}</q-tooltip><q-icon v-if="warnings && warnings[v.variable]" size="14px" name="warning" color="orange"/>
+              <component v-if="widgetClass(v).displayComponent" :is="widgetClass(v).displayComponent" :model-value="modelValue[v.variable]" v-bind="widget(v).getOptions()" readonly/>
+              <template v-else> {{widget(v).formatValue(modelValue[v.variable],'None')}}</template></span>
           </span>
           <span v-else>
             <q-field

@@ -2,6 +2,7 @@ import _ from 'lodash'
 import {Widget, WidgetFactory} from './Widget.js'
 import DateComponent from '../editors/DateComponent.vue'
 import TextAreaComponent from '../editors/TextAreaComponent.vue'
+import FileComponent from '../editors/FileComponent.vue'
 
 class TextWidget extends Widget {
   static type = 'string'
@@ -38,6 +39,19 @@ class DateWidget extends Widget {
       {'variable': 'foo', 'label': 'Foo', 'type': 'text'},
       {'variable': 'bar', 'label': 'Bar', 'type': 'text', 'options': [{'label': 'One', 'value': 1}, {'label': 'Two', 'value': 2}]}
     ]
+}
+
+class FileWidget extends Widget {
+  // Picked by the field's format ({"type": "string", "format": "file"}), not offered in the widget list:
+  // the server only treats fields with that format as files.
+  static type = 'file'
+  static id = 'file'
+  static component = FileComponent
+  static displayComponent = FileComponent // rendered with `readonly` when viewing a submission
+  static name = 'File upload'
+  getOptions () {
+    return { definition: this.variable.schema, variable: this.variable.variable }
+  }
 }
 
 class CheckboxWidget extends Widget {
@@ -170,6 +184,6 @@ class MultiSelectWidget extends SelectWidget {
 //   }
 // }
 
-const widgetFactory = new WidgetFactory([TextWidget, TextAreaWidget, WYSIWYGWidget, ChipsWidget, SelectWidget, MultiSelectWidget, CheckboxWidget, RadioWidget, MultiCheckboxWidget, DateWidget], SelectWidget, MultiSelectWidget)
+const widgetFactory = new WidgetFactory([TextWidget, TextAreaWidget, WYSIWYGWidget, ChipsWidget, SelectWidget, MultiSelectWidget, CheckboxWidget, RadioWidget, MultiCheckboxWidget, DateWidget, FileWidget], SelectWidget, MultiSelectWidget)
 // export {MultiSelectWidget}
 export default widgetFactory

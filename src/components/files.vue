@@ -17,7 +17,8 @@
       </template> -->
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td key="file" :props="props"><q-btn v-if="$perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')" class="float-left" color="red" label="Delete" @click="deleteFile(props.row)"/><a :href="`${$axios.defaults.baseURL}/api/submission_files/${props.row.id}/download/`">{{ props.row.filename }}</a></q-td>
+          <q-td key="file" :props="props"><q-btn v-if="!props.row.variable && $perms.hasSubmissionPerms(submission, ['ADMIN','STAFF'], 'ANY')" class="float-left" color="red" label="Delete" @click="deleteFile(props.row)"/><a :href="`${$axios.defaults.baseURL}/api/submission_files/${props.row.id}/download/`">{{ props.row.filename }}</a>
+            <q-badge v-if="props.row.variable" class="q-ml-sm" :color="isCurrent(props.row) ? 'primary' : 'grey-6'" :label="fieldLabel(props.row)"><q-tooltip>Uploaded through the form; change it by editing the submission.</q-tooltip></q-badge></q-td>
           <q-td key="uploaded_at" :props="props">{{ $formatDate(props.row.uploaded_at) }}</q-td>
         </q-tr>
       </template>
@@ -115,6 +116,14 @@ export default {
         .catch(function () {
           self.$q.notify({message: 'Error deleting file', type: 'negative'})
         })
+    },
+    isCurrent (file) { // form uploads stay attached after being replaced, e.g. for older versions
+      return (this.submission.submission_data || {})[file.variable] === file.id
+    },
+    fieldLabel (file) {
+      const properties = (this.submission.submission_schema || {}).properties || {}
+      const title = (properties[file.variable] && properties[file.variable].title) || file.variable
+      return this.isCurrent(file) ? `Form field: ${title}` : `Form field: ${title} (replaced)`
     },
     uploadFactory (files) {
       // Quasar v2 QUploader factory: return the upload config; QUploader does

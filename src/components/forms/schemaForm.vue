@@ -145,7 +145,7 @@
 // import axios from 'axios'
 import _ from 'lodash'
 import draggable from 'vuedraggable'
-import schemaFieldRow, { TYPE_OPTIONS, WIDTH_OPTIONS } from './schemaFieldRow.vue'
+import schemaFieldRow, { typeOptions, WIDTH_OPTIONS } from './schemaFieldRow.vue'
 import { GROUP_DISPLAY_OPTIONS, addGroup, canMoveLayoutItem, isGroup, moveLayoutItem, normalizeLayout, removeGroup } from '../../utils/schemaGroups.js'
 // import Formatoptions from '../components/formatoptions.vue'
 import jsonDiffModal from '../modals/jsonDiffModal.vue'
@@ -174,7 +174,6 @@ export default {
     return {
       schema: this.modelValue,
       errors: {},
-      type_options: TYPE_OPTIONS,
       width_options: WIDTH_OPTIONS,
       groupDisplayOptions: GROUP_DISPLAY_OPTIONS,
       new_variable: {},
@@ -238,6 +237,8 @@ export default {
     addVariable () {
       if (this.new_variable.type === 'table') {
         this.schema.properties[this.new_variable.name] = {type: this.new_variable.type, internal: false, unique: false, schema: { order: [], properties: {}}, printing: { hidden: false }}
+      } else if (this.new_variable.type === 'file') {
+        this.schema.properties[this.new_variable.name] = {type: 'string', format: 'file', internal: false, unique: false}
       } else {
         this.schema.properties[this.new_variable.name] = {type: this.new_variable.type, internal: false, unique: false}
       }
@@ -395,6 +396,9 @@ export default {
   //   }
   // },
   computed: {
+    type_options () {
+      return typeOptions(this.type)
+    },
     groupsEnabled () {
       return !!(this.options && this.options.groups)
     },

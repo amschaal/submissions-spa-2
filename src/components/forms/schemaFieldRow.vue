@@ -9,7 +9,7 @@
       <q-select
         dense options-dense
         :aria-label="`${variable} type`"
-        v-model="field.type"
+        v-model="fieldType"
         :options="typeOptions"
         map-options emit-value
       />
@@ -38,6 +38,11 @@ import { defineAsyncComponent } from 'vue'
 import Fieldoptions from '../fieldoptions.vue'
 
 export const TYPE_OPTIONS = [{ 'label': 'Text', 'value': 'string' }, { 'label': 'Number', 'value': 'number' }, { 'label': 'True / False', 'value': 'boolean' }, { 'label': 'Table', 'value': 'table' }]
+const FILE_TYPE_OPTION = { 'label': 'File', 'value': 'file' }
+// File fields ({"type": "string", "format": "file"}) are only supported in submission forms, not table columns (yet).
+export function typeOptions (formType) {
+  return formType === 'submission' ? TYPE_OPTIONS.concat([FILE_TYPE_OPTION]) : TYPE_OPTIONS
+}
 export const WIDTH_OPTIONS = [{ 'label': '100%', 'value': 'col-md-12 col-sm-12 col-xs-auto' }, { 'label': '5/6', 'value': 'col-md-10 col-sm-12 col-xs-auto' }, { 'label': '3/4', 'value': 'col-md-9 col-sm-12 col-xs-auto' }, { 'label': '2/3', 'value': 'col-md-8 col-sm-12 col-xs-auto' }, { 'label': '1/2', 'value': 'col-md-6 col-sm-12 col-xs-auto' }, { 'label': '1/3', 'value': 'col-md-4 col-sm-6 col-xs-auto' }, { 'label': '1/4', 'value': 'col-md-3 col-sm-6 col-xs-auto' }, { 'label': '1/6', 'value': 'col-md-2 col-sm-4 col-xs-auto' }]
 
 // One field of a schema in schemaForm. Edits the field (and the schema's
@@ -48,13 +53,31 @@ export default {
   emits: ['delete'],
   data () {
     return {
-      typeOptions: TYPE_OPTIONS,
       widthOptions: WIDTH_OPTIONS
     }
   },
   computed: {
     field () {
       return this.schema.properties[this.variable]
+    },
+    typeOptions () {
+      return typeOptions(this.type)
+    },
+    fieldType: { // "File" is stored as {"type": "string", "format": "file"}
+      get () {
+        return this.field.format === 'file' ? 'file' : this.field.type
+      },
+      set (value) {
+        if (value === 'file') {
+          this.field.type = 'string'
+          this.field.format = 'file'
+        } else {
+          this.field.type = value
+          if (this.field.format === 'file') {
+            delete this.field.format
+          }
+        }
+      }
     }
   },
   methods: {

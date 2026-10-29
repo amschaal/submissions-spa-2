@@ -347,6 +347,10 @@ import _ from 'lodash'
 export default {
   // name: 'submission',
   props: ['id', 'submission_types', 'create', 'version'],
+  provide () {
+    // File fields upload before saving: against the submission when editing, else its type (see FileComponent).
+    return { fileUploadTarget: () => (this.submission.id ? { submission: this.submission.id } : { type: this.submission.type }) }
+  },
   data () {
     return {
       submission: {'submission_data': {}, 'contacts': [], 'payment': {}},
