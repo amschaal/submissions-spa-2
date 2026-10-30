@@ -96,6 +96,9 @@ export class WidgetFactory {
   }
   getWidget (id, type, definition) {
     // console.log('getWidget', id, type, this.lookup, definition)
+    if (definition && definition.format === 'file' && this.lookup.file) {
+      return this.lookup.file
+    }
     if (id && this.lookup[id]) {
       return this.lookup[id]
     }

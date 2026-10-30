@@ -49,7 +49,7 @@
             {{submission_type.name}}
           </div>
           <div class="field col-sm-12 col-md-6">
-            <p class="caption">Submitted</p>
+            <p class="caption">Submission Created</p>
             {{ $formatDate(submission.submitted) }}
           </div>
           <div class="field col-sm-12 col-md-12" v-if="isAdmin">
@@ -118,8 +118,9 @@
             {{c.email}}
           </div>
         </div>
-        <p class="caption">Payment</p>
-        <div class="row">
+        <!-- Submissions created without a payment requirement have no payment data. -->
+        <p class="caption" v-if="hasPayment">Payment</p>
+        <div class="row" v-if="hasPayment">
           <div class="field col-sm-12 col-md-6" v-for="(value, label) in submission.payment.display" :key="label">
             <p class="caption">{{label}}</p>
             {{value}}
@@ -216,7 +217,7 @@ export default {
     //   }
     // },
     download () {
-      window.location.href = `/server/api/submissions/${this.submission.id}/download/?format=${this.downloadParams.format}&data=${this.downloadParams.data}`
+      window.location.href = `/server/api/submissions/${this.submission.id}/download/?export_format=${this.downloadParams.format}&data=${this.downloadParams.data}`
     },
     copySubmission () {
       // Vue Router 4 requires lab_id explicitly (v3 inherited it from the
@@ -253,6 +254,9 @@ export default {
     },
     hasWarnings () {
       return this.submission && this.submission.warnings && _.size(this.submission.warnings) > 0
+    },
+    hasPayment () {
+      return !!(this.submission && this.submission.payment && _.size(this.submission.payment.display) > 0)
     },
     formatOptions () {
       const options = [

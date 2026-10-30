@@ -9,6 +9,13 @@
         </q-bar>
         <q-card-section v-if="opened">
           <q-input dense label="Description" v-model="data.description" autogrow placeholder="Enter description here."/>
+          <template v-if="isFile">
+            <h5>File</h5>
+            <q-select dense options-dense clearable label="Template" v-model="data.template" :options="templateOptions" map-options emit-value :loading="loadingTemplates"
+              hint="A file submitters can download, e.g. a spreadsheet to fill in. Choose from the lab's files (Settings > Files); internal files can't be used."/>
+            <q-input dense label="Accepted file types" v-model="data.accept" hint="Comma-separated extensions, e.g. .xlsx,.csv. Leave blank to accept any file."/>
+            <q-input dense label="Maximum size (MB)" v-model.number="data.max_size_mb" type="number" hint="Optional."/>
+          </template>
             <!-- <q-checkbox v-model="data.unique" :false-value="true" :true-value="false" indeterminate-icon="check_box_outline_blank" unchecked-icon="check_box" checked-icon="check_box_outline_blank" keep-color /> -->
           <h5>Validation</h5>
           <q-checkbox dense label="Unique" v-if="type!='submission'" v-model="data.unique"/>
@@ -22,7 +29,7 @@
           /> -->
           <q-input
             dense
-            v-if="data.type === 'string'"
+            v-if="data.type === 'string' && !isFile"
             label="Regular Expression"
             hint="Enter a valid regular expression to validate against. Example for matching values such as '20.3 ul': ^\d+(\.{1}\d+)? ul$"
             v-model="data.pattern"
@@ -44,7 +51,7 @@
             /> -->
             <q-input
               dense
-              v-if="data.type === 'string'"
+              v-if="data.type === 'string' && !isFile"
               label="Choices"
               hint="If the variable should be constrained to specific choices, enter here.  Choices may be added, reordered, or removed."
               v-model="option"
@@ -95,7 +102,7 @@
             label="Custom validators"
             stack-label
             borderless
-            v-if="data.type !== 'table' && data.validators"
+            v-if="data.type !== 'table' && data.validators && !isFile"
           >
             <q-btn-dropdown size="md" label="Add validator">
               <q-list>
@@ -123,7 +130,7 @@
             label="Widget"
             borderless
             style="width:100%"
-            v-if="data.type !== 'table'"
+            v-if="data.type !== 'table' && !isFile"
           >
             <span class="col-9">
               <q-select
@@ -185,7 +192,9 @@ export default {
       data: {enum: [], widget: {}, printing: {}},
       validators: this.$store.getters.validatorDict, // t{unique: {id: 'unique', name: 'Unique'}, foo: {id: 'foo', name: 'Foo'}},
       add_validator: null,
-      option: null
+      option: null,
+      templateOptions: [],
+      loadingTemplates: false
       // options: this.modelValue && this.modelValue.enum ? this.modelValue.enum : []
     }
   },
@@ -212,6 +221,9 @@ export default {
     },
     openModal () {
       this.setup()
+      if (this.isFile) {
+        this.loadTemplates()
+      }
       // this.data = _.cloneDeep(this.modelValue)
       console.log('root', this.$root.validators)
 
@@ -253,6 +265,14 @@ export default {
       this.$emit('update:modelValue', val)
       this.$refs.modal.hide()
       // this.data
+    },
+    loadTemplates () {
+      // Only public files: the server rejects internal templates, which submitters couldn't download.
+      this.loadingTemplates = true
+      this.$axios.get('/api/lab_files/', { params: { lab: this.$store.getters.lab.lab_id, internal: false } })
+        .then(({ data }) => { this.templateOptions = data.map(f => ({ label: `${f.name} (${f.filename})`, value: f.id })) })
+        .catch(() => this.$q.notify({ message: 'Error loading lab files.', type: 'negative' }))
+        .finally(() => { this.loadingTemplates = false })
     },
     discard () {
       this.$refs.modal.hide()
@@ -325,6 +345,9 @@ export default {
     }
   },
   computed: {
+    isFile () {
+      return this.data.format === 'file'
+    },
     widgetFactory () {
       return this.type === 'submission' ? submissionWidgetFactory : tableWidgetFactory
     },

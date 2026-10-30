@@ -22,7 +22,17 @@
           <!-- <h6>Plugins here: {{$plugins}}</h6> -->
           <h3 v-if="submission.cancelled" class="text-red">Submission cancelled</h3>
           <h3 v-if="modify && id && !canModify">You do not have permission to modify this submission.</h3>
-          <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="(modify && id && canModify) || create" v-on:submission_updated="submissionUpdated" ref="submission_form"/>
+          <q-banner class="bg-grey-3 q-my-md" v-if="create && noSubmissionTypes">
+            <template v-slot:avatar><q-icon name="info" color="primary"/></template>
+            <span v-if="$store.getters.isStaff">
+              This lab has no submission types available.  Create one, or make an existing one active, before submissions can be entered.
+            </span>
+            <span v-else>
+              <span v-if="$store.getters.lab">{{$store.getters.lab.name}} is</span><span v-else>This lab is</span>
+              not currently accepting online submissions.  Please contact the lab directly if you would like to submit a project.
+            </span>
+          </q-banner>
+          <SubmissionForm :create="create" :submission_types="submission_types" :type_options="type_options" :id="id" v-if="((modify && id && canModify) || create) && !noSubmissionTypes" v-on:submission_updated="submissionUpdated" ref="submission_form"/>
           <Submission :submission="submission" v-if="(!modify || !canModify) && id"/>
         </q-card-section>
       </q-tab-panel>
@@ -181,6 +191,18 @@ export default {
     canModify () {
       return !this.submission.locked || this.isAdmin
       // return this.submission.editable && !submission.cancelled
+    },
+    // Types the current user could actually pick on the create form.  Internal
+    // types are only returned by the API for lab members, and clients never see
+    // inactive ones.
+    availableTypes () {
+      const types = this.$store.getters.types || []
+      return this.$store.getters.isStaff ? types : types.filter(t => t.active)
+    },
+    // Wait until the lab (which carries submission_types) has loaded before
+    // deciding there is nothing to submit.
+    noSubmissionTypes () {
+      return !!this.$store.getters.lab && this.availableTypes.length === 0
     }
     // type_options () {
     //   return this.submission_types.map(opt => ({label: opt.name, value: opt.id}))
