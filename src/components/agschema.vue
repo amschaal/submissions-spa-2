@@ -238,7 +238,7 @@ import SelectComponent from './aggrid/editors/SelectComponent.vue'
 import GridComponent from './aggrid/editors/GridComponent.vue'
 import _ from 'lodash'
 import sampleWidgetFactory from './aggrid/widgets.js'
-import { tableExportFilename, downloadBlob, TABLE_FORMATS } from '../utils/tableExport.js'
+import { tableExportFilename, downloadBlob, TABLE_FORMATS, withoutInternalColumns, hasInternalValues } from '../utils/tableExport.js'
 // import { ClipboardService } from '../../node_modules/ag-grid-enterprise/dist/lib/clipboardService.js'
 // import axios from 'axios'
 // var clipboardService = null
@@ -595,7 +595,7 @@ export default {
       const self = this
       this.exporting = true
       this.$axios.post('/api/tables/template/',
-        {schema: this.sample_schema, data: this.getRowData(false), format},
+        {schema: this.io_schema, data: this.getRowData(false), format},
         {responseType: 'blob'})
         .then(function (response) {
           const filename = tableExportFilename({
@@ -615,6 +615,15 @@ export default {
         })
     },
     triggerImport (format, accept) {
+      if (this.hidesInternal && hasInternalValues(this.sample_schema, this.getRowData(false))) {
+        // Without row ids an import can only replace every row, which would
+        // erase the lab's values in the columns this user can't see.
+        this.$q.dialog({
+          title: 'Import unavailable',
+          message: 'This table already contains information entered by the lab, which importing a file would erase. Please edit the rows in the table instead, or contact the lab.'
+        })
+        return
+      }
       this.importFormat = format
       this.$refs.importInput.accept = accept || ''
       this.$refs.importInput.click()
@@ -634,7 +643,7 @@ export default {
         self.importing = true
         const form = new FormData()
         form.append('file', file)
-        form.append('schema', JSON.stringify(self.sample_schema))
+        form.append('schema', JSON.stringify(self.io_schema))
         form.append('format', format)
         self.$axios.post('/api/tables/parse/', form)
           .then(function (response) {
@@ -797,6 +806,14 @@ export default {
   computed: {
     sample_schema () {
       return this.schema ? this.schema : this.type.sample_schema
+    },
+    hidesInternal () {
+      // Same rule schema2Columns uses to hide internal columns from the grid.
+      return this.editable && !this.$store.getters.isStaff
+    },
+    io_schema () {
+      // The schema used for export/import: only the columns the grid shows.
+      return this.hidesInternal ? withoutInternalColumns(this.sample_schema) : this.sample_schema
     },
     columnDefs () {
       return this._columnDefs ? this._columnDefs : []

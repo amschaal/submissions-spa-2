@@ -40,6 +40,42 @@ export const TABLE_FORMATS = [
   { format: 'tsv', label: 'TSV (.tsv)', accept: '.tsv,text/tab-separated-values,text/plain' }
 ]
 
+function internalVariables (schema) {
+  const properties = (schema && schema.properties) || {}
+  return Object.keys(properties).filter(v => properties[v] && properties[v].internal)
+}
+
+// Copy of a table schema without its internal (lab-only) columns: what a
+// non-staff user editing the grid can see, so their export/import matches it.
+export function withoutInternalColumns (schema) {
+  const internal = internalVariables(schema)
+  if (!internal.length) {
+    return schema
+  }
+  const keep = v => internal.indexOf(v) === -1
+  const properties = {}
+  Object.keys(schema.properties).filter(keep).forEach(v => { properties[v] = schema.properties[v] })
+  const stripped = { ...schema, properties }
+  if (Array.isArray(schema.order)) {
+    stripped.order = schema.order.filter(keep)
+  }
+  if (Array.isArray(schema.required)) {
+    stripped.required = schema.required.filter(keep)
+  }
+  return stripped
+}
+
+// Whether any row holds a value in an internal column. Import replaces every
+// row, so for a user whose file can't carry those columns it would erase them.
+// Saved rows hold null for unfilled fields; 0 and false count as values.
+export function hasInternalValues (schema, rows) {
+  const internal = internalVariables(schema)
+  return internal.length > 0 && (rows || []).some(row => row && internal.some(v => {
+    const value = row[v]
+    return value !== undefined && value !== null && value !== '' && !(Array.isArray(value) && value.length === 0)
+  }))
+}
+
 // Trigger a browser download of a Blob under the given filename.
 export function downloadBlob (blob, filename) {
   const url = window.URL.createObjectURL(blob)
