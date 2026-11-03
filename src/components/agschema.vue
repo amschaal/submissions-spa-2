@@ -44,6 +44,13 @@
                 <q-item v-for="f in tableFormats" :key="f.format" clickable v-close-popup @click="exportTable(f.format)">
                   <q-item-section>{{f.label}}</q-item-section>
                 </q-item>
+                <q-separator />
+                <q-item clickable v-close-popup @click="exportTable('xlsx', true)">
+                  <q-item-section>
+                    <q-item-label>{{blankTemplate.label}}</q-item-label>
+                    <q-item-label caption>{{blankTemplate.caption}}</q-item-label>
+                  </q-item-section>
+                </q-item>
               </q-list>
             </q-btn-dropdown>
             <q-btn-dropdown v-if="editable" color="primary" icon="upload" label="Import" :loading="importing">
@@ -238,7 +245,7 @@ import SelectComponent from './aggrid/editors/SelectComponent.vue'
 import GridComponent from './aggrid/editors/GridComponent.vue'
 import _ from 'lodash'
 import sampleWidgetFactory from './aggrid/widgets.js'
-import { tableExportFilename, downloadBlob, TABLE_FORMATS, withoutInternalColumns, hasInternalValues } from '../utils/tableExport.js'
+import { tableExportFilename, downloadBlob, TABLE_FORMATS, BLANK_TEMPLATE, withoutInternalColumns, hasInternalValues } from '../utils/tableExport.js'
 // import { ClipboardService } from '../../node_modules/ag-grid-enterprise/dist/lib/clipboardService.js'
 // import axios from 'axios'
 // var clipboardService = null
@@ -317,7 +324,8 @@ export default {
       exporting: false,
       importing: false,
       importFormat: 'xlsx',
-      tableFormats: TABLE_FORMATS
+      tableFormats: TABLE_FORMATS,
+      blankTemplate: BLANK_TEMPLATE
     }
   },
   mounted () {
@@ -591,11 +599,11 @@ export default {
           throw new Error('Unsupported type ' + definition.type)
       }
     },
-    exportTable (format) {
+    exportTable (format, blank) {
       const self = this
       this.exporting = true
       this.$axios.post('/api/tables/template/',
-        {schema: this.io_schema, data: this.getRowData(false), format},
+        {schema: this.io_schema, data: blank ? [] : this.getRowData(false), format},
         {responseType: 'blob'})
         .then(function (response) {
           const filename = tableExportFilename({
@@ -603,7 +611,8 @@ export default {
             variable: self.variable,
             title: self.sample_schema && self.sample_schema.title,
             typeName: self.type && self.type.name,
-            format
+            format,
+            blank
           })
           downloadBlob(response.data, filename)
         })

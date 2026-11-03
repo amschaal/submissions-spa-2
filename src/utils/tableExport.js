@@ -20,16 +20,19 @@ const EXTENSIONS = { xlsx: 'xlsx', csv: 'csv', tsv: 'tsv' }
 // Submission id and project id (internal_id) are omitted when absent (an
 // unsaved draft, or a project id not yet assigned). The table name falls back
 // through variable -> schema title -> type name; when none is known it is
-// dropped so the name never degrades to "table_table_...".
-export function tableExportFilename ({ submission, variable, title, typeName, format } = {}) {
+// dropped so the name never degrades to "table_table_...". A blank template
+// holds no submission data, so it is named table_template_<TABLE>_<TIMESTAMP>.
+export function tableExportFilename ({ submission, variable, title, typeName, format, blank } = {}) {
   const tableName = variable || title || typeName || null
-  const parts = [
-    'table',
-    submission && submission.id,
-    submission && submission.internal_id,
-    tableName,
-    timestamp()
-  ]
+  const parts = blank
+    ? ['table_template', tableName, timestamp()]
+    : [
+        'table',
+        submission && submission.id,
+        submission && submission.internal_id,
+        tableName,
+        timestamp()
+      ]
   return parts.filter(Boolean).map(sanitize).join('_') + '.' + (EXTENSIONS[format] || 'xlsx')
 }
 
@@ -39,6 +42,13 @@ export const TABLE_FORMATS = [
   { format: 'csv', label: 'CSV (.csv)', accept: '.csv,text/csv' },
   { format: 'tsv', label: 'TSV (.tsv)', accept: '.tsv,text/tab-separated-values,text/plain' }
 ]
+
+// The Export menus' blank-template item: an xlsx with the columns, dropdowns,
+// notes and instructions but no rows (requested by sending data: []).
+export const BLANK_TEMPLATE = {
+  label: 'Blank template (.xlsx)',
+  caption: 'Columns and instructions, no rows'
+}
 
 function internalVariables (schema) {
   const properties = (schema && schema.properties) || {}

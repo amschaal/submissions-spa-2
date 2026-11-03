@@ -54,6 +54,13 @@
                     <q-item v-for="f in tableFormats" :key="f.format" clickable v-close-popup @click="exportTable(v, f.format)">
                       <q-item-section>{{f.label}}</q-item-section>
                     </q-item>
+                    <q-separator />
+                    <q-item clickable v-close-popup @click="exportTable(v, 'xlsx', true)">
+                      <q-item-section>
+                        <q-item-label>{{blankTemplate.label}}</q-item-label>
+                        <q-item-label caption>{{blankTemplate.caption}}</q-item-label>
+                      </q-item-section>
+                    </q-item>
                   </q-list>
                 </q-btn-dropdown>
               </template>
@@ -140,7 +147,7 @@ import widgetFactory from '../forms/widgets.js'
 import { layoutItems } from '../../utils/schemaGroups.js'
 import CustomFieldGroup from './customFieldGroup.vue'
 import { QSelect, QOptionGroup, QCheckbox } from 'quasar'
-import { tableExportFilename, downloadBlob, TABLE_FORMATS } from '../../utils/tableExport.js'
+import { tableExportFilename, downloadBlob, TABLE_FORMATS, BLANK_TEMPLATE } from '../../utils/tableExport.js'
 // import _ from 'lodash'
 
 export default {
@@ -149,7 +156,8 @@ export default {
     return {
       data: this.modelValue ? this.modelValue : {},
       exporting: {},
-      tableFormats: TABLE_FORMATS
+      tableFormats: TABLE_FORMATS,
+      blankTemplate: BLANK_TEMPLATE
     }
   },
   mounted () {
@@ -217,20 +225,24 @@ export default {
       console.log('refs', this.$refs, v, this.$refs[v.variable][0])
       this.$refs[v.variable][0].openSamplesheet()
     },
-    exportTable (v, format) {
+    exportTable (v, format, blank) {
       // Standalone export for the view (non-edit) mode: send just the
       // submission id + table variable and let the server use the saved rows.
+      // A blank template sends data: [] so the server leaves them out.
       const self = this
       this.exporting = {...this.exporting, [v.variable]: true}
-      this.$axios.post('/api/tables/template/',
-        {submission: this.submission.id, table: v.variable, format},
-        {responseType: 'blob'})
+      const body = {submission: this.submission.id, table: v.variable, format}
+      if (blank) {
+        body.data = []
+      }
+      this.$axios.post('/api/tables/template/', body, {responseType: 'blob'})
         .then(function (response) {
           const filename = tableExportFilename({
             submission: self.submission,
             variable: v.variable,
             title: v.schema && v.schema.title,
-            format
+            format,
+            blank
           })
           downloadBlob(response.data, filename)
         })
