@@ -2,6 +2,7 @@ import { Notify } from 'quasar'
 import auth from '../store/auth/index.js'
 import { axiosInstance } from './axios.js'
 import { getCsrfToken } from '../utils/csrf.js'
+import { safeNext } from '../utils/next.js'
 
 // social-auth-app-django >= 6 only starts a login on POST, behind Django's
 // CSRF check, so submit a form rather than navigating.  It goes to
@@ -9,7 +10,8 @@ import { getCsrfToken } from '../utils/csrf.js'
 // SOCIAL_LOGIN_URL names.  The csrftoken cookie normally exists already
 // (App.vue calls /api/get_user/ on boot); if Login is clicked before that
 // returns, fetch it first -- the 403 an anonymous user gets still sets it.
-function login () {
+// `next` (optional) is the path inside this app to come back to afterwards.
+function login (next) {
   const ready = getCsrfToken()
     ? Promise.resolve()
     : axiosInstance.get('/api/get_user/').catch(() => {})
@@ -17,6 +19,13 @@ function login () {
     const form = document.createElement('form')
     form.method = 'post'
     form.action = '/server/accounts/login/'
+    if (typeof next === 'string' && safeNext(next) !== '/') {
+      const target = document.createElement('input')
+      target.type = 'hidden'
+      target.name = 'next'
+      target.value = safeNext(next)
+      form.appendChild(target)
+    }
     const token = document.createElement('input')
     token.type = 'hidden'
     token.name = 'csrfmiddlewaretoken'

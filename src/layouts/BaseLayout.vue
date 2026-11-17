@@ -16,7 +16,7 @@
               </template>
             </selectLabModal>
           <!-- <div slot="subtitle">Sample Submission System</div> -->
-          <q-btn v-if="!$store.getters.isLoggedIn" @click="$login()" class="float-right" flat>Login</q-btn>
+          <q-btn v-if="!$store.getters.isLoggedIn" v-show="$route.name !== 'login'" @click="$router.push({ name: 'login', query: { next: $route.fullPath } })" class="float-right" flat>Login</q-btn>
           <span v-else class="float-right">
             <q-btn-dropdown color="primary" class="q-btn--flat" icon="person" :label="$store.getters.getUser.username">
               <q-list>

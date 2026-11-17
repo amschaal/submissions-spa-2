@@ -45,6 +45,23 @@ export const checkAuth = (context, {axios}) => {
     })
 }
 
+// Emailed sign-in code (non-staff users).  Both calls resolve for any response
+// below 500 so the sign-in page can branch on the status:
+//   request: 401 = code sent (login is now pending), 400 = bad email / rate
+//            limited, 409 = already signed in
+//   confirm: 200 = signed in, 400 = wrong code, 409 = expired or not pending,
+//            403 = this account must use single sign-on
+const CODE_LOGIN_URL = '/_allauth/browser/v1/auth/code/'
+const anyClientStatus = { validateStatus: (status) => status < 500 }
+
+export const requestLoginCode = (context, {axios, email}) => {
+  return axios.post(CODE_LOGIN_URL + 'request', { email }, anyClientStatus)
+}
+
+export const confirmLoginCode = (context, {axios, code}) => {
+  return axios.post(CODE_LOGIN_URL + 'confirm', { code }, anyClientStatus)
+}
+
 export const logout = (context, {axios}) => {
   return axios.post('/api/logout/', {
     // headers: auth.getAuthHeader(),

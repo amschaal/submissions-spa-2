@@ -25,7 +25,11 @@ export default function (/* { ssrContext } */) {
     if (authorize && authorize.isLoggedIn && to.path !== '/' && !store.getters.isLoggedIn) {
       store.dispatch('checkAuth', { axios: axiosInstance })
         .then(function (response) {
-          if (!store.getters.isLoggedIn || (authorize && authorize.isStaff && !store.getters.isStaff)) {
+          if (!store.getters.isLoggedIn) {
+            // Sign in first, then come back to the page that was asked for.
+            return next({ name: 'login', query: { next: to.fullPath } })
+          }
+          if (authorize && authorize.isStaff && !store.getters.isStaff) {
             return next({ path: '/' })
           }
           if (authorize && authorize.isSuperuser && !store.getters.isSuperuser) {
