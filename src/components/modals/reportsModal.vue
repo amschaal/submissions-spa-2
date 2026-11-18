@@ -86,7 +86,8 @@ export default {
     return {
       qs: '',
       opened: false,
-      reports: null,
+      reports: [],
+      reportsLoaded: false,
       filter: null,
       columns: [
         { name: 'name', align: 'center', label: 'Name', field: 'name', sortable: true },
@@ -102,15 +103,27 @@ export default {
       period: null
     }
   },
-  mounted () {
-    this.$axios.get('/api/submissions/reports/').then(response => {
-      this.reports = response.data
-    })
-  },
   methods: {
+    // Reports are a lab staff feature, so the list is only requested when the
+    // dialog is opened (by the staff-only "Create Report" button), not when
+    // the submissions page loads.
+    loadReports () {
+      if (this.reportsLoaded) {
+        return
+      }
+      this.$axios.get('/api/submissions/reports/')
+        .then(response => {
+          this.reports = response.data
+          this.reportsLoaded = true
+        })
+        .catch(() => {
+          this.$q.notify({message: 'The list of reports could not be loaded.', type: 'negative'})
+        })
+    },
     open (qs) {
       this.qs = qs
       this.opened = true
+      this.loadReports()
     },
     view (reportId) {
       const period = this.selected_report.periods && this.period ? this.period : null
