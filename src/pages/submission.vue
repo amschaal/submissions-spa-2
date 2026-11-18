@@ -1,6 +1,7 @@
 <template>
   <q-page padding class="docs-input row justify-center">
-    <q-card class="p90">
+    <NoAccess v-if="unavailable"/>
+    <q-card class="p90" v-else>
     <q-tabs
       v-model="tab"
       dense
@@ -79,6 +80,7 @@ import Submission from '../components/submission.vue'
 import Files from '../components/files.vue'
 import NotesTree from '../components/notesTree.vue'
 import Charges from '../components/charges.vue'
+import NoAccess from '../components/noAccess.vue'
 
 export default {
   name: 'submission',
@@ -90,7 +92,8 @@ export default {
       submission_types: [],
       type_options: this.$store.getters.typeOptions,
       tab: 'submission',
-      plugin_tabs: []
+      plugin_tabs: [],
+      unavailable: false // the API would not hand this submission over (404/403)
       // type: {},
       // debug: false,
       // modify: false,
@@ -130,9 +133,21 @@ export default {
             self.plugin_tabs = tabs
           })
         })
+        .catch(self.loadFailed)
     }
   },
   methods: {
+    loadFailed (error) {
+      // Not found covers both "no such submission" and "not one you are named on".
+      // (A signed-out response is handled by the axios interceptor, which sends
+      // the browser to the sign-in page.)
+      const status = error && error.response ? error.response.status : null
+      if (status === 404 || (status === 403 && this.$store.getters.isLoggedIn)) {
+        this.unavailable = true
+      } else if (status !== 401 && status !== 403) {
+        this.$q.notify({message: 'The submission could not be loaded. Please try again.', type: 'negative'})
+      }
+    },
     submissionUpdated (submission) {
       // this.modify = false
       console.log('submissionUpdated', submission)
@@ -171,11 +186,14 @@ export default {
           .get('/api/submissions/' + self.id)
           .then(function (response) {
             console.log('response', response)
+            self.unavailable = false
             self.submission = response.data
             self.submission.type = response.data.type.id
             self.setLab()
           })
+          .catch(self.loadFailed)
       } else {
+        this.unavailable = false
         this.submission = {'sample_data': [], 'contacts': [], 'payment': {}}
         // this.submission = {'sample_data': [], 'contacts': [], biocore: false}
       }
@@ -210,6 +228,7 @@ export default {
 
   },
   components: {
+    NoAccess,
     Files,
     SubmissionForm,
     NotesTree,

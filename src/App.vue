@@ -23,14 +23,21 @@ export default {
   mounted () {
     // var self = this
     this.$perms.init(this.$store)
-    this.$store.dispatch('checkAuth', {axios: this.$axios})
+    const self = this
+    // The institution (name, logo) is public and dresses the sign-in page; the
+    // rest of the reference data needs a signed-in user.
+    this.$store.dispatch('fetchInstitution', {axios: this.$axios})
+    this.$store.dispatch('checkAuth', {axios: this.$axios}).then(function () {
+      if (self.$store.getters.isLoggedIn) {
+        self.$store.dispatch('fetchAll', {axios: self.$axios, plugins: self.$plugins})
+      }
+    })
     // this.$store.dispatch('fetchValidators', {axios: this.$axios})
     // this.$store.dispatch('fetchTypes', {axios: this.$axios})
     // this.$store.dispatch('fetchStatuses', {axios: this.$axios})
     // this.$store.dispatch('fetchLabs', {axios: this.$axios}).then(labs => {
     //   this.$plugins.initLabs(this.$store.getters.labs)
     // })
-    this.$store.dispatch('fetchAll', {axios: this.$axios, plugins: this.$plugins})
     console.log('$store', this.$store)
 
     // window.onbeforeunload = function () {

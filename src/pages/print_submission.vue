@@ -79,6 +79,13 @@ export default {
         // self.submission = response.data
         self.submission = submission
       })
+      .catch(function (error) {
+        const status = error && error.response ? error.response.status : null
+        if (status === 404 || (status === 403 && self.$store.getters.isLoggedIn)) {
+          // The submission page shows why it is not available.
+          self.$router.replace({ name: 'submission', params: { id: self.id } })
+        }
+      })
   },
   methods: {
     getTitle (schema, variable) {

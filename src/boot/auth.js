@@ -35,6 +35,17 @@ function login (next) {
     form.submit()
   })
 }
+// Unsaved submission forms are kept in localStorage (see submissionForm.vue);
+// don't leave them behind for the next person on a shared computer.
+function clearSavedSubmissions () {
+  try {
+    Object.keys(window.localStorage)
+      .filter(key => key === 'submission' || key.indexOf('submission:') === 0)
+      .forEach(key => window.localStorage.removeItem(key))
+  } catch (e) {
+    // storage unavailable: nothing to clear
+  }
+}
 // Django 5 dropped GET support from LogoutView, so navigating the browser to
 // /server/accounts/logout/ just returns a 405.  POST to the API endpoint
 // instead (axios adds the CSRF header), then follow the URL it hands back --
@@ -43,6 +54,7 @@ function login (next) {
 function logout () {
   return axiosInstance.post('/api/logout/')
     .then(function (response) {
+      clearSavedSubmissions()
       window.location.href = response.data.redirect_url || '/'
     })
     .catch(function (error) {

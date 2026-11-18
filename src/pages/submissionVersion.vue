@@ -1,6 +1,7 @@
 <template>
   <q-page padding class="docs-input row justify-center">
-    <q-card class="p90">
+    <NoAccess v-if="unavailable"/>
+    <q-card class="p90" v-else>
         <q-card-section>
           <div class="row">
             <div class="field col-12 q-mt-xs q-mb-xs">
@@ -26,6 +27,7 @@
 import Submission from '../components/submission.vue'
 import RevertButton from '../components/revertButton.vue'
 import SubmissionForm from '../components/forms/submissionForm.vue'
+import NoAccess from '../components/noAccess.vue'
 
 export default {
   name: 'submission_version',
@@ -34,6 +36,7 @@ export default {
     return {
       submission: {'sample_data': [], 'payment': {}, 'contacts': []},
       version_details: null,
+      unavailable: false, // the API would not hand this version over (404/403)
       errors: {},
       submission_types: [],
       type_options: this.$store.getters.typeOptions
@@ -55,6 +58,12 @@ export default {
           }
           self.submission = submission
           self.setLab()
+        })
+        .catch(function (error) {
+          const status = error && error.response ? error.response.status : null
+          if (status === 404 || (status === 403 && self.$store.getters.isLoggedIn)) {
+            self.unavailable = true
+          }
         })
     }
   },
@@ -103,6 +112,7 @@ export default {
     }
   },
   components: {
+    NoAccess,
     Submission,
     SubmissionForm,
     RevertButton

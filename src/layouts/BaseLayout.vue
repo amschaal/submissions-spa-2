@@ -10,7 +10,7 @@
         </router-link>
         <q-toolbar-title>
             <!-- <router-link style="color: white; text-decoration: none;" :to="{ name: 'lab', params: { lab_id: $route.params.lab_id } }">{{$store.getters.lab.name}}</router-link> -->
-            <selectLabModal>
+            <selectLabModal v-if="$store.getters.isLoggedIn">
               <template v-slot:button="{ open }">
                 <q-btn size="large" flat :label="$store.getters.labId && $store.getters.lab ? $store.getters.lab.name : 'Select Lab'" icon-right="arrow_drop_down" @click="open" title="Change lab"/>
               </template>
@@ -41,7 +41,7 @@
           </span>
         </q-toolbar-title>
       </q-toolbar>
-      <nav aria-label="Main">
+      <nav aria-label="Main" v-if="$store.getters.isLoggedIn">
       <!-- NOTE: axe flags aria-required-children on this q-tabs because the
            Core/Site q-btn-dropdowns share the tablist with the route-tabs.
            It is a Quasar composition limitation (documented in ACCESSIBILITY.md);

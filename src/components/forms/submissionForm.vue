@@ -404,7 +404,7 @@ export default {
   },
   methods: {
     initialize: function () {
-      const submission = window.localStorage.getItem('submission')
+      const submission = window.localStorage.getItem(this.cacheKey)
       const self = this
       if (!this.create) {
         // this.$axios
@@ -472,6 +472,9 @@ export default {
           // }
         }
         console.log('draft', this.draft)
+        if (!this.import && !this.draft) {
+          this.prefillSubmitter()
+        }
         this.updatePaymentForm()
       }
       // this.type_id = !this.id && this.$route.query.type ? this.$route.query.type : null
@@ -531,7 +534,23 @@ export default {
       // this.errors.sample_data = errors
     },
     removeCached () {
-      window.localStorage.removeItem('submission')
+      window.localStorage.removeItem(this.cacheKey)
+    },
+    prefillSubmitter () {
+      // A new submission has to name the person saving it (submitter, PI or a
+      // contact), so start them off as the submitter.  Staff usually enter
+      // submissions for someone else.
+      const user = this.$store.getters.getUser
+      if (!user || this.$store.getters.isStaff || this.submission.email) {
+        return
+      }
+      this.submission.email = user.email
+      if (!this.submission.first_name && user.first_name) {
+        this.submission.first_name = user.first_name
+      }
+      if (!this.submission.last_name && user.last_name) {
+        this.submission.last_name = user.last_name
+      }
     },
     lockPayment () {
       // An existing submission's stored payment is kept as it is by the API
@@ -741,6 +760,10 @@ export default {
           self.updatePaymentForm()
           self.lockPayment()
         })
+        .catch(function (error) {
+          // The page around this form reports a submission that can't be opened.
+          console.log('loadSubmission failed', error.message)
+        })
     },
     addContact () {
       this.submission.contacts.push({})
@@ -811,7 +834,7 @@ export default {
       handler (newVal, oldVal) {
         console.log('submission changed')
         if (window.JSON && window.JSON.stringify && !newVal.id) {
-          window.localStorage.setItem('submission', window.JSON.stringify(newVal))
+          window.localStorage.setItem(this.cacheKey, window.JSON.stringify(newVal))
         }
         // console.log('submission saved', window.localStorage.getItem('submission'))
       },
@@ -841,6 +864,11 @@ export default {
     // }
   },
   computed: {
+    // Unsaved forms are kept per signed-in user (and cleared on sign out, see boot/auth.js).
+    cacheKey () {
+      const user = this.$store.getters.getUser
+      return user && user.id ? `submission:${user.id}` : 'submission'
+    },
     // sample_schema () {
     //   if (this.type && this.type.sample_schema) {
     //     return Object.freeze(Object.assign({}, this.type.sample_schema))

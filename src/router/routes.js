@@ -58,7 +58,7 @@ const routes = [
     component: () => import('layouts/BaseLayout'),
     children: [
       { path: '', name: 'index', component: () => import('pages/index') },
-      { path: 'login', name: 'login', component: () => import('pages/login'), meta: { title: 'Sign in' } },
+      { path: 'login', name: 'login', component: () => import('pages/login'), meta: { title: 'Sign in', public: true } },
       { path: 'profile', name: 'profile', component: () => import('pages/profile'), meta: { authorize: {isLoggedIn: true} } },
       { path: 'settings', name: 'institution_settings', component: () => import('pages/institution_settings.vue'), meta: { authorize: {isLoggedIn: true, isStaff: true, isSuperuser: true} } },
       {
@@ -136,7 +136,8 @@ const routes = [
       {
         path: 'submission_type/create',
         component: () => import('pages/submission_type'),
-        name: 'create_submission_type'
+        name: 'create_submission_type',
+        meta: { authorize: {isLoggedIn: true, isStaff: true} }
       },
       {
         path: 'settings',
@@ -196,12 +197,14 @@ const routes = [
   {
     path: '/error',
     component: () => import('pages/404'),
-    name: 'error'
+    name: 'error',
+    meta: { public: true }
   },
   { // Always leave this as last one (vue-router 4 catch-all syntax)
     path: '/:catchAll(.*)*',
     component: () => import('pages/404'),
-    name: 'not_found'
+    name: 'not_found',
+    meta: { public: true }
   }
 ]
 

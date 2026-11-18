@@ -16,36 +16,47 @@ export default function (/* { ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
+  // Everything needs a signed-in user except routes marked meta.public (the
+  // sign-in page and the error pages).  The first navigation asks the server
+  // who we are; after that the store knows.
+  let authCheck = null
+  function whenAuthKnown () {
+    if (store.getters.isLoggedIn) {
+      return Promise.resolve()
+    }
+    if (!authCheck) {
+      authCheck = store.dispatch('checkAuth', { axios: axiosInstance })
+    }
+    return authCheck
+  }
+
   Router.beforeEach((to, from, next) => {
-    // redirect to login page if not logged in and trying to access a restricted page
-    const { authorize } = to.meta
-    if (to.params.lab_id && to.params.lab_id !== store.getters.labId) {
-      store.dispatch('setLabId', { axios: axiosInstance, labId: to.params.lab_id })
+    if (to.meta.public) {
+      return next()
     }
-    if (authorize && authorize.isLoggedIn && to.path !== '/' && !store.getters.isLoggedIn) {
-      store.dispatch('checkAuth', { axios: axiosInstance })
-        .then(function (response) {
-          if (!store.getters.isLoggedIn) {
-            // Sign in first, then come back to the page that was asked for.
-            return next({ name: 'login', query: { next: to.fullPath } })
-          }
-          if (authorize && authorize.isStaff && !store.getters.isStaff) {
-            return next({ path: '/' })
-          }
-          if (authorize && authorize.isSuperuser && !store.getters.isSuperuser) {
-            return next({ path: '/' })
-          }
-          next()
-        })
-        .catch(function (error) {
-          console.log('error', error)
+    const authorize = to.meta.authorize || {}
+    whenAuthKnown()
+      .then(function () {
+        if (!store.getters.isLoggedIn) {
+          authCheck = null // ask again next time, e.g. after signing in in another tab
+          // Sign in first, then come back to the page that was asked for.
+          return next({ name: 'login', query: { next: to.fullPath } })
+        }
+        if (to.params.lab_id && to.params.lab_id !== store.getters.labId) {
+          store.dispatch('setLabId', { axios: axiosInstance, labId: to.params.lab_id })
+        }
+        if (authorize.isSuperuser && !store.getters.isSuperuser) {
           return next({ path: '/' })
-        })
-    } else if (authorize && authorize.isStaff && !store.getters.isStaff) {
-      return next({ path: '/' })
-    } else {
-      next()
-    }
+        }
+        if (authorize.isStaff && !store.getters.isStaff) {
+          return next({ path: '/' })
+        }
+        next()
+      })
+      .catch(function (error) {
+        console.log('error', error)
+        return next({ name: 'login', query: { next: to.fullPath } })
+      })
   })
 
   // Per-route document title (WCAG 2.4.2). Uses meta.title when set, otherwise
