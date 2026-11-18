@@ -101,7 +101,7 @@
         </div>
         </div>
         <!-- {{ advancedParams }} -->
-        <div v-show="useAdvancedFilters">
+        <div v-if="canUseAdvancedFilters" v-show="useAdvancedFilters">
           <q-btn label="Advanced filters" color="primary" v-if="!advanced" @click="advanced=true"/>
           <advancedFilters ref="advancedFilters" :lab="lab" @update="updateAdvancedFilters" :params="advancedFilters" v-show="advanced"/>
         </div>
@@ -333,7 +333,13 @@ export default {
       // this.filters = _.cloneDeep(settings.filters)
       if (settings.advancedFilters) {
         // this.advancedFilters = _.cloneDeep(settings.advancedFilters)
-        this.$refs['advancedFilters'] && this.$refs['advancedFilters'].update(_.assign({}, _.cloneDeep(settings.advancedFilters)))
+        if (this.$refs['advancedFilters']) {
+          this.$refs['advancedFilters'].update(_.assign({}, _.cloneDeep(settings.advancedFilters)))
+        } else {
+          // Not rendered yet (it waits for the lab's permissions to load): it
+          // picks these up through its `params` prop when it is.
+          this.advancedFilters = _.cloneDeep(settings.advancedFilters)
+        }
         this.advanced = true
         // this.$refs['advancedFilters'] && this.$refs['advancedFilters'].update()
       }
@@ -394,6 +400,11 @@ export default {
     // this.refresh()
   },
   computed: {
+    // The lab's filter definitions are only served to its members, so the
+    // advanced filters are not offered (or loaded) for anyone else.
+    canUseAdvancedFilters () {
+      return this.$store.getters.isSuperuser || this.$perms.hasLabPerm('MEMBER') || this.$perms.hasLabPerm('ADMIN')
+    },
     allColumns () {
       return this.showCustomColumns ? this.columns.concat(this.customColumns) : this.columns
     },
