@@ -403,9 +403,13 @@ export default {
     // this.refresh()
   },
   computed: {
-    // The lab's filter definitions are only served to its members, so the
-    // advanced filters are not offered (or loaded) for anyone else.
+    // Advanced filters are built from one lab's submission types and custom
+    // variables, so they only belong on a lab's own list (not "My Submissions"
+    // or other cross-lab lists), and the lab only serves them to its members.
     canUseAdvancedFilters () {
+      if (!this.lab) {
+        return false
+      }
       return this.$store.getters.isSuperuser || this.$perms.hasLabPerm('MEMBER') || this.$perms.hasLabPerm('ADMIN')
     },
     allColumns () {
