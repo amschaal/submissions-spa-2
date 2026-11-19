@@ -331,17 +331,20 @@ export default {
       // "do not mutate vuex store state outside mutation handlers".
       this.filters = _.assign(this.getDefaultFilters().filters, _.cloneDeep(settings.filters))
       // this.filters = _.cloneDeep(settings.filters)
-      if (settings.advancedFilters) {
-        // this.advancedFilters = _.cloneDeep(settings.advancedFilters)
-        if (this.$refs['advancedFilters']) {
-          this.$refs['advancedFilters'].update(_.assign({}, _.cloneDeep(settings.advancedFilters)))
-        } else {
-          // Not rendered yet (it waits for the lab's permissions to load): it
-          // picks these up through its `params` prop when it is.
-          this.advancedFilters = _.cloneDeep(settings.advancedFilters)
-        }
+      if (settings.advancedFilters && this.$refs['advancedFilters']) {
+        // The panel applies them and emits `update`, which fetches the list.
+        this.$refs['advancedFilters'].update(_.assign({}, _.cloneDeep(settings.advancedFilters)))
         this.advanced = true
-        // this.$refs['advancedFilters'] && this.$refs['advancedFilters'].update()
+      } else {
+        // No panel: it is only rendered for lab members, and only once the
+        // lab's permissions have loaded.  Keep the settings for it (it reads
+        // them through its `params` prop if it renders later) and fetch the
+        // list here, since there is no `update` event to do it.
+        if (settings.advancedFilters) {
+          this.advancedFilters = _.cloneDeep(settings.advancedFilters)
+          this.advanced = true
+        }
+        this.refresh()
       }
       if (settings.name) {
         this.$q.notify({message: `Loaded saved search settings '${settings.name}'.`, type: 'positive'})
