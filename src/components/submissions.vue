@@ -336,11 +336,11 @@ export default {
         this.$refs['advancedFilters'].update(_.assign({}, _.cloneDeep(settings.advancedFilters)))
         this.advanced = true
       } else {
-        // No panel: it is only rendered for lab members, and only once the
-        // lab's permissions have loaded.  Keep the settings for it (it reads
-        // them through its `params` prop if it renders later) and fetch the
-        // list here, since there is no `update` event to do it.
-        if (settings.advancedFilters) {
+        // No panel (see canUseAdvancedFilters), so there is no `update` event
+        // to fetch the list: do it here.  On a lab's list the panel may still
+        // render once the lab's permissions load, so keep the settings for it
+        // (it reads them through its `params` prop); elsewhere they are unused.
+        if (settings.advancedFilters && this.lab) {
           this.advancedFilters = _.cloneDeep(settings.advancedFilters)
           this.advanced = true
         }
