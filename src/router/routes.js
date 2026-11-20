@@ -57,7 +57,8 @@ const routes = [
     path: '/',
     component: () => import('layouts/BaseLayout'),
     children: [
-      { path: '', name: 'index', component: () => import('pages/index') },
+      // The site and lab landing pages are readable without signing in.
+      { path: '', name: 'index', component: () => import('pages/index'), meta: { public: true } },
       { path: 'login', name: 'login', component: () => import('pages/login'), meta: { title: 'Sign in', public: true } },
       { path: 'profile', name: 'profile', component: () => import('pages/profile'), meta: { authorize: {isLoggedIn: true} } },
       { path: 'settings', name: 'institution_settings', component: () => import('pages/institution_settings.vue'), meta: { authorize: {isLoggedIn: true, isStaff: true, isSuperuser: true} } },
@@ -93,7 +94,7 @@ const routes = [
     path: '/:lab_id',
     component: () => import('layouts/BaseLayout'),
     children: [
-      { path: '', name: 'lab', component: () => import('pages/lab') },
+      { path: '', name: 'lab', component: () => import('pages/lab'), meta: { public: true } },
       {
         path: 'submissions',
         component: () => import('pages/submissions'),

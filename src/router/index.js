@@ -17,8 +17,8 @@ export default function (/* { ssrContext } */) {
   })
 
   // Everything needs a signed-in user except routes marked meta.public (the
-  // sign-in page and the error pages).  The first navigation asks the server
-  // who we are; after that the store knows.
+  // landing pages, the sign-in page and the error pages).  The first
+  // navigation asks the server who we are; after that the store knows.
   let authCheck = null
   function whenAuthKnown () {
     if (store.getters.isLoggedIn) {
@@ -31,13 +31,15 @@ export default function (/* { ssrContext } */) {
   }
 
   Router.beforeEach((to, from, next) => {
-    if (to.meta.public) {
-      return next()
-    }
     const authorize = to.meta.authorize || {}
     whenAuthKnown()
       .then(function () {
         if (!store.getters.isLoggedIn) {
+          if (to.meta.public) {
+            // Public pages render either way; they check the store to decide
+            // what to show a signed-out visitor.
+            return next()
+          }
           authCheck = null // ask again next time, e.g. after signing in in another tab
           // Sign in first, then come back to the page that was asked for.
           return next({ name: 'login', query: { next: to.fullPath } })
@@ -55,6 +57,9 @@ export default function (/* { ssrContext } */) {
       })
       .catch(function (error) {
         console.log('error', error)
+        if (to.meta.public) {
+          return next()
+        }
         return next({ name: 'login', query: { next: to.fullPath } })
       })
   })

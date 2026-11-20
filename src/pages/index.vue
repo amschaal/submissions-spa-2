@@ -37,16 +37,28 @@
 </style>
 
 <script>
-import { mapGetters } from 'vuex'
 export default {
   name: 'PageIndex',
   data () {
     return {
-      lab: this.$store.getters.labId
+      lab: this.$store.getters.labId,
+      publicLabs: [] // what a signed-out visitor may see: each lab's id and name
     }
   },
   mounted () {
     console.log('mount labs', this.labs)
+    if (!this.$store.getters.isLoggedIn) {
+      // This page is public.  The store's lab list needs a signed-in user, so
+      // a visitor gets the public one instead.
+      const self = this
+      this.$axios.get('/api/public/labs/')
+        .then(function (response) {
+          self.publicLabs = response.data
+        })
+        .catch(function (error) {
+          console.log('public labs', error.message)
+        })
+    }
     this.isOnlyLab()
   },
   methods: {
@@ -61,7 +73,14 @@ export default {
       }
     }
   },
-  computed: mapGetters(['institution', 'labs']),
+  computed: {
+    institution () {
+      return this.$store.getters.institution
+    },
+    labs () {
+      return this.$store.getters.isLoggedIn ? this.$store.getters.labs : this.publicLabs
+    }
+  },
   watch: {
     labs: function (val) {
       this.isOnlyLab()
