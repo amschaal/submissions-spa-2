@@ -41,24 +41,11 @@ export default {
   name: 'PageIndex',
   data () {
     return {
-      lab: this.$store.getters.labId,
-      publicLabs: [] // what a signed-out visitor may see: each lab's id and name
+      lab: this.$store.getters.labId
     }
   },
   mounted () {
     console.log('mount labs', this.labs)
-    if (!this.$store.getters.isLoggedIn) {
-      // This page is public.  The store's lab list needs a signed-in user, so
-      // a visitor gets the public one instead.
-      const self = this
-      this.$axios.get('/api/public/labs/')
-        .then(function (response) {
-          self.publicLabs = response.data
-        })
-        .catch(function (error) {
-          console.log('public labs', error.message)
-        })
-    }
     this.isOnlyLab()
   },
   methods: {
@@ -77,8 +64,10 @@ export default {
     institution () {
       return this.$store.getters.institution
     },
+    // This page is public: for a signed-out visitor the store holds the public
+    // lab list (id and name only, see App.vue).
     labs () {
-      return this.$store.getters.isLoggedIn ? this.$store.getters.labs : this.publicLabs
+      return this.$store.getters.labs
     }
   },
   watch: {

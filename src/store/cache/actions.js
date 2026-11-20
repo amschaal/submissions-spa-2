@@ -82,6 +82,18 @@ export const fetchLabs = (context, {axios}) => {
     })
 }
 
+// For signed-out visitors: each enabled lab's id and name, which is all the lab
+// chooser and the site landing page need.  (fetchLabs needs a signed-in user.)
+export const fetchPublicLabs = (context, {axios}) => {
+  return axios.get('/api/public/labs/')
+    .then(function (response) {
+      context.commit('labs', response.data)
+    })
+    .catch(function (error) {
+      console.log(error.message)
+    })
+}
+
 export const fetchInstitution = (context, {axios}) => {
   return axios.get('/api/institutions/default/')
     .then(function (response) {

@@ -10,9 +10,9 @@
         </router-link>
         <q-toolbar-title>
             <!-- <router-link style="color: white; text-decoration: none;" :to="{ name: 'lab', params: { lab_id: $route.params.lab_id } }">{{$store.getters.lab.name}}</router-link> -->
-            <selectLabModal v-if="$store.getters.isLoggedIn">
+            <selectLabModal>
               <template v-slot:button="{ open }">
-                <q-btn size="large" flat :label="$store.getters.labId && $store.getters.lab ? $store.getters.lab.name : 'Select Lab'" icon-right="arrow_drop_down" @click="open" title="Change lab"/>
+                <q-btn size="large" flat :label="currentLabName || 'Select Lab'" icon-right="arrow_drop_down" @click="open" title="Change lab"/>
               </template>
             </selectLabModal>
           <!-- <div slot="subtitle">Sample Submission System</div> -->
@@ -162,6 +162,18 @@ export default {
   computed: {
     institution () {
       return this.$store.getters.institution
+    },
+    // The lab shown on the chooser button.  A signed-out visitor has no lab
+    // loaded in the store, only the public lab list, so theirs is whichever
+    // lab the address names.
+    currentLabName () {
+      const getters = this.$store.getters
+      if (getters.isLoggedIn) {
+        return getters.labId && getters.lab ? getters.lab.name : null
+      }
+      const labId = this.$route.params.lab_id
+      const lab = (getters.labs || []).find(l => l.lab_id === labId)
+      return lab ? lab.name : null
     }
   },
   components: {

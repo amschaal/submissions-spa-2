@@ -30,6 +30,9 @@ export default {
     this.$store.dispatch('checkAuth', {axios: this.$axios}).then(function () {
       if (self.$store.getters.isLoggedIn) {
         self.$store.dispatch('fetchAll', {axios: self.$axios, plugins: self.$plugins})
+      } else {
+        // Enough for the lab chooser and the public landing pages.
+        self.$store.dispatch('fetchPublicLabs', {axios: self.$axios})
       }
     })
     // this.$store.dispatch('fetchValidators', {axios: this.$axios})
