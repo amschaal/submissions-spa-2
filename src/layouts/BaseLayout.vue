@@ -10,11 +10,16 @@
         </router-link>
         <q-toolbar-title>
             <!-- <router-link style="color: white; text-decoration: none;" :to="{ name: 'lab', params: { lab_id: $route.params.lab_id } }">{{$store.getters.lab.name}}</router-link> -->
-            <selectLabModal>
-              <template v-slot:button="{ open }">
-                <q-btn size="large" flat :label="currentLabName || 'Select Lab'" icon-right="arrow_drop_down" @click="open" title="Change lab"/>
-              </template>
-            </selectLabModal>
+            <!-- Lab chooser: pick a lab to go to its landing page. -->
+            <q-btn-dropdown size="large" flat auto-close :label="currentLabName || 'Select Lab'" :disable="!labs.length" title="Change lab">
+              <q-list>
+                <q-item v-for="lab in labs" :key="lab.lab_id" clickable :active="lab.lab_id === currentLabId" :to="{ name: 'lab', params: { lab_id: lab.lab_id } }">
+                  <q-item-section>
+                    <q-item-label>{{ lab.name }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
           <!-- <div slot="subtitle">Sample Submission System</div> -->
           <q-btn v-if="!$store.getters.isLoggedIn" v-show="$route.name !== 'login'" @click="$router.push({ name: 'login', query: { next: $route.fullPath } })" class="float-right" flat>Login</q-btn>
           <span v-else class="float-right">
@@ -133,7 +138,6 @@
 
 <script>
 import { openURL } from 'quasar'
-import selectLabModal from '../components/modals/selectLabModal.vue'
 import version from '../components/version.vue'
 // import Auth from '../components/auth.vue'
 
@@ -163,22 +167,29 @@ export default {
     institution () {
       return this.$store.getters.institution
     },
-    // The lab shown on the chooser button.  A signed-out visitor has no lab
+    // The lab chooser's options: the full list when signed in, the public one
+    // (id and name) for a signed-out visitor.
+    labs () {
+      return this.$store.getters.labs || []
+    },
+    // The lab the chooser shows as current.  A signed-out visitor has no lab
     // loaded in the store, only the public lab list, so theirs is whichever
     // lab the address names.
+    currentLabId () {
+      return this.$store.getters.isLoggedIn ? this.$store.getters.labId : this.$route.params.lab_id
+    },
     currentLabName () {
       const getters = this.$store.getters
       if (getters.isLoggedIn) {
         return getters.labId && getters.lab ? getters.lab.name : null
       }
-      const labId = this.$route.params.lab_id
-      const lab = (getters.labs || []).find(l => l.lab_id === labId)
+      const labId = this.currentLabId
+      const lab = this.labs.find(l => l.lab_id === labId)
       return lab ? lab.name : null
     }
   },
   components: {
     // Auth
-    selectLabModal,
     version
   }
 }
